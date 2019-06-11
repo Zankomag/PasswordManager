@@ -18,9 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Properties\botSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
