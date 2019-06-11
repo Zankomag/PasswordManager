@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
 
 namespace UPwdBot {
 	public class Program {
 		public static void Main() {
+			Bot.Instance.Start().Wait();
 			CreateWebHostBuilder().Build().Run();
 		}
 

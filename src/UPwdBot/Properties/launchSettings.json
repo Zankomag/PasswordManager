@@ -3,7 +3,7 @@
 		"windowsAuthentication": false,
 		"anonymousAuthentication": true,
 		"iisExpress": {
-			"applicationUrl": "http://localhost:7720",
+			"applicationUrl": "http://localhost:7720/",
 			"sslPort": 0
 		}
 	},
@@ -16,8 +16,8 @@
 			}
 		},
 		"UPwdBot": {
-			"applicationUrl": "http://localhost:7720/",
 			"commandName": "Project",
+			"applicationUrl": "http://localhost:7720/",
 			"environmentVariables": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			}
