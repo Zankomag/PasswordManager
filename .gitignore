@@ -333,3 +333,5 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 src/UPwdBot/Properties/botSettings.json
+src/UPwdBot/stenndc.dll
+src/UPwdBot/stenndc.cs
