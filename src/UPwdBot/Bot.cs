@@ -3,9 +3,11 @@ using System.IO;
 using System.Data;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using MySql.Data.MySqlClient;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using System.Data.SQLite;
+using Dapper;
+using System.Linq;
 
 namespace UPwdBot {
 	public class Bot {
@@ -14,8 +16,7 @@ namespace UPwdBot {
 
 		public TelegramBotClient Client { get; private set; }
 		public ChatId AdminId { get; private set; }
-		public MySqlConnection Connection { get; private set; } = null;
-		private string connString;
+		public string connString;
 
 		private Bot() {
 			Instance = this;
@@ -26,35 +27,20 @@ namespace UPwdBot {
 			}
 			Client = new TelegramBotClient(botSettings.BotToken);
 			AdminId = botSettings.AdminId;
-			connString = botSettings.GetDBConnectionString();
+			connString = botSettings.ConnectionString;
 		}
 		
-		public bool ConnectToDB(out string message) {
-			bool connected = false;
-			try {
-				Connection = new MySqlConnection(connString);
-				Connection.Open();
-				connected = true;
-				message = "Connected to DB successfully";
+		private Account ConnectToDB() {
+
+			using (IDbConnection conn = new SQLiteConnection(connString)) {
+				var output = conn.Query<Account>("select * from Account");
+				return output.ToList()[0];
 			}
-			catch (ArgumentException a_ex) {
-				message = a_ex.ToString() + "\nShutting down";
-			}
-			catch (MySqlException ex) {
-				message = ex.Message + "\nExeption Number: " + ex.Number + "\nShutting down";
-				connected = false;
-			}
-			return connected;
+			
 		}
 
-		public async Task Start() {
-			string message;
-			bool connected = ConnectToDB(out message);
-			//Report start message
-			await Client.SendTextMessageAsync(AdminId, "🔴\n" + message);
-
-			if (!connected)
-				Environment.Exit(0);
+		public async Task ReportStart() {
+			await Client.SendTextMessageAsync(AdminId, "🔴\n");
 		}
 
 	}

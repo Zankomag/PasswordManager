@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace UPwdBot {
 	public class Program {
 		public static void Main() {
-			//Bot.Instance.Start().Wait();
+			Bot.Instance.ReportStart().Wait();
 			CreateWebHostBuilder().Build().Run();
 		}
 
