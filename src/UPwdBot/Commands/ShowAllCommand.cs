@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
@@ -8,15 +7,15 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace UPwdBot.Commands {
-	public class ShowAllCommand : ICommand {
+	public class ShowAllCommand : ILocalizedCommand {
 
-		public async Task ExecuteAsync(Message message) {
-			await BotHandler.Instance.Bot.SendTextMessageAsync(message.From.Id,
-				GetAllAccounts(message.From.Id),
+		public async Task ExecuteAsync(Message message, string langCode) {
+			await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
+				GetAllAccounts(message.From.Id, langCode),
 				disableWebPagePreview: true);
 		}
 
-		private string GetAllAccounts(int userID) {
+		private string GetAllAccounts(int userID, string langCode) {
 			IEnumerable<Account> accounts;
 
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
@@ -24,16 +23,16 @@ namespace UPwdBot.Commands {
 			}
 
 			if (!accounts.Any()) {
-				return "You have no accounts.\nAdd one: /add";
+				return Localization.GetMessage("NoAccounts", langCode) +  "/add";
 			}
 
-			string message = "Your accounts:";
+			string message = Localization.GetMessage("AccountList", langCode);
 			foreach (Account account in accounts) {
 				message += "\n==========================";
 				message += "\n" + account.AccountName;
 				if(account.Link != null)
 					message += "\n" + account.Link;
-				message += "\nLogin: " + account.Login;
+				message += "\n" + Localization.GetMessage("Login", langCode) + ": " + account.Login;
 			}
 
 			return message;

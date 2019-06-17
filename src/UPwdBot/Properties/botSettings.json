@@ -1,10 +1,5 @@
 {
 	"BotToken": "BOT_TOKEN",
 	"AdminId": 123456789,
-	"DBConnection": {
-		"Server": "0.0.0.0",
-		"UserId": "user",
-		"Password": "password",
-		"DataBase": "database"
-	}
+	"ConnectionString": "Data Source=Absolute/path/to/your.db;Version=3;"
 }
