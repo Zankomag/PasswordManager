@@ -1,13 +1,15 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using UPwdBot.Types;
 
 namespace UPwdBot.Commands {
-	public class ShowAllCommand : ILocalizedCommand {
+	public class ShowAllCommand : IMessageCommand {
 
 		public async Task ExecuteAsync(Message message, string langCode) {
 			await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
@@ -23,7 +25,7 @@ namespace UPwdBot.Commands {
 			}
 
 			if (!accounts.Any()) {
-				return Localization.GetMessage("NoAccounts", langCode) +  "/add";
+				return String.Format(Localization.GetMessage("NoAccounts", langCode),  "/add");
 			}
 
 			string message = Localization.GetMessage("AccountList", langCode);

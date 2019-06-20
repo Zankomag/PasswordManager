@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Dapper;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace UPwdBot.Commands {
-	public class SelectLanguageCommand : IBaseCommand {
+	public class SelectLanguageCommand : IMessageCommand, ICallBackQueryCommand {
 		private InlineKeyboardMarkup inlineKeyboard;
 
 		public SelectLanguageCommand() {
@@ -31,9 +32,27 @@ namespace UPwdBot.Commands {
 			inlineKeyboard = new InlineKeyboardMarkup(buttons);
 		}
 
-		public async Task ExecuteAsync(Message message) {
-			await BotHandler.Bot.SendTextMessageAsync(message.Chat.Id, "Choose your language.",
+		public async Task ExecuteAsync(Message message, string langCode) {
+			await BotHandler.Bot.SendTextMessageAsync(message.Chat.Id, Localization.GetMessage("ChooseLang", langCode),
 				replyMarkup: inlineKeyboard);
+		}
+
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
+			string langCode = callbackQuery.Data.Substring(1);
+			if (!Localization.HasLanguage(langCode))
+				langCode = Localization.defaultLanguage;
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				if (user == null) {
+					conn.Execute("Insert into User (Id, Lang) values (@Id, @Lang)",
+						new { Id = callbackQuery.From.Id, Lang = langCode });
+				} else {
+					conn.Execute("update User set Lang = @Lang where Id = @Id",
+						new { Lang = langCode, callbackQuery.From.Id });
+				}
+			}
+			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
+				Localization.GetMessage("Help", langCode));
 		}
 	}
 }

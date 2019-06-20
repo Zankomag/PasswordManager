@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Uten.Encryption;
+using UPwdBot.Types;
 
 namespace UPwdBot.Commands {
-	public class AddAccountCommand : ILocalizedCommand {
+	public class AddAccountCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, string langCode) {
 			Account account = new Account();
 			//if user is already assembling account - CONTINUE assembling it instead of creating new

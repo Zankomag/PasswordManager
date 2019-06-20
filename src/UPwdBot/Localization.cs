@@ -10,8 +10,8 @@ namespace UPwdBot {
 		//
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }
-		private const string defaultLanguage = "en-US";
-		private const string defaultIcon = "🇺🇸ГЫГЫ";
+		public const string defaultLanguage = "en-US";
+		private const string defaultIcon = "❔";
 		/// <summary>
 		/// </summary>
 		/// <returns>String of <paramref name="langCode"/> by its key. Retunrs en-US string if not found.</returns>
@@ -54,6 +54,10 @@ namespace UPwdBot {
 				langCodes.Add(item.Key);
 			}
 			return langCodes;
+		}
+
+		public static bool HasLanguage(string langCode) {
+			return stringsByCode.ContainsKey(langCode);
 		}
 	}
 }

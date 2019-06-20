@@ -29,15 +29,6 @@ namespace UPwdBot {
 			AdminId = botSettings.AdminId;
 			connString = botSettings.ConnectionString;
 		}
-		
-		private Account ConnectToDB() {
-
-			using (IDbConnection conn = new SQLiteConnection(connString)) {
-				var output = conn.Query<Account>("select * from Account");
-				return output.ToList()[0];
-			}
-			
-		}
 
 		public async Task ReportStart() {
 			await Client.SendTextMessageAsync(AdminId, "🔴\n");

@@ -1,6 +1,6 @@
 ﻿
 
-namespace UPwdBot {
+namespace UPwdBot.Types {
 	public class Account {
 		public int Id { get; set; }
 		public int UserId { get; set; }

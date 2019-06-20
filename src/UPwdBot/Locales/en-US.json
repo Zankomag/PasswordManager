@@ -1,7 +1,10 @@
 ﻿{
 	"Icon": "🇺🇸",
 	"Help": "Help message",
-	"NoAccounts": "You have no accounts.\nAdd a new one: ",
+	"ChooseLang": "Choose your language.",
+	"LangIsSet":  "Your language is set to English.",
+	"Unknown":  "Unknown command: {0}",
+	"NoAccounts": "You have no accounts.\nAdd a new one: {0}",
 	"AccountList": "Your accounts:",
 	"Login": "Login"
 }

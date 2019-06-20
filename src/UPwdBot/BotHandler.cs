@@ -1,86 +1,114 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using UPwdBot.Commands;
+using UPwdBot.Types;
+using User = UPwdBot.Types.User;
 
 namespace UPwdBot {
 	public class BotHandler {
 		public static BotHandler Instance { get; private set; }
 		public static TelegramBotClient Bot { get => UPwdBot.Bot.Instance.Client; }
-		public static Dictionary<string, ICommand> Commands { get; private set; } = new Dictionary<string, ICommand>();
+		public static Dictionary<string, IMessageCommand> MessageCommands { get; private set; } = new Dictionary<string, IMessageCommand>();
+		public static Dictionary<char, ICallBackQueryCommand> CallBackCommands { get; private set; } = new Dictionary<char, ICallBackQueryCommand>();
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
 		
 		private BotHandler() {}
 
 		static BotHandler() {
-			if(Instance == null)
+			if (Instance == null) {
 				Instance = new BotHandler();
-			InitCommands();
+				InitCommands();
+			}
 		}
 
-		public static  void InitCommands() {
-			ICommand selectLanguageCommand = new SelectLanguageCommand();
-			ICommand addAccountCommand = new AddAccountCommand();
-			ICommand helpCommand = new HelpCommand();
-			Commands.Add("/help", helpCommand);
-			Commands.Add("/start",helpCommand);
-			Commands.Add("/language", selectLanguageCommand);
-			Commands.Add("/all", new ShowAllCommand());
-			Commands.Add("/add", addAccountCommand);
-			Commands.Add("add account", addAccountCommand);
+		private static  void InitCommands() {
+			SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
+			IMessageCommand addAccountCommand = new AddAccountCommand();
+			IMessageCommand helpCommand = new HelpCommand();
+
+			MessageCommands.Add("/help", helpCommand);
+			MessageCommands.Add("/start",helpCommand);
+			MessageCommands.Add("/language", selectLangCommand);
+			MessageCommands.Add("/all", new ShowAllCommand());
+			MessageCommands.Add("/add", addAccountCommand);
+			MessageCommands.Add("add account", addAccountCommand);
+
+			CallBackCommands.Add('L', selectLangCommand);
 		}
 
-		public async void HandleUpdate(Update update) {
+		public void HandleUpdate(Update update) {
 			switch (update.Type) {
 				case UpdateType.Message:
 					if(update.Message.Text != null)
-						await HandleMessage(update.Message);
-				break;
+						HandleMessage(update.Message);
+				return;
 				case UpdateType.CallbackQuery:
-
-				break;
+					HandleCallbackQuery(update.CallbackQuery);
+				return;
 			}
 		}
 
-		public async Task HandleMessage(Message message) {
+		private async void HandleMessage(Message message) {
 			User user;
 			using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
-				//Check if user exists in User table and add this user if not
-				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { Id = message.From.Id });
+				//User must choose language before using any command
+				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
 				if (user == null) {
-					conn.Execute("Insert into User (Id) values (@Id)", //DELETE, COOHING LANGUAGE HANDLER MUST INSERT NEW USER
-						new { Id = message.From.Id });
-					user = new User() {Id = message.From.Id};
-					await (Commands["/language"] as IBaseCommand).ExecuteAsync(message);
-				} else if(user.Lang == null) { //DELETE AFTER MAKE LOCALICATION SETTINGS
-					await (Commands["/language"] as IBaseCommand).ExecuteAsync(message);
+					await MessageCommands["/language"].ExecuteAsync(message, Localization.defaultLanguage);
+					return;
 				}
 			}
+
 			string commandText = message.Text.ToLower();
+
+			//Command that starts with '/' can contain args
 			if (message.Text.StartsWith('/')){
 				int cIndex = commandText.IndexOfAny(new char[] { ' ', '\n' });
 				if(cIndex != -1)
 					commandText = commandText.Substring(0, cIndex);
 			}
-			ICommand command;
-			if(Commands.TryGetValue(commandText, out command)) {
-				if(command is ILocalizedCommand)
-					await (command as ILocalizedCommand).ExecuteAsync(message, user.Lang);
-				else
-					await (command as IBaseCommand).ExecuteAsync(message);
+
+			string langCode = Localization.HasLanguage(user.Lang) ? user.Lang : Localization.defaultLanguage;
+			IMessageCommand command;
+			if(MessageCommands.TryGetValue(commandText, out command)) {
+					await command.ExecuteAsync(message, langCode);
 			} else {
 				if (AssemblingAccounts.ContainsKey(message.From.Id)) {
-					await (Commands["/add"] as ILocalizedCommand).ExecuteAsync(message, user.Lang);
+					await MessageCommands["/add"].ExecuteAsync(message, langCode);
 				} //ELSE IF - USER IS SEARCHING ACCOUNT AND PUT SERSHING IF AS FIRST CHECK
 				else {
-					await Bot.SendTextMessageAsync(message.From.Id, "Don't get command\n" + commandText + "\n" + commandText.Length);
+					await Bot.SendTextMessageAsync(message.From.Id, String.Format(Localization.GetMessage("Unknown", langCode), commandText));
 				}
 			}
 		}
+
+		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
+			User user;
+			using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
+				//Check if user exists in User table and add this user if not
+				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
+					new { callbackQuery.From.Id });
+				if (user == null) {
+					//Add new user to db with selected language
+					await CallBackCommands['L'].ExecuteAsync(callbackQuery, user);
+					return;
+				}
+			}
+
+			ICallBackQueryCommand command;
+			if (CallBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
+				await command.ExecuteAsync(callbackQuery, user);
+			} else {
+				await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
+			}
+				
+		} 
+
 	}
 }

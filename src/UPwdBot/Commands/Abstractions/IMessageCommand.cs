@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 
 namespace UPwdBot.Commands {
-	public interface IBaseCommand : ICommand {
-		Task ExecuteAsync(Message message);
+	public interface IMessageCommand {
+		Task ExecuteAsync(Message message, string langCode);
 	}
 }
