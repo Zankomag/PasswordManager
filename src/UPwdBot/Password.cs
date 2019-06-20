@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Uten.Passwords {
-	public class Password {
+	public static class Password {
 		public static string Generate(uint length = 32,
 			bool containsLowerChars = true,
 			bool containsUpperChars = true,
@@ -39,6 +39,25 @@ namespace Uten.Passwords {
 				pwd += charList[random.Next(0, charList.Length)];
 
 			return pwd;
+		}
+
+		/// <summary>
+		/// Pattern must be 6+ digits.
+		/// <para> Each of first 5 digits must be 1 or 0 relatively to <see cref="Generate(uint, bool, bool, bool, bool, bool)" method./></para>
+		public static string GeneratePasswordByPattern(this string pattern) {
+			string password = "";
+			if (pattern.Length < 6)
+				return password;
+
+			password = Generate(
+				Convert.ToUInt32(pattern.Substring(5)),
+				pattern[0] == '0' ? false : true,
+				pattern[0] == '0' ? false : true,
+				pattern[0] == '0' ? false : true,
+				pattern[0] == '0' ? false : true,
+				pattern[0] == '0' ? false : true);
+
+			return password;
 		}
 	}
 }

@@ -6,11 +6,13 @@ namespace UPwdBot {
 	public class Localization {
 		//
 		//TODO:
-		//ADD LANGUAGE SORTING. default -> must be always first
+		//ADD LANGUAGE SORTING IN CONSTRUCTOR: 
+		//default -> must be always first to assign in to defaultLanguage or vice versa
 		//
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }
-		public const string defaultLanguage = "en-US";
+
+		public static readonly string defaultLanguage = "en-US";
 		private const string defaultIcon = "❔";
 		/// <summary>
 		/// </summary>

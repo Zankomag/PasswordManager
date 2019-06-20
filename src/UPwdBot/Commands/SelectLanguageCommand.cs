@@ -43,8 +43,9 @@ namespace UPwdBot.Commands {
 				langCode = Localization.defaultLanguage;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if (user == null) {
+					//New user
 					conn.Execute("Insert into User (Id, Lang) values (@Id, @Lang)",
-						new { Id = callbackQuery.From.Id, Lang = langCode });
+						new { callbackQuery.From.Id, Lang = langCode });
 				} else {
 					conn.Execute("update User set Lang = @Lang where Id = @Id",
 						new { Lang = langCode, callbackQuery.From.Id });

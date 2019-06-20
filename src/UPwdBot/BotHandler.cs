@@ -40,6 +40,10 @@ namespace UPwdBot {
 			MessageCommands.Add("add account", addAccountCommand);
 
 			CallBackCommands.Add('L', selectLangCommand);
+			CallBackCommands.Add('S', new SkipLinkCommand());
+			CallBackCommands.Add('A', new AutoLinkCommand());
+			CallBackCommands.Add('G', new GeneratePasswordCommand());
+			CallBackCommands.Add('Z', new AcceptPasswordCommand());
 		}
 
 		public void HandleUpdate(Update update) {
