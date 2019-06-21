@@ -17,6 +17,7 @@ namespace UPwdBot.Commands {
 				if (message.Text.StartsWith("/add")) {
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						String.Format(Localization.GetMessage("AlreadyAdding", langCode), "/cancel")); 
+					//TODO:
 					//ADD MESSAGE WHAT TO DO NEXT (ADD LINK OR ACCOUNT NAME...)
 					return;
 				}
@@ -34,12 +35,11 @@ namespace UPwdBot.Commands {
 				} else if (account.Login == null) {
 					account.Login = message.Text;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
-					var inlineKeyBoard = new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
-							"G"));
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						"🔐 " + String.Format(Localization.GetMessage("AddPassword", langCode), "/gen"),
-						replyMarkup: inlineKeyBoard);
+					replyMarkup: new InlineKeyboardMarkup(
+						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
+							"G")));
 
 				} else if (account.Password == null) {
 					account.Password = Encryption.Encrypt(message.Text);
@@ -95,7 +95,7 @@ namespace UPwdBot.Commands {
 				"✅ " + String.Format(Localization.GetMessage("AccountAdded", langCode), account.AccountName));
 		}
 
-		private async Task AddLinkPrompt(ChatId chatId, string accountName, string langCode) {
+		private static async Task AddLinkPrompt(ChatId chatId, string accountName, string langCode) {
 			var inlineKeyBoard = new InlineKeyboardMarkup(
 				new InlineKeyboardButton[][] {
 							new InlineKeyboardButton[] {
@@ -113,20 +113,26 @@ namespace UPwdBot.Commands {
 		}
 
 		public static async Task UpdateCallBackMessageAsync(ChatId chatId, int MessageId, Account account, string langCode) {
-			
-			if(account.AccountName == null) {
+
+			if (account.AccountName == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
 					"📝 " + Localization.GetMessage("AddAccount", langCode));
-			} else if (account.Login == null) {
+			}
+			else if (!account.SkipLink && account.Link == null) {
+				await AddLinkPrompt(chatId, account.AccountName, langCode);
+			}
+			else if (account.Login == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
 					"📇 " + Localization.GetMessage("AddLogin", langCode));
-			} else if(account.Password == null){
+			}
+			else if (account.Password == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
 					"🔐 " + String.Format(Localization.GetMessage("AddPassword", langCode), "/gen"),
 					replyMarkup: new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
 							"G")));
-			} else {
+			}
+			else {
 				BotHandler.AssemblingAccounts.Remove(account.UserId);
 				await SaveToDBAsync(account, langCode);
 			}
