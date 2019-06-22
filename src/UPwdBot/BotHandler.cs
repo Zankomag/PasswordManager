@@ -17,7 +17,9 @@ namespace UPwdBot {
 		public static Dictionary<string, IMessageCommand> MessageCommands { get; private set; } = new Dictionary<string, IMessageCommand>();
 		public static Dictionary<char, ICallBackQueryCommand> CallBackCommands { get; private set; } = new Dictionary<char, ICallBackQueryCommand>();
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
-		
+
+		private static readonly SearchCommand searchCommand = new SearchCommand();
+
 		private BotHandler() {}
 
 		static BotHandler() {
@@ -44,6 +46,7 @@ namespace UPwdBot {
 			CallBackCommands.Add('A', new AutoLinkCommand());
 			CallBackCommands.Add('G', new GeneratePasswordCommand());
 			CallBackCommands.Add('Z', new AcceptPasswordCommand());
+			CallBackCommands.Add('Q', searchCommand);
 		}
 
 		public void HandleUpdate(Update update) {
@@ -83,11 +86,11 @@ namespace UPwdBot {
 			if(MessageCommands.TryGetValue(commandText, out command)) {
 					await command.ExecuteAsync(message, langCode);
 			} else {
-				if (AssemblingAccounts.ContainsKey(message.From.Id)) {
+				//if user doesn't setting up account then search
+				if (!AssemblingAccounts.ContainsKey(message.From.Id)) {
+					await searchCommand.ExecuteAsync(message, langCode);
+				} else {
 					await MessageCommands["/add"].ExecuteAsync(message, langCode);
-				} //ELSE IF - USER IS SEARCHING ACCOUNT AND PUT SERSHING IF AS FIRST CHECK
-				else {
-					await Bot.SendTextMessageAsync(message.From.Id, String.Format(Localization.GetMessage("Unknown", langCode), commandText));
 				}
 			}
 		}
