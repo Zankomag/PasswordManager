@@ -25,5 +25,8 @@
 	"Next": "Next",
 	"Prev": "Prev.",
 	"SearchAgain": "Search again.",
-	"NotFound": "There are no accounts you are searching for.\nAdd a new one: {0}"
+	"NotFound": "There are no accounts you are searching for.\nAdd a new one: {0}",
+	"MaxLength": "Max {0} length is {1} characters. Try again.",
+	"Link": "Link",
+	"AccName": "Account name"
 }

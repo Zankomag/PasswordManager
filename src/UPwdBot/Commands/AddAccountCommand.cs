@@ -21,18 +21,36 @@ namespace UPwdBot.Commands {
 					//ADD MESSAGE WHAT TO DO NEXT (ADD LINK OR ACCOUNT NAME...)
 					return;
 				}
-				if(account.AccountName == null) {	
+				if(account.AccountName == null) {
+					if (message.Text.Length > Account.maxAccountNameLength) {
+						await ReportExceededLength(message.From.Id, langCode,
+							Localization.GetMessage("AccName", langCode), Account.maxAccountNameLength);
+						return;
+					}
+
 					account.AccountName = message.Text;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await AddLinkPrompt(message.Chat.Id, account.AccountName, langCode);
 
 				} else if(!account.SkipLink && account.Link == null){
+					if (message.Text.Length > Account.maxLinkLength) {
+						await ReportExceededLength(message.From.Id, langCode,
+							Localization.GetMessage("Link", langCode), Account.maxLinkLength);
+						return;	
+					}
+
 					account.Link = message.Text;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						"📇 " + Localization.GetMessage("AddLogin", langCode));
 
 				} else if (account.Login == null) {
+					if (message.Text.Length > Account.maxLoginLength) {
+						await ReportExceededLength(message.From.Id, langCode,
+							Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+						return;
+					}
+
 					account.Login = message.Text;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
@@ -42,6 +60,12 @@ namespace UPwdBot.Commands {
 							"G")));
 
 				} else if (account.Password == null) {
+					if (message.Text.Length > Account.maxPasswordLength) {
+						await ReportExceededLength(message.From.Id, langCode,
+							Localization.GetMessage("Password", langCode), Account.maxPasswordLength);
+						return;
+					}
+
 					account.Password = Encryption.Encrypt(message.Text);
 					await SaveToDBAsync(account, langCode);
 					BotHandler.AssemblingAccounts.Remove(message.From.Id);
@@ -59,21 +83,54 @@ namespace UPwdBot.Commands {
 
 		private async Task AssembleAccountAsync(Message message, string langCode) {
 			string[] accountData = message.Text.Remove(0, 5).Split('\n', StringSplitOptions.RemoveEmptyEntries);
+			if (accountData[0].Length > Account.maxAccountNameLength) {
+				await ReportExceededLength(message.From.Id, langCode,
+					Localization.GetMessage("AccName", langCode), Account.maxAccountNameLength);
+				return;
+			}
 			Account account = new Account {
 				AccountName = accountData[0],
 				UserId = message.From.Id
 			};
 
 			if (accountData.Length > 3) {
+				if (accountData[1].Length > Account.maxLinkLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Link", langCode), Account.maxLinkLength);
+					return;
+				} else if (accountData[2].Length > Account.maxLoginLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+					return;
+				} else if (accountData[3].Length > Account.maxPasswordLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Password", langCode), Account.maxPasswordLength);
+					return;
+				}
 				account.Link = accountData[1].BuildLink();
 				account.Login = accountData[2].Trim();
 				account.Password = Encryption.Encrypt(accountData[3].Trim());
 				await SaveToDBAsync(account, langCode);
 			} else if(accountData.Length == 3) {
+				if (accountData[1].Length > Account.maxLoginLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+					return;
+				}
+				else if (accountData[2].Length > Account.maxPasswordLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Password", langCode), Account.maxPasswordLength);
+					return;
+				}
 				account.Login = accountData[1];
 				account.Password = Encryption.Encrypt(accountData[2]);
 				await SaveToDBAsync(account, langCode);
 			} else if(accountData.Length == 2) {
+				if (accountData[1].Length > Account.maxLoginLength) {
+					await ReportExceededLength(message.From.Id, langCode,
+						Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+					return;
+				}
 				account.Login = accountData[1].Trim();
 				BotHandler.AssemblingAccounts[message.From.Id] = account;
 				await AddLinkPrompt(message.Chat.Id, account.AccountName, langCode);
@@ -137,5 +194,11 @@ namespace UPwdBot.Commands {
 				await SaveToDBAsync(account, langCode);
 			}
 		}
+
+		public static async Task ReportExceededLength(ChatId chatid, string langCode, string paramName, int maxLength) {
+			await Bot.Instance.Client.SendTextMessageAsync(chatid,
+				String.Format(Localization.GetMessage("MaxLength", langCode), paramName, maxLength));
+		}
+
 	}
 }

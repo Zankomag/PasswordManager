@@ -2,6 +2,12 @@
 
 namespace UPwdBot.Types {
 	public class Account {
+
+		public const int maxAccountNameLength = 50;
+		public const int maxLinkLength = 54; //AccountName + ".com"
+		public const int maxLoginLength = 35;
+		public const int maxPasswordLength = 63;
+
 		public int Id { get; set; }
 		public int UserId { get; set; }
 		public string AccountName { get; set; }

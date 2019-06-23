@@ -14,7 +14,6 @@ namespace UPwdBot {
 								str.Substring(0,
 									str.IndexOf(' ')).ToLower() :
 								str.ToLower();
-			autoLink += ".com";
 			return autoLink;
 		}
 	}
