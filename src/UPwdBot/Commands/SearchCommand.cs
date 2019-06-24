@@ -17,7 +17,7 @@ namespace UPwdBot.Commands {
 			int accountCount = GetAccountCount(message.From.Id, message.Text);
 
 			if (accountCount == 1) {
-				await ShowAccount(message.From.Id, message.Text, langCode);
+				await ShowAccountByName(message.From.Id, message.Text, langCode);
 			}
 			else if (accountCount == 0) {
 				await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
@@ -65,21 +65,26 @@ namespace UPwdBot.Commands {
 			}
 		}
 
-		private async Task ShowAccount(int UserId, string accountName, string langCode) {
+		private async Task ShowAccountByName(int UserId, string accountName, string langCode) {
 			Account account;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
-					"select AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
+					"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
 					new {UserId,
 						AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"});
 			}
 			if(account != null) {
-				string message = account.AccountName + "\n" + account.Link + "\n" + 
-					Localization.GetMessage("Login", langCode) + account.Login;
+				string message = account.Link != null ? account.AccountName + "\n" + account.Link + "\n" +
+					Localization.GetMessage("Login", langCode) + account.Login :
+					account.AccountName + "\n" + Localization.GetMessage("Login", langCode) + account.Login;
 				await Bot.Instance.Client.SendTextMessageAsync(UserId, message,
-					replyMarkup: new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🔑 " + Localization.GetMessage("Password", langCode),
-							"P" + account.Id)), disableWebPagePreview: true);
+					replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", langCode),
+								"D") },
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData("🔑 " + Localization.GetMessage("Password", langCode),
+								"P" + account.Id.ToString())} }), disableWebPagePreview: true);
 			}
 		}
 
@@ -87,7 +92,7 @@ namespace UPwdBot.Commands {
 			List<Account> accounts;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				accounts = conn.Query<Account>(
-					"select AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
+					"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
 					new {
 						UserId,
 						AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
@@ -118,7 +123,7 @@ namespace UPwdBot.Commands {
 			List<Account> accounts;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				accounts = conn.Query<Account>(
-					"select AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName " +
+					"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName " +
 						"limit @Limit offset @Offset",
 					new {UserId,
 						AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",

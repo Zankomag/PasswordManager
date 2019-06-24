@@ -47,6 +47,8 @@ namespace UPwdBot {
 			CallBackCommands.Add('G', new GeneratePasswordCommand());
 			CallBackCommands.Add('Z', new AcceptPasswordCommand());
 			CallBackCommands.Add('Q', searchCommand);
+			CallBackCommands.Add('P', new ShowPwdCommand());
+			CallBackCommands.Add('O', new ShowAccById());
 		}
 
 		public void HandleUpdate(Update update) {
