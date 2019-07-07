@@ -1,5 +1,6 @@
 {
 	"BotToken": "BOT_TOKEN",
 	"AdminId": 123456789,
-	"ConnectionString": "Data Source=Absolute/path/to/your.db;Version=3;"
+	"ConnectionString": "Data Source=Absolute/path/to/your.db;Version=3;",
+	"Domain": "example.com"
 }
