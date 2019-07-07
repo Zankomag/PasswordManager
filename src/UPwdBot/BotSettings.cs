@@ -7,6 +7,7 @@ namespace UPwdBot {
 		public string BotToken;
 		public ChatId AdminId;
 		public string ConnectionString;
+		public string Domain;
 
 	}
 }

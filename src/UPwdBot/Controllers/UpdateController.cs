@@ -3,13 +3,15 @@ using Telegram.Bot.Types;
 
 namespace UPwdBot.Controllers
 {
-    [Route("api/bots/upwdbot")]
+    [Route("api/bots")]
     [ApiController]
     public class UpdateController : ControllerBase {
 
-		[HttpPost]
-		public IActionResult Post([FromBody]Update update) {
-			BotHandler.Instance.HandleUpdate(update);
+		[HttpPost("{token}")]
+		public IActionResult Post([FromBody]Update update, string token) {
+			if (Bot.Instance.IsTokenCorrect(token)) {
+				BotHandler.Instance.HandleUpdate(update);
+			}
 			return Ok();
 		}
 	}
