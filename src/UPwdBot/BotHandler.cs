@@ -8,6 +8,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using UPwdBot.Commands;
 using UPwdBot.Types;
+using Uten.Localization.MultiUser;
 using User = UPwdBot.Types.User;
 
 namespace UPwdBot {
@@ -86,7 +87,7 @@ namespace UPwdBot {
 					commandText = commandText.Substring(0, cIndex);
 			}
 
-			string langCode = Localization.HasLanguage(user.Lang) ? user.Lang : Localization.defaultLanguage;
+			string langCode = Localization.ContainsLanguage(user.Lang) ? user.Lang : Localization.defaultLanguage;
 			IMessageCommand command;
 			if(MessageCommands.TryGetValue(commandText, out command)) {
 					await command.ExecuteAsync(message, langCode);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class CancelCommand : IMessageCommand {

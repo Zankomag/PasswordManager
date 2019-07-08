@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace UPwdBot {
+namespace Uten.Localization.MultiUser {
 	public class Localization {
-		//
-		//TODO:
-		//ADD LANGUAGE SORTING IN CONSTRUCTOR: 
-		//default -> must be always first to assign in to defaultLanguage or vice versa
-		//
+
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }
 
@@ -24,6 +20,8 @@ namespace UPwdBot {
 				return stringsByCode[defaultLanguage][key];
 		}
 		static Localization() {
+			if(!File.Exists(Path.Combine("Locales", defaultLanguage + ".json")))
+				throw new FileNotFoundException("Default Language file couldn't be found in Locales folder.", defaultLanguage + ".json");
 			string[] files = Directory.GetFiles("Locales");
 			for(int i = 0; i < files.Length; i++) {
 				Dictionary<string, string> strings;
@@ -33,9 +31,7 @@ namespace UPwdBot {
 						.Deserialize(file, typeof(Dictionary<string, string>));
 				}
 				stringsByCode.Add(Path.GetFileNameWithoutExtension(files[i]), strings);
-			}
-			if (!stringsByCode.ContainsKey(defaultLanguage))
-				throw new FileNotFoundException("Default Language file couldn't be found in Locales folder.", defaultLanguage + ".json");
+			}	
 		}
 
 		public static IList<string> GetIcons() {
@@ -58,7 +54,7 @@ namespace UPwdBot {
 			return langCodes;
 		}
 
-		public static bool HasLanguage(string langCode) {
+		public static bool ContainsLanguage(string langCode) {
 			return stringsByCode.ContainsKey(langCode);
 		}
 	}

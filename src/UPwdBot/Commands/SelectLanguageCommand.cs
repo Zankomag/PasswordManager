@@ -39,7 +39,7 @@ namespace UPwdBot.Commands {
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
 			string langCode = callbackQuery.Data.Substring(1);
-			if (!Localization.HasLanguage(langCode))
+			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.defaultLanguage;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if (user == null) {

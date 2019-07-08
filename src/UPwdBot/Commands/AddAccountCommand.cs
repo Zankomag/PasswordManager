@@ -7,6 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Uten.Encryption;
 using UPwdBot.Types;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class AddAccountCommand : IMessageCommand {

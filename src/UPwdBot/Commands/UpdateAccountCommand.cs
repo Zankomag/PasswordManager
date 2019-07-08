@@ -2,6 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class UpdateAccountCommand : ICallBackQueryCommand {

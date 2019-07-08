@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using UPwdBot.Types;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class ShowPwdCommand : ICallBackQueryCommand {

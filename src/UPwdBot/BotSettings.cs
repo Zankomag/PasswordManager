@@ -1,5 +1,4 @@
 ﻿using Telegram.Bot.Types;
-using System;
 
 namespace UPwdBot {
 

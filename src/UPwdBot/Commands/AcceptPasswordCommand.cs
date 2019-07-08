@@ -2,6 +2,7 @@
 using Telegram.Bot.Types;
 using UPwdBot.Types;
 using Uten.Encryption;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class AcceptPasswordCommand : ICallBackQueryCommand {
