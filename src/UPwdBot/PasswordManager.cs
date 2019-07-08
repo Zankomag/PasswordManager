@@ -96,7 +96,7 @@ namespace UPwdBot {
 				message += "\n" + accounts[i].AccountName;
 				if (accounts[i].Link != null)
 					message += "\n" + accounts[i].Link;
-				message += "\n" + Localization.GetMessage("Login", langCode) + accounts[i].Login;
+				message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
 				keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
 					(i + 1) + "⃣ " + accounts[i].AccountName,
 					"O" + accounts[i].Id.ToString()) };
@@ -219,18 +219,22 @@ namespace UPwdBot {
 		public static async Task ShowAccount(ChatId chatId, Account account, string langCode, int messageToEditId = 0) {
 			if (account != null) {
 				string message = account.Link != null ? account.AccountName + "\n" + account.Link + "\n" +
-					Localization.GetMessage("Login", langCode) + account.Login :
-					account.AccountName + "\n" + Localization.GetMessage("Login", langCode) + account.Login;
+					Localization.GetMessage("Login", langCode) + ": " + account.Login :
+					account.AccountName + "\n" + Localization.GetMessage("Login", langCode) + ": " + account.Login;
 				var keyboardMarkup = new InlineKeyboardMarkup(
 					new InlineKeyboardButton[][] {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
-								"🗑 " + Localization.GetMessage("DeleteMsg", langCode),
-								"D") },
+								"🔑 " + Localization.GetMessage("Password", langCode),
+								"P" + account.Id.ToString())},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
-								"🔑 " + Localization.GetMessage("Password", langCode),
-								"P" + account.Id.ToString())}
+								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
+								"U0" + (account.Link != null ? "1" : "0") + account.Id) },
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
+								"X") },
 					});
 				if (messageToEditId == 0) {
 					await Bot.Instance.Client.SendTextMessageAsync(chatId, message,

@@ -4,13 +4,12 @@ namespace UPwdBot {
 
 		public static string BuildLink(this string link) {
 			return (link.StartsWith("https://") || link.StartsWith("http://"))
-				? link.Trim() : "http://" + link.Trim();
+				? link.Trim() : "https://" + link.Trim();
 		}
 
 		/// <summary>Returns first_word_in_string.com</summary>
 		public static string AutoLink(this string str) {
-			string autoLink = "";
-			autoLink += str.Contains(' ') ?
+			string autoLink = str.Contains(' ') ?
 								str.Substring(0,
 									str.IndexOf(' ')).ToLower() :
 								str.ToLower();

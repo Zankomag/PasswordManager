@@ -17,7 +17,7 @@
 	"AccountAdded": "{0} account has been added successfully!",
 	"NoAccounts": "You have no accounts.\nAdd a new one: {0}",
 	"AccountList": "Here's accounts I've found:",
-	"Login": "Login: ",
+	"Login": "Login",
 	"Password": "Password",
 	"Cancel": "{0} command has been canceled.",
 	"NoCancel": "There's no command to cancel.",
@@ -29,5 +29,11 @@
 	"MaxLength": "Max {0} length is {1} characters. Try again.",
 	"Link": "Link",
 	"AccName": "Account name",
-	"DeleteMsg": "Delete message"
+	"DeleteMsg": "Delete message",
+	"UpdateAcc": "Update account",
+	"DeleteAcc": "Delete account",
+	"AccountName": "Account name",
+	"ChooseWhatUpdate": "Choose what you want to update",
+	"Back": "Back",
+	"DeleteLink": "Delete link"
 }

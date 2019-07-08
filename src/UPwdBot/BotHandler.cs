@@ -50,6 +50,10 @@ namespace UPwdBot {
 			CallBackCommands.Add('P', new ShowPwdCommand());
 			CallBackCommands.Add('O', new ShowAccountCommand());
 			CallBackCommands.Add('D', new DeleteMessageCommand());
+			CallBackCommands.Add('U', new UpdateAccountCommand());
+			//X in PasswordManager -> deleteAccount
+			//U UpdateAccount Data UN - AccountName, UR - AccountLink UD - Delete Link, UL - Login, UP - Password
+			//
 		}
 
 		public void HandleUpdate(Update update) {
