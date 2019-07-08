@@ -39,7 +39,7 @@ namespace UPwdBot.Commands {
 						return;	
 					}
 
-					account.Link = message.Text;
+					account.Link = message.Text.BuildLink();
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						"📇 " + Localization.GetMessage("AddLogin", langCode));

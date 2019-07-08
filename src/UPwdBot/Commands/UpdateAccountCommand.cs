@@ -35,7 +35,7 @@ namespace UPwdBot.Commands {
 								new InlineKeyboardButton[] {
 									InlineKeyboardButton.WithCallbackData(
 										"⏪ " + Localization.GetMessage("Back", user.Lang),
-										"BA") },
+										"O" + accountId) },
 							}) : 
 							new InlineKeyboardMarkup(
 								new InlineKeyboardButton[][] {
@@ -58,14 +58,15 @@ namespace UPwdBot.Commands {
 									new InlineKeyboardButton[] {
 										InlineKeyboardButton.WithCallbackData(
 											"⏪ " + Localization.GetMessage("Back", user.Lang),
-											"BA") },
+											"O" + accountId) },
 								});
 
 					await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						"**" + Localization.GetMessage("ChooseWhatUpdate", user.Lang) + "**\n\n" + callbackQuery.Message.Text,
 						replyMarkup: keyboardMarkup,
-						parseMode: ParseMode.Markdown);
+						parseMode: ParseMode.Markdown,
+						disableWebPagePreview: true);
 					break;
 				}
 				case 'N': {

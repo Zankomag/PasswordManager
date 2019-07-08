@@ -226,7 +226,7 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🔑 " + Localization.GetMessage("Password", langCode),
-								"P" + account.Id.ToString())},
+								"P" + account.Id)},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
@@ -234,7 +234,7 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
-								"X") },
+								"X0" + account.Id) },
 					});
 				if (messageToEditId == 0) {
 					await Bot.Instance.Client.SendTextMessageAsync(chatId, message,

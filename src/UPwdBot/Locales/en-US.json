@@ -33,7 +33,11 @@
 	"UpdateAcc": "Update account",
 	"DeleteAcc": "Delete account",
 	"AccountName": "Account name",
-	"ChooseWhatUpdate": "Choose what you want to update",
+	"ChooseWhatUpdate": "Choose what you want to update.",
 	"Back": "Back",
-	"DeleteLink": "Delete link"
+	"DeleteLink": "Delete link",
+	"SureDeleteAcc": "Are you sure want to delete this account?",
+	"ImSure": "Yes, I'm 100% sure",
+	"No!": "No!",
+	"AccountDeleted": "Account has been deleted successfully!"
 }
