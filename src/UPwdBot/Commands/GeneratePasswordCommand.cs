@@ -1,16 +1,30 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using UPwdBot.Types;
+using Telegram.Bot.Types.Enums;
 using Uten.Passwords;
+using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class GeneratePasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
-			if (BotHandler.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
-				string password = user.GenPattern.GeneratePasswordByPattern();
+			if (BotHandler.AssemblingAccounts.ContainsKey(user.Id)) {
+				string password;
+				try {
+					password = user.GenPattern.GeneratePasswordByPattern();
+				} catch (ArgumentException) {
+					//
+					//TODO:
+					//SET DEFAULT PATTERN TO USER
+					//
+					await Bot.Instance.Client.SendTextMessageAsync(
+						callbackQuery.From.Id,
+						"PASSWORD PATTERN ERROR.\nPATTERN HAS BEEN SET TO DEFAULT.");
+					password = Password.Generate();
+				}
 
-				var inlineKeyBoard = new InlineKeyboardMarkup(
+			var inlineKeyBoard = new InlineKeyboardMarkup(
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
 							"G"),
@@ -18,9 +32,11 @@ namespace UPwdBot.Commands {
 							"Z")});
 
 				await BotHandler.Bot.EditMessageTextAsync(
-					callbackQuery.Message.Chat.Id,
+					callbackQuery.From.Id,
 					callbackQuery.Message.MessageId,
-					password, replyMarkup: inlineKeyBoard);
+					"`" + password + "`",
+					replyMarkup: inlineKeyBoard,
+					parseMode: ParseMode.Markdown);
 
 
 			} else {

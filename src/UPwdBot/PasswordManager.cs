@@ -12,6 +12,7 @@ using Uten.Localization.MultiUser;
 
 namespace UPwdBot {
 	public static class PasswordManager {
+		public const string separator = "\n──────────────────";
 		private const int maxAccsByPage = 3;
 
 		public static int GetAccountCount(int UserId, string accountName) {
@@ -93,7 +94,7 @@ namespace UPwdBot {
 
 			for (int i = 0; i < accounts.Count; i++) {
 				if (i != 0)
-					message += "\n──────────────────";
+					message += separator;
 				message += "\n" + accounts[i].AccountName;
 				if (accounts[i].Link != null)
 					message += "\n" + accounts[i].Link;

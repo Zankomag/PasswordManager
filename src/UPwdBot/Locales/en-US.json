@@ -39,5 +39,6 @@
 	"SureDeleteAcc": "Are you sure want to delete this account?",
 	"ImSure": "Yes, I'm 100% sure",
 	"No!": "No!",
-	"AccountDeleted": "Account has been deleted successfully!"
+	"AccountDeleted": "Account has been deleted successfully!",
+	"UpdateAccData": "Send me new {0} for this account."
 }

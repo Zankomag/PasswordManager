@@ -5,11 +5,12 @@ using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
-	public class ShowPwdCommand : ICallBackQueryCommand {
+	public class ShowPasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
 			await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));
@@ -23,10 +24,11 @@ namespace UPwdBot.Commands {
 			}
 			if(account!= null) {
 				await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
-					Uten.Encryption.Encryption.Decrypt(account.Password),
+					"`" + Uten.Encryption.Encryption.Decrypt(account.Password) + "`",
 					replyMarkup: new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							"D")));
+							"D")),
+					parseMode: ParseMode.Markdown);
 			}
 		}
 

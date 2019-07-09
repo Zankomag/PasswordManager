@@ -48,7 +48,7 @@ namespace UPwdBot {
 			CallBackCommands.Add('G', new GeneratePasswordCommand());
 			CallBackCommands.Add('Z', new AcceptPasswordCommand());
 			CallBackCommands.Add('Q', searchCommand);
-			CallBackCommands.Add('P', new ShowPwdCommand());
+			CallBackCommands.Add('P', new ShowPasswordCommand());
 			CallBackCommands.Add('O', new ShowAccountCommand());
 			CallBackCommands.Add('D', new DeleteMessageCommand());
 			CallBackCommands.Add('U', new UpdateAccountCommand());
