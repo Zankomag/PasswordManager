@@ -8,7 +8,7 @@ namespace UPwdBot.Types {
 		public const int maxLoginLength = 35;
 		public const int maxPasswordLength = 63;
 
-		public int Id { get; set; }
+		public long Id { get; set; }
 		public int UserId { get; set; }
 		public string AccountName { get; set; }
 		public string Link { get; set; }

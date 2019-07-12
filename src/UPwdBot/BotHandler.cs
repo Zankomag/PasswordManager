@@ -42,6 +42,7 @@ namespace UPwdBot {
 			MessageCommands.Add("/all", new ShowAllCommand());
 			MessageCommands.Add("/add", addAccountCommand);
 			MessageCommands.Add("/cancel", new CancelCommand());
+			MessageCommands.Add("/delete", new DeleteAllMessagesCommand());
 
 			CallBackCommands.Add('L', selectLangCommand);
 			CallBackCommands.Add('S', new SkipLinkCommand());

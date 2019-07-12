@@ -220,7 +220,7 @@ namespace UPwdBot {
 			}
 		}
 
-		public static async Task ShowAccount(ChatId chatId, Account account, string langCode, int messageToEditId = 0) {
+		public static async Task ShowAccount(ChatId chatId, Account account, string langCode, int messageToEditId = 0, string extraMessage = null) {
 			if (account != null) {
 				string message = account.Link != null ? account.AccountName + "\n" + account.Link + "\n" +
 					Localization.GetMessage("Login", langCode) + ": " + account.Login :
@@ -240,6 +240,9 @@ namespace UPwdBot {
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
 								"X0" + account.Id) },
 					});
+				if(extraMessage != null) {
+					message = extraMessage + "\n\n" + message;
+				}
 				if (messageToEditId == 0) {
 					await Bot.Instance.Client.SendTextMessageAsync(chatId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);

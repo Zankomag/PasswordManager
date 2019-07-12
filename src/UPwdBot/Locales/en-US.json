@@ -39,5 +39,6 @@
 	"ImSure": "Yes, I'm 100% sure",
 	"No!": "No!",
 	"AccountDeleted": "Account has been deleted successfully!",
-	"UpdateAccData": "Send me new {0} for this account."
+	"UpdateAccData": "Send me new {0} for this account.",
+	"DefaultPattern": "Pattern has been set to default."
 }

@@ -26,6 +26,8 @@ namespace UPwdBot.Commands {
 			//then user is already assembling account, so CONTINUE assembling it
 			else {
 				Account account = BotHandler.AssemblingAccounts[message.From.Id];
+				string data = !message.Text.Contains('\n') ? message.Text :
+					message.Text.Substring(0, message.Text.IndexOf('\n'));
 				if (account.AccountName == null) {
 					if (await IsLengthExceeded(message.Text.Length,
 							Account.maxAccountNameLength,"AccName",
@@ -33,7 +35,7 @@ namespace UPwdBot.Commands {
 						return;
 					}
 
-					account.AccountName = message.Text;
+					account.AccountName = data;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await AddLinkPrompt(message.Chat.Id, account.AccountName, langCode);
 
@@ -44,7 +46,7 @@ namespace UPwdBot.Commands {
 						return;
 					}
 
-					account.Link = message.Text.BuildLink();
+					account.Link = data.BuildLink();
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						"📇 " + Localization.GetMessage("AddLogin", langCode));
@@ -55,8 +57,8 @@ namespace UPwdBot.Commands {
 							message.From.Id, langCode)) {
 						return;
 					}
-
-					account.Login = message.Text;
+					
+					account.Login = data;
 					BotHandler.AssemblingAccounts[message.From.Id] = account;
 					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 						"🔐 " + String.Format(Localization.GetMessage("AddPassword", langCode), "/gen"),
@@ -71,7 +73,7 @@ namespace UPwdBot.Commands {
 						return;
 					}
 
-					account.Password = Encryption.Encrypt(message.Text);
+					account.Password = Encryption.Encrypt(data);
 					await SaveToDBAsync(account, langCode);
 					BotHandler.AssemblingAccounts.Remove(message.From.Id);
 				}
@@ -142,13 +144,14 @@ namespace UPwdBot.Commands {
 
 		private static async Task SaveToDBAsync(Account account, string langCode) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				conn.Execute("Insert into Account (UserId, AccountName, Link, Login, Password) " +
-					"values (@UserId, @AccountName, @Link, @Login, @Password)",
+				account.Id = (long)conn.ExecuteScalar("Insert into Account (UserId, AccountName, Link, Login, Password) " +
+					"values (@UserId, @AccountName, @Link, @Login, @Password);" +
+					"select last_insert_rowid()",
 					account);
 			}
 
-			await BotHandler.Bot.SendTextMessageAsync(account.UserId,
-				"✅ " + String.Format(Localization.GetMessage("AccountAdded", langCode), account.AccountName));
+			await PasswordManager.ShowAccount(account.UserId, account, langCode, 
+				extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", langCode), account.AccountName));
 		}
 
 		private static async Task AddLinkPrompt(ChatId chatId, string accountName, string langCode) {
