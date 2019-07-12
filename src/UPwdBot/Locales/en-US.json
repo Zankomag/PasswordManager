@@ -3,7 +3,6 @@
 	"Help": "Help message",
 	"ChooseLang": "Choose your language.",
 	"LangIsSet": "Your language is set to English.",
-	"AlreadyAdding": "You have been adding another account.\nUse {0} to revoke it and then create a new one.",
 	"AddLink": "Good. Now you can add an optional link for your account or use suggested.\nUse {0} to get more info about links.",
 	"Skip": "Skip",
 	"CantWithoutNewAcc": "It's impossible. Start adding a new account.",

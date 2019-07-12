@@ -9,13 +9,14 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
+using Uten.Passwords;
 
 namespace UPwdBot {
 	public static class PasswordManager {
 		public const string separator = "\n──────────────────";
 		private const int maxAccsByPage = 3;
 
-		public static int GetAccountCount(int UserId, string accountName) {
+		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
@@ -45,7 +46,7 @@ namespace UPwdBot {
 		/// <param name="accountName">Send null to find all accounts</param>
 		/// <param name="langCode"></param>
 		/// <returns></returns>
-		public static async Task SearchAccounts(int chatId, string accountName, string langCode) {
+		public static async Task SearchAccounts(int chatId, string langCode, string accountName = null) {
 			int accountCount = GetAccountCount(chatId, accountName);
 
 			if (accountCount == 1) {
@@ -63,25 +64,25 @@ namespace UPwdBot {
 			}
 		}
 
-		private static async Task ShowAccountByName(int UserId, string accountName, string langCode) {
+		private static async Task ShowAccountByName(int userId, string accountName, string langCode) {
 			Account account;
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
+						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName",
 						new {
-							UserId,
+							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
 						});
 				}
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId",
-						new {UserId});
+						"select Id, AccountName, Link, Login from Account where UserId = @userId",
+						new {userId});
 				}
 			}
-			await ShowAccount(UserId, account, langCode);
+			await ShowAccount(userId, account, langCode);
 		}
 
 		private static string GetPageMessage(List<Account> accounts,
@@ -106,28 +107,29 @@ namespace UPwdBot {
 			return message;
 		}
 
-		private static async Task ShowSinglePage(int UserId, string accountName, string langCode) {
+		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 			List<Account> accounts;
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName",
+						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName",
 						new {
-							UserId,
+							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
 						}).ToList();
 				}
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId",
-						new {UserId}).ToList();
+						"select Id, AccountName, Link, Login from Account where UserId = @userId",
+						new {userId})
+						.ToList();
 				}
 			}
 
 			string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
 
-			await Bot.Instance.Client.SendTextMessageAsync(UserId, message,
+			await Bot.Instance.Client.SendTextMessageAsync(userId, message,
 					replyMarkup: new InlineKeyboardMarkup(keyboard),
 					disableWebPagePreview: true);
 		}
@@ -141,11 +143,11 @@ namespace UPwdBot {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName " +
-							"limit @Limit offset @Offset",
+							"limit @maxAccsByPage offset @Offset",
 						new {
 							UserId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",
-							Limit = maxAccsByPage,
+							maxAccsByPage,
 							Offset = page * maxAccsByPage
 						})
 						.ToList();
@@ -154,10 +156,10 @@ namespace UPwdBot {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Account where UserId = @UserId " +
-							"limit @Limit offset @Offset",
+							"limit @maxAccsByPage offset @Offset",
 						new {
 							UserId,
-							Limit = maxAccsByPage,
+							maxAccsByPage,
 							Offset = page * maxAccsByPage
 						})
 						.ToList();
@@ -246,6 +248,44 @@ namespace UPwdBot {
 					await Bot.Instance.Client.EditMessageTextAsync(chatId, messageToEditId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
+			}
+		}
+
+		public static async Task ShowAccountById(int userId, string accountId, string langCode, int messageToEditId = 0) {
+			Account account;
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				account = conn.QueryFirstOrDefault<Account>(
+					"select Id, AccountName, Link, Login from Account where Id = @accountId and UserId = @userId",
+					new {
+						accountId,
+						userId
+					});
+			}
+			await ShowAccount(userId, account, langCode, messageToEditId);
+		}
+
+		public static void SetPasswordPattern(Types.User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
+			if (user != null) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+					conn.Execute("update User set GenPattern = @passwordPattern where Id = @Id",
+						new { passwordPattern, user.Id });
+				}
+			}
+		}
+
+		public static void SetLanguage(Types.User user, string langCode) {
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				if(user != null) {
+					conn.Execute("update User set Lang = @langCode where Id = @Id",
+						new { langCode, user.Id });
+				}
+			}
+		}
+
+		public static void AddUser(int userId, string langCode) {
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				conn.Execute("Insert into User (Id, Lang) values (@userId, @langCode)",
+					new { userId, langCode });
 			}
 		}
 

@@ -12,20 +12,24 @@ using Uten.Localization.MultiUser;
 namespace UPwdBot.Commands {
 	public class AddAccountCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, string langCode) {
-			Account account = new Account();
-			//if user is already assembling account - CONTINUE assembling it instead of creating new
-			if (BotHandler.AssemblingAccounts.TryGetValue(message.From.Id, out account)) {
-				if (message.Text.StartsWith("/add")) {
-					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-						String.Format(Localization.GetMessage("AlreadyAdding", langCode), "/cancel")); 
-					//TODO:
-					//ADD MESSAGE WHAT TO DO NEXT (ADD LINK OR ACCOUNT NAME...)
-					return;
-				}
-				if(account.AccountName == null) {
-					if (message.Text.Length > Account.maxAccountNameLength) {
-						await ReportExceededLength(message.From.Id, langCode,
-							Localization.GetMessage("AccName", langCode), Account.maxAccountNameLength);
+			if (message.Text.StartsWith("/add") && message.Text.Length > 5) {
+				if (BotHandler.AssemblingAccounts.ContainsKey(message.From.Id))
+					BotHandler.AssemblingAccounts.Remove(message.From.Id);
+				await AssembleAccountAsync(message, langCode);
+
+			}
+			else if (message.Text == "/add") {
+				BotHandler.AssemblingAccounts[message.From.Id] = new Account() { UserId = message.From.Id };
+				await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
+					"📝 " + Localization.GetMessage("AddAccount", langCode));
+			}
+			//then user is already assembling account, so CONTINUE assembling it
+			else {
+				Account account = BotHandler.AssemblingAccounts[message.From.Id];
+				if (account.AccountName == null) {
+					if (await IsLengthExceeded(message.Text.Length,
+							Account.maxAccountNameLength,"AccName",
+							message.From.Id, langCode)) {
 						return;
 					}
 
@@ -34,10 +38,10 @@ namespace UPwdBot.Commands {
 					await AddLinkPrompt(message.Chat.Id, account.AccountName, langCode);
 
 				} else if(!account.SkipLink && account.Link == null){
-					if (message.Text.Length > Account.maxLinkLength) {
-						await ReportExceededLength(message.From.Id, langCode,
-							Localization.GetMessage("Link", langCode), Account.maxLinkLength);
-						return;	
+					if (await IsLengthExceeded(message.Text.Length,
+							Account.maxLinkLength, "Link",
+							message.From.Id, langCode)) {
+						return;
 					}
 
 					account.Link = message.Text.BuildLink();
@@ -46,9 +50,9 @@ namespace UPwdBot.Commands {
 						"📇 " + Localization.GetMessage("AddLogin", langCode));
 
 				} else if (account.Login == null) {
-					if (message.Text.Length > Account.maxLoginLength) {
-						await ReportExceededLength(message.From.Id, langCode,
-							Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+					if (await IsLengthExceeded(message.Text.Length,
+							Account.maxLoginLength, "Login",
+							message.From.Id, langCode)) {
 						return;
 					}
 
@@ -61,9 +65,9 @@ namespace UPwdBot.Commands {
 							"G")));
 
 				} else if (account.Password == null) {
-					if (message.Text.Length > Account.maxPasswordLength) {
-						await ReportExceededLength(message.From.Id, langCode,
-							Localization.GetMessage("Password", langCode), Account.maxPasswordLength);
+					if (await IsLengthExceeded(message.Text.Length,
+							Account.maxPasswordLength, "Password",
+							message.From.Id, langCode)) {
 						return;
 					}
 
@@ -71,22 +75,14 @@ namespace UPwdBot.Commands {
 					await SaveToDBAsync(account, langCode);
 					BotHandler.AssemblingAccounts.Remove(message.From.Id);
 				}
-
-			} else if (message.Text.StartsWith("/add") && message.Text.Length > 5) {
-				await AssembleAccountAsync(message, langCode);
-
-			} else {
-				BotHandler.AssemblingAccounts.Add(message.From.Id, new Account() { UserId = message.From.Id});
-				await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-					"📝 " + Localization.GetMessage("AddAccount", langCode));
 			}
 		}
 
 		private async Task AssembleAccountAsync(Message message, string langCode) {
 			string[] accountData = message.Text.Remove(0, 5).Split('\n', StringSplitOptions.RemoveEmptyEntries);
-			if (accountData[0].Length > Account.maxAccountNameLength) {
-				await ReportExceededLength(message.From.Id, langCode,
-					Localization.GetMessage("AccName", langCode), Account.maxAccountNameLength);
+			if (await IsLengthExceeded(accountData[0].Length,
+							Account.maxAccountNameLength, "AccName",
+							message.From.Id, langCode)) {
 				return;
 			}
 			Account account = new Account {
@@ -95,17 +91,10 @@ namespace UPwdBot.Commands {
 			};
 
 			if (accountData.Length > 3) {
-				if (accountData[1].Length > Account.maxLinkLength) {
-					await ReportExceededLength(message.From.Id, langCode,
-						Localization.GetMessage("Link", langCode), Account.maxLinkLength);
-					return;
-				} else if (accountData[2].Length > Account.maxLoginLength) {
-					await ReportExceededLength(message.From.Id, langCode,
-						Localization.GetMessage("Login", langCode), Account.maxLoginLength);
-					return;
-				} else if (accountData[3].Length > Account.maxPasswordLength) {
-					await ReportExceededLength(message.From.Id, langCode,
-						Localization.GetMessage("Password", langCode), Account.maxPasswordLength);
+				if (await IsLengthExceeded(accountData[1].Length, Account.maxLinkLength, "Link", message.From.Id, langCode) ||
+					await IsLengthExceeded(accountData[2].Length, Account.maxLoginLength, "Login", message.From.Id, langCode) ||
+					await IsLengthExceeded(accountData[3].Length, Account.maxPasswordLength, "Password", message.From.Id, langCode)) {
+
 					return;
 				}
 				account.Link = accountData[1].BuildLink();
@@ -140,6 +129,15 @@ namespace UPwdBot.Commands {
 				await AddLinkPrompt(message.Chat.Id, account.AccountName, langCode);
 			}
 
+		}
+
+		private async Task<bool> IsLengthExceeded(int paramLength, int maxParamLength, string paramName, int userId, string langCode) {
+			if (paramLength > maxParamLength) {
+				await ReportExceededLength(userId, langCode,
+					Localization.GetMessage("Login", langCode), Account.maxLoginLength);
+				return true;
+			}
+			return false;
 		}
 
 		private static async Task SaveToDBAsync(Account account, string langCode) {

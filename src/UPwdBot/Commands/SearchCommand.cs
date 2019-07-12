@@ -6,7 +6,7 @@ using Uten.Localization.MultiUser;
 namespace UPwdBot.Commands {
 	public class SearchCommand : IMessageCommand, ICallBackQueryCommand{
 		public async Task ExecuteAsync(Message message, string langCode) {
-			await PasswordManager.SearchAccounts(message.From.Id, message.Text, langCode);
+			await PasswordManager.SearchAccounts(message.From.Id, langCode, message.Text);
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {

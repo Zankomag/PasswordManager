@@ -20,6 +20,8 @@ namespace UPwdBot {
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
 
 		private static readonly SearchCommand searchCommand = new SearchCommand();
+		private static readonly AddAccountCommand addAccountCommand = new AddAccountCommand();
+		private static readonly SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
 
 		private BotHandler() {}
 
@@ -31,12 +33,11 @@ namespace UPwdBot {
 		}
 
 		private static  void InitCommands() {
-			SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
-			IMessageCommand addAccountCommand = new AddAccountCommand();
+			
 			IMessageCommand helpCommand = new HelpCommand();
 
 			MessageCommands.Add("/help", helpCommand);
-			MessageCommands.Add("/start",helpCommand);
+			MessageCommands.Add("/start", helpCommand);
 			MessageCommands.Add("/language", selectLangCommand);
 			MessageCommands.Add("/all", new ShowAllCommand());
 			MessageCommands.Add("/add", addAccountCommand);
@@ -80,7 +81,7 @@ namespace UPwdBot {
 
 			string commandText = message.Text.ToLower();
 
-			//Command that starts with '/' can contain args
+			//Command that starts with '/' may contain args
 			if (message.Text.StartsWith('/')){
 				int cIndex = commandText.IndexOfAny(new char[] { ' ', '\n' });
 				if(cIndex != -1)
@@ -96,7 +97,7 @@ namespace UPwdBot {
 				if (!AssemblingAccounts.ContainsKey(message.From.Id)) {
 					await searchCommand.ExecuteAsync(message, langCode);
 				} else {
-					await MessageCommands["/add"].ExecuteAsync(message, langCode);
+					await addAccountCommand.ExecuteAsync(message, langCode);
 				}
 			}
 		}
@@ -108,8 +109,8 @@ namespace UPwdBot {
 				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
 					new { callbackQuery.From.Id });
 				if (user == null) {
-					//Add new user to db with selected language
-					await CallBackCommands['L'].ExecuteAsync(callbackQuery, user);
+					//Add new user to db when he selected language for the first time
+					await selectLangCommand.ExecuteAsync(callbackQuery, user);
 					return;
 				}
 			}

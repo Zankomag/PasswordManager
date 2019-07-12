@@ -14,13 +14,10 @@ namespace UPwdBot.Commands {
 				try {
 					password = user.GenPattern.GeneratePasswordByPattern();
 				} catch (ArgumentException) {
-					//
-					//TODO:
-					//SET DEFAULT PATTERN TO USER
-					//
+					PasswordManager.SetPasswordPattern(user);
 					await Bot.Instance.Client.SendTextMessageAsync(
 						callbackQuery.From.Id,
-						"PASSWORD PATTERN ERROR.\nPATTERN HAS BEEN SET TO DEFAULT.");
+						"PASSWORD PATTERN ERROR.\nPattern has been set to default.");
 					password = Password.Generate();
 				}
 
