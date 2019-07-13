@@ -47,6 +47,7 @@ namespace UPwdBot {
 		/// <param name="langCode"></param>
 		/// <returns></returns>
 		public static async Task SearchAccounts(int chatId, string langCode, string accountName = null) {
+
 			int accountCount = GetAccountCount(chatId, accountName);
 
 			if (accountCount == 1) {
@@ -134,7 +135,7 @@ namespace UPwdBot {
 					disableWebPagePreview: true);
 		}
 
-		public static async Task ShowPage(int UserId,
+		public static async Task ShowPage(int userId,
 			string accountName, int page, int pageCount,
 			string langCode, int messageToEditId = 0) {
 
@@ -142,10 +143,10 @@ namespace UPwdBot {
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId and AccountName like @AccountName " +
+						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName " +
 							"limit @maxAccsByPage offset @Offset",
 						new {
-							UserId,
+							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",
 							maxAccsByPage,
 							Offset = page * maxAccsByPage
@@ -155,10 +156,10 @@ namespace UPwdBot {
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @UserId " +
+						"select Id, AccountName, Link, Login from Account where userId = @UserId " +
 							"limit @maxAccsByPage offset @Offset",
 						new {
-							UserId,
+							userId,
 							maxAccsByPage,
 							Offset = page * maxAccsByPage
 						})
@@ -169,55 +170,48 @@ namespace UPwdBot {
 			string message = Localization.GetMessage("Page", langCode) + " " + (page + 1) + "/" + pageCount + "\n";
 			message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, langCode, message);
 
+			//This is first page
 			if (page == 0) {
-				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
-					"▶️ " + Localization.GetMessage("Next",langCode),
-					"Q" + 1 + "." + //64 - 6(> + 1 + .) = 58 bytes for search string = 29 chars
-					(accountName != null ? 
-						accountName.Length <= 29 ? 
-						accountName : 
-						accountName.Substring(0, 29) : 
-						null)) };
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(true, page, accountName, langCode)};
 			}
+			//This is last page
 			else if (page == pageCount - 1) {
-				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
-					"◀️ " + Localization.GetMessage("Prev",langCode),
-					"Q" + (page-1) + "." +
-					(accountName != null ? 
-						accountName.Length <= page.ToString().Length ? 
-						accountName : 
-						accountName.Substring(0, page.ToString().Length) : 
-						null)) };
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(false, page, accountName, langCode)};
 			}
+			//This is middle page
 			else {
-				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
-					"◀️ " + Localization.GetMessage("Prev",langCode),
-					"Q" + (page-1) + "." +
-					(accountName != null ? 
-						accountName.Length <= page.ToString().Length ? 
-						accountName : 
-						accountName.Substring(0, page.ToString().Length) : 
-						null)),
-					InlineKeyboardButton.WithCallbackData(
-						"▶️ " + Localization.GetMessage("Next",langCode),
-						"Q" + (page+1) + "." +
-						(accountName != null ? 
-							accountName.Length <= page.ToString().Length ? 
-							accountName : 
-							accountName.Substring(0, page.ToString().Length) : 
-							null))};
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(false, page, accountName, langCode),
+					GetPageButton(true, page, accountName, langCode)};
 			}
 
 			if (messageToEditId == 0) {
-				await Bot.Instance.Client.SendTextMessageAsync(UserId, message,
+				await Bot.Instance.Client.SendTextMessageAsync(userId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			}
 			else {
-				await Bot.Instance.Client.EditMessageTextAsync(UserId, messageToEditId, message,
+				await Bot.Instance.Client.EditMessageTextAsync(userId, messageToEditId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			}
+		}
+
+		public static InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
+			if (accountName != null) {
+				//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
+				//So, search string can be no more than 64 - (4(>(2 bytes) + . (2 bytes)) + page.ToString().Length*2) chars
+				int maxLength = (64 - (4/*(> + .)*/ + page.ToString().Length*2));
+				accountName = accountName.Length <= maxLength ?
+					accountName : accountName.Substring(0, maxLength);
+			}
+			return InlineKeyboardButton.WithCallbackData(
+				next ? "▶️ " + Localization.GetMessage("Next", langCode) :
+					"◀️ " + Localization.GetMessage("Prev", langCode),
+				"Q" + (next ? (page + 1).ToString() : (page - 1).ToString()) + 
+				"." + accountName);
 		}
 
 		public static async Task ShowAccount(ChatId chatId, Account account, string langCode, int messageToEditId = 0, string extraMessage = null) {

@@ -116,12 +116,15 @@ namespace UPwdBot {
 				}
 			}
 
-			ICallBackQueryCommand command;
-			if (CallBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
-				await command.ExecuteAsync(callbackQuery, user);
-			} else {
-				await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
-			}
+			try {
+				ICallBackQueryCommand command;
+				if (CallBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
+					await command.ExecuteAsync(callbackQuery, user);
+				}
+				else {
+					await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
+				}
+			} catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
 				
 		} 
 
