@@ -10,12 +10,12 @@ using UPwdBot.Types;
 namespace UPwdBot.Commands {
 	public class GeneratePasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
-			if (BotHandler.AssemblingAccounts.ContainsKey(user.Id)) {
+			if (PasswordManager.AssemblingAccounts.ContainsKey(user.Id)) {
 				string password;
 				try {
 					password = user.GenPattern.GeneratePasswordByPattern();
 				} catch (ArgumentException ex) {
-					PasswordManager.SetPasswordPattern(user);
+					PasswordManager.SetUserPasswordPattern(user);
 					await Bot.Instance.Client.SendTextMessageAsync(
 						callbackQuery.From.Id,
 						ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
@@ -25,7 +25,7 @@ namespace UPwdBot.Commands {
 				if (password.Length > Account.maxPasswordLength) {
 					string genPattern = user.GenPattern.Remove(6) + Account.maxPasswordLength;
 					password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
-					PasswordManager.SetPasswordPattern(user, genPattern);
+					PasswordManager.SetUserPasswordPattern(user, genPattern);
 				}
 
 				var inlineKeyBoard = new InlineKeyboardMarkup(

@@ -1,7 +1,4 @@
-﻿using Dapper;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -9,7 +6,7 @@ using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class SelectLanguageCommand : IMessageCommand, ICallBackQueryCommand {
-		private InlineKeyboardMarkup inlineKeyboard;
+		private readonly InlineKeyboardMarkup inlineKeyboard;
 
 		public SelectLanguageCommand() {
 			//Set up Choosing Language Keyboard
@@ -33,8 +30,8 @@ namespace UPwdBot.Commands {
 			inlineKeyboard = new InlineKeyboardMarkup(buttons);
 		}
 
-		public async Task ExecuteAsync(Message message, string langCode) {
-			await BotHandler.Bot.SendTextMessageAsync(message.Chat.Id, Localization.GetMessage("ChooseLang", langCode),
+		public async Task ExecuteAsync(Message message, Types.User user) {
+			await BotHandler.Bot.SendTextMessageAsync(message.Chat.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
@@ -42,13 +39,12 @@ namespace UPwdBot.Commands {
 			string langCode = callbackQuery.Data.Substring(1);
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.defaultLanguage;
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				if (user == null) {
-					PasswordManager.AddUser(callbackQuery.From.Id, langCode);
-				} else {
-					PasswordManager.SetLanguage(user, langCode);
-				}
+			if (user == null) {
+				PasswordManager.AddUser(callbackQuery.From.Id, langCode);
+			} else {
+				PasswordManager.SetUserLanguage(user, langCode);
 			}
+			
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
 				Localization.GetMessage("Help", langCode));

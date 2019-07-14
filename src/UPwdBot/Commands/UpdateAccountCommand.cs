@@ -3,9 +3,10 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Uten.Localization.MultiUser;
+using UPwdBot.Types;
 
 namespace UPwdBot.Commands {
-	public class UpdateAccountCommand : ICallBackQueryCommand {
+	public class UpdateAccountCommand : ICallBackQueryCommand, IMessageCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
 			string accountId = callbackQuery.Data.Substring(3);
 			if (callbackQuery.Data[1] == '0') {
@@ -22,8 +23,8 @@ namespace UPwdBot.Commands {
 				InlineKeyboardButton[] loginButton = 
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-								"📇 " + Localization.GetMessage("Login", user.Lang),
-								"UL" + accountId) };
+							"📇 " + Localization.GetMessage("Login", user.Lang),
+							"UL" + accountId) };
 				InlineKeyboardButton[] passwordButton = 
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
@@ -77,30 +78,43 @@ namespace UPwdBot.Commands {
 								"*" + Localization.GetMessage("AccountName", user.Lang) + "*") + accountDataMessage,
 							disableWebPagePreview: true,
 							parseMode: ParseMode.Markdown);
+						PasswordManager.SetUserAction(user, Actions.Update);
 						break;
 					}
 					case 'R': {
 						//Link
-
+						PasswordManager.SetUserAction(user, Actions.Update);
 						break;
 					}
 					case 'L': {
 						//Login
-
+						PasswordManager.SetUserAction(user, Actions.Update);
 						break;
 					}
 					case 'P': {
 						//Password
-
+						PasswordManager.SetUserAction(user, Actions.Update);
 						break;
 					}
 					case 'E': {
-						//delete Link
+						//Delete Link
+						await BotHandler.DeleteMessageAsync(user.Id, callbackQuery.Message.MessageId);
+						PasswordManager.DeleteAccountLink(user, accountId);
+						await Bot.Instance.Client.EditMessageTextAsync(
+							callbackQuery.From.Id,
+							callbackQuery.Message.MessageId,
+							Localization.GetMessage("LinkDeleted", user.Lang) + accountDataMessage,
+							disableWebPagePreview: true,
+							parseMode: ParseMode.Markdown);
 						break;
 					}
 				}
 				
 			}
+		}
+
+		public async Task ExecuteAsync(Message message, Types.User user) {
+
 		}
 	}
 }

@@ -5,8 +5,8 @@ using Uten.Localization.MultiUser;
 
 namespace UPwdBot.Commands {
 	public class SearchCommand : IMessageCommand, ICallBackQueryCommand{
-		public async Task ExecuteAsync(Message message, string langCode) {
-			await PasswordManager.SearchAccounts(message.From.Id, langCode, message.Text);
+		public async Task ExecuteAsync(Message message, Types.User user) {
+			await PasswordManager.SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
@@ -22,7 +22,7 @@ namespace UPwdBot.Commands {
 			} else {
 				await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 					Localization.GetMessage("SearchAgain", user.Lang), showAlert: true);
-				await DeleteMessageCommand.DeleteMessageAsync(
+				await BotHandler.DeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 			}
 		}

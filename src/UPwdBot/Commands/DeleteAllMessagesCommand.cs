@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 
 namespace UPwdBot.Commands {
 	public class DeleteAllMessagesCommand : IMessageCommand {
-		public async Task ExecuteAsync(Message message, string langCode) {
+		public async Task ExecuteAsync(Message message, Types.User user) {
 			try {
 				await Bot.Instance.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 			}

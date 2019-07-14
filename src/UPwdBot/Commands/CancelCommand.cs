@@ -1,18 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Uten.Localization.MultiUser;
+using UPwdBot.Types;
 
 namespace UPwdBot.Commands {
 	public class CancelCommand : IMessageCommand {
-		public async Task ExecuteAsync(Message message, string langCode) {
-			if (BotHandler.AssemblingAccounts.ContainsKey(message.From.Id)){
-				BotHandler.AssemblingAccounts.Remove(message.From.Id);
+		public async Task ExecuteAsync(Message message, Types.User user) {
+			if (user.ActionType != Actions.Search) {
+				PasswordManager.AssemblingAccounts.Remove(message.From.Id);
+
+				PasswordManager.SetUserAction(user, Actions.Search);
 				await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
-					String.Format(Localization.GetMessage("Cancel", langCode),"Add"));
-			} else {
+					Localization.GetMessage("Cancel", user.Lang));
+			}
+			else {
 				await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("NoCancel", langCode));
+					Localization.GetMessage("NoCancel", user.Lang));
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 ﻿using Dapper;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -17,10 +17,10 @@ namespace UPwdBot {
 		public static TelegramBotClient Bot { get => UPwdBot.Bot.Instance.Client; }
 		public static Dictionary<string, IMessageCommand> MessageCommands { get; private set; } = new Dictionary<string, IMessageCommand>();
 		public static Dictionary<char, ICallBackQueryCommand> CallBackCommands { get; private set; } = new Dictionary<char, ICallBackQueryCommand>();
-		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
 
-		private static readonly SearchCommand searchCommand = new SearchCommand();
-		private static readonly AddAccountCommand addAccountCommand = new AddAccountCommand();
+		private static Dictionary<Actions, IMessageCommand> ActionCommands = new Dictionary<Actions, IMessageCommand>();
+
+
 		private static readonly SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
 
 		private BotHandler() {}
@@ -35,6 +35,12 @@ namespace UPwdBot {
 		private static  void InitCommands() {
 			
 			IMessageCommand helpCommand = new HelpCommand();
+			SearchCommand searchCommand = new SearchCommand();
+			IMessageCommand addAccountCommand = new AddAccountCommand();
+
+			ActionCommands.Add(Actions.Assemble, addAccountCommand);
+			ActionCommands.Add(Actions.Search, searchCommand);
+			ActionCommands.Add(Actions.Update, new UpdateAccountCommand());
 
 			MessageCommands.Add("/help", helpCommand);
 			MessageCommands.Add("/start", helpCommand);
@@ -60,7 +66,7 @@ namespace UPwdBot {
 		public void HandleUpdate(Update update) {
 			switch (update.Type) {
 				case UpdateType.Message:
-					if(update.Message.Text != null)
+					if(update.Message.Type == MessageType.Text)
 						HandleMessage(update.Message);
 				return;
 				case UpdateType.CallbackQuery:
@@ -72,36 +78,31 @@ namespace UPwdBot {
 		private async void HandleMessage(Message message) {
 			User user;
 			using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
-				//User must choose language before using any command
+				//User must choose language before be added to db and using any command
 				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
 				if (user == null) {
-					await MessageCommands["/language"].ExecuteAsync(message, Localization.defaultLanguage);
+					await selectLangCommand.ExecuteAsync(message, new Types.User { Lang = Localization.defaultLanguage });
 					return;
 				}
 			}
 
 			string commandText = message.Text.ToLower();
 
-			//Command that starts with '/' may contain args
+			//Command that starts with '/' may contain args and must be separated
 			if (message.Text.StartsWith('/')){
 				int cIndex = commandText.IndexOfAny(new char[] { ' ', '\n' });
 				if(cIndex != -1)
 					commandText = commandText.Substring(0, cIndex);
 			}
 
-			string langCode = Localization.ContainsLanguage(user.Lang) ? user.Lang : Localization.defaultLanguage;
-			IMessageCommand command;
-			if(MessageCommands.TryGetValue(commandText, out command)) {
-					await command.ExecuteAsync(message, langCode);
-			} else {
-				//if user doesn't setting up account then search
-				if (!AssemblingAccounts.ContainsKey(message.From.Id)) {
-					await searchCommand.ExecuteAsync(message, langCode);
-				} else {
-					await addAccountCommand.ExecuteAsync(message, langCode);
-				}
+			if (MessageCommands.TryGetValue(commandText, out IMessageCommand command)) {
+				await command.ExecuteAsync(message, user);
+			}
+			else {
+				await ActionCommands[user.ActionType].ExecuteAsync(message, user);
 			}
 		}
+
 
 		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
 			User user;
@@ -126,7 +127,19 @@ namespace UPwdBot {
 				}
 			} catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
 				
-		} 
+		}
+
+		/// <summary>
+		/// Tries to delete message. If unsuccessfully - edit it.
+		/// </summary>
+		public static async Task DeleteMessageAsync(ChatId chatId, int messageId) {
+			try {
+				await Bot.DeleteMessageAsync(chatId, messageId);
+			}
+			catch (Telegram.Bot.Exceptions.ApiRequestException) {
+				await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
+			}
+		}
 
 	}
 }

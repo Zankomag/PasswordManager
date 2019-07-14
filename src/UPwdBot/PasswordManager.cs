@@ -16,6 +16,8 @@ namespace UPwdBot {
 		public const string separator = "\n──────────────────";
 		private const int maxAccsByPage = 3;
 
+		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
+
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
 			if (accountName != null) {
@@ -261,7 +263,7 @@ namespace UPwdBot {
 			await ShowAccount(userId, account, langCode, messageToEditId);
 		}
 
-		public static void SetPasswordPattern(Types.User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
+		public static void SetUserPasswordPattern(Types.User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
 			if (user != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					conn.Execute("update User set GenPattern = @passwordPattern where Id = @Id",
@@ -270,11 +272,20 @@ namespace UPwdBot {
 			}
 		}
 
-		public static void SetLanguage(Types.User user, string langCode) {
+		public static void SetUserLanguage(Types.User user, string langCode) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if(user != null) {
 					conn.Execute("update User set Lang = @langCode where Id = @Id",
 						new { langCode, user.Id });
+				}
+			}
+		}
+
+		public static void SetUserAction(Types.User user, Actions action) {
+			if (user?.ActionType != action) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+					conn.Execute("update User set Action = @action where Id = @Id",
+						new { action, user.Id });
 				}
 			}
 		}
@@ -285,6 +296,16 @@ namespace UPwdBot {
 					new { userId, langCode });
 			}
 		}
+
+		public static void DeleteAccountLink(Types.User user, string accountId) {
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				if (user != null) {
+					conn.Execute("update User set Link = NULL where Id = @accountId and UserId = @Id",
+						new { accountId, user.Id });
+				}
+			}
+		}
+
 
 	}
 }

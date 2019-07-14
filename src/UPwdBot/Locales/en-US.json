@@ -18,7 +18,7 @@
 	"AccountList": "Here's accounts I've found:",
 	"Login": "Login",
 	"Password": "Password",
-	"Cancel": "{0} command has been canceled.",
+	"Cancel": "Action has been canceled.",
 	"NoCancel": "There's no command to cancel.",
 	"Page": "Page",
 	"Next": "Next",
@@ -40,5 +40,6 @@
 	"No!": "No!",
 	"AccountDeleted": "Account has been deleted successfully!",
 	"UpdateAccData": "Send me new {0} for this account.",
-	"DefaultPattern": "Pattern has been set to default."
+	"DefaultPattern": "Pattern has been set to default.",
+	"LinkDeleted": "Link has been deleted."
 }
