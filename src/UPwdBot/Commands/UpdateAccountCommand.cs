@@ -54,9 +54,22 @@ namespace UPwdBot.Commands {
 						passwordButton,
 						backButton});
 
+				//
+				//TODO:
+				//UPGRADE METHOD PERFOMANCE
+				//
+				var oldText = callbackQuery.Message.Text.Split('\n');
+				string text = null;
+				if (oldText.Length > 3) {
+					text = string.Empty;
+					for (int i = 2; i < oldText.Length; i++) {
+						text += oldText[i] + "\n";
+					}
+				}
+
 				await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
-					"*" + Localization.GetMessage("ChooseWhatUpdate", user.Lang) + "* \n\n" + callbackQuery.Message.Text,
+					"*" + Localization.GetMessage("ChooseWhatUpdate", user.Lang) + "* \n\n" + (text ?? callbackQuery.Message.Text),
 					replyMarkup: keyboardMarkup,
 					parseMode: ParseMode.Markdown,
 					disableWebPagePreview: true);
