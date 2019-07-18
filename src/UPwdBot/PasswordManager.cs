@@ -6,6 +6,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
@@ -230,7 +231,7 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
-								"U0" + (account.Link != null ? "1" : "0") + account.Id) },
+								"U0" + (account.Link != null ? '1' : '0') + account.Id) },
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
@@ -300,12 +301,71 @@ namespace UPwdBot {
 		public static void DeleteAccountLink(Types.User user, string accountId) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if (user != null) {
-					conn.Execute("update User set Link = NULL where Id = @accountId and UserId = @Id",
+					conn.Execute("update Account set Link = NULL where Id = @accountId and UserId = @Id",
 						new { accountId, user.Id });
 				}
 			}
 		}
 
+		public static async Task UpdateAccountAsync(
+			ChatId chatId, int messageId, string accountId, string message, 
+			string langCode, char containsDeleteLinkButton, string messageText) {
+
+			InlineKeyboardButton[] accNameButton =
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📝 " + Localization.GetMessage("AccountName", langCode),
+							"UN" + containsDeleteLinkButton + accountId)};
+			InlineKeyboardButton[] linkButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔗 " + Localization.GetMessage("Link", langCode),
+							"UR" + containsDeleteLinkButton + accountId) };
+			InlineKeyboardButton[] loginButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📇 " + Localization.GetMessage("Login", langCode),
+							"UL" + containsDeleteLinkButton + accountId) };
+			InlineKeyboardButton[] passwordButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔐 " + Localization.GetMessage("Password", langCode),
+							"UP" + containsDeleteLinkButton + accountId) };
+			InlineKeyboardButton[] backButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"⏪ " + Localization.GetMessage("Back", langCode),
+							"O" + accountId) };
+
+			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton == '1' ?
+				new InlineKeyboardButton[][] {
+						accNameButton,
+						linkButton,
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"🗑 " + Localization.GetMessage("DeleteLink", langCode),
+								"UE" + containsDeleteLinkButton + accountId) },
+						loginButton,
+						passwordButton,
+						backButton
+				} :
+				new InlineKeyboardButton[][] {
+						accNameButton,
+						linkButton,
+						loginButton,
+						passwordButton,
+						backButton});
+
+			await Bot.Instance.Client.EditMessageTextAsync(chatId,
+				messageId,
+				"*" + message + "* \n\n" +
+				((messageText.Count(x => x == '\n') > 3) ?
+					messageText.Substring(messageText.IndexOf('\n') + 2) :
+					messageText),
+				replyMarkup: keyboardMarkup,
+				parseMode: ParseMode.Markdown,
+				disableWebPagePreview: true);
+		}
 
 	}
 }
