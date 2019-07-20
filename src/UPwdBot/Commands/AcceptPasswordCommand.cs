@@ -7,24 +7,26 @@ using Uten.Localization.MultiUser;
 namespace UPwdBot.Commands {
 	public class AcceptPasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
-			if (PasswordManager.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
-				account.Password = callbackQuery.Message.Text.Encrypt();
-				if (callbackQuery.Data.Length == 1) {
+			if (callbackQuery.Data.Length == 1) {
+				if (PasswordManager.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
+					account.Password = callbackQuery.Message.Text.Encrypt();
 					PasswordManager.AssemblingAccounts[user.Id] = account;
-				} else {
-					//Update password is existing account
+					await AddAccountCommand.UpdateCallBackMessageAsync(
+						callbackQuery.Message.Chat.Id,
+						callbackQuery.Message.MessageId,
+						account,
+						user);
 				}
-				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
-				await AddAccountCommand.UpdateCallBackMessageAsync(
-					callbackQuery.Message.Chat.Id,
-					callbackQuery.Message.MessageId,
-					account,
-					user);
+				else {
+					await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id,
+						text: Localization.GetMessage("CantWithoutNewAcc", user.Lang), showAlert: true);
+				}
 			}
 			else {
-				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id,
-					text: Localization.GetMessage("CantWithoutNewAcc", user.Lang), showAlert: true);
+				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
+				PasswordManager.UpdateAccountData(AccountDataTypes.Password, callbackQuery.Message.Text.Encrypt(), callbackQuery.Data.Substring(1), callbackQuery.From.Id);
 			}
+			
 		}
 	}
 }

@@ -154,7 +154,7 @@ namespace UPwdBot.Commands {
 			return false;
 		}
 
-		private static async Task SaveToDBAsync(Account account, Types.User user) {
+		private static async Task SaveToDBAsync(Account account, Types.User user, int messageToEditId = 0) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				account.Id = (long)conn.ExecuteScalar("Insert into Account (UserId, AccountName, Link, Login, Password) " +
 					"values (@UserId, @AccountName, @Link, @Login, @Password);" +
@@ -164,7 +164,7 @@ namespace UPwdBot.Commands {
 
 			PasswordManager.SetUserAction(user, Actions.Search);
 
-			await PasswordManager.ShowAccount(account.UserId, account, user.Lang, 
+			await PasswordManager.ShowAccount(account.UserId, account, user.Lang, messageToEditId: messageToEditId,
 				extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", user.Lang), account.AccountName));
 		}
 
@@ -185,21 +185,21 @@ namespace UPwdBot.Commands {
 				replyMarkup: inlineKeyBoard);
 		}
 
-		public static async Task UpdateCallBackMessageAsync(ChatId chatId, int MessageId, Account account, Types.User user) {
+		public static async Task UpdateCallBackMessageAsync(ChatId chatId, int messageId, Account account, Types.User user) {
 
 			if (account.AccountName == null) {
-				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
+				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
 					"📝 " + Localization.GetMessage("AddAccount", user.Lang));
 			}
 			else if (!account.SkipLink && account.Link == null) {
 				await AddLinkPrompt(chatId, account.AccountName, user.Lang);
 			}
 			else if (account.Login == null) {
-				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
+				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
 					"📇 " + Localization.GetMessage("AddLogin", user.Lang));
 			}
 			else if (account.Password == null) {
-				await BotHandler.Bot.EditMessageTextAsync(chatId, MessageId,
+				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
 					"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
 					replyMarkup: new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
@@ -207,7 +207,7 @@ namespace UPwdBot.Commands {
 			}
 			else {
 				PasswordManager.AssemblingAccounts.Remove(account.UserId);
-				await SaveToDBAsync(account, user);
+				await SaveToDBAsync(account, user, messageId);
 			}
 		}
 

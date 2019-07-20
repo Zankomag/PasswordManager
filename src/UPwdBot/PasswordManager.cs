@@ -18,7 +18,7 @@ namespace UPwdBot {
 		private const int maxAccsByPage = 3;
 
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
-		public static Dictionary<int, Updates> UpdatingAccounts { get; set; } = new Dictionary<int, Updates>();
+		public static Dictionary<int, AccountDataTypes> UpdatingAccounts { get; set; } = new Dictionary<int, AccountDataTypes>();
 
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
@@ -373,6 +373,13 @@ namespace UPwdBot {
 				replyMarkup: keyboardMarkup,
 				parseMode: ParseMode.Markdown,
 				disableWebPagePreview: true);
+		}
+
+		public static void UpdateAccountData(AccountDataTypes updateType, string data, string accountId, int userId) {
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				conn.Execute($"update Account set {updateType.ToString()} = @data where Id = @accountId and UserId = @userId",
+					new {data, accountId, userId});	
+			}
 		}
 
 	}

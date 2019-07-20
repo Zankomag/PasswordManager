@@ -44,13 +44,13 @@ namespace UPwdBot.Commands {
 				//
 				//await BotHandler.TryDeleteMessageAsync(callbackQuery.From.Id, callbackQuery.Message.MessageId);
 				PasswordManager.SetUserAction(user, Actions.Update);
-				Updates update = (Updates)(byte)callbackQuery.Data[1];
-				InlineKeyboardMarkup inlineKeyboardMarkup = update == Updates.Password ? 
+				AccountDataTypes dataType = (AccountDataTypes)(byte)callbackQuery.Data[1];
+				InlineKeyboardMarkup inlineKeyboardMarkup = dataType == AccountDataTypes.Password ? 
 					new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-						'G' + callbackQuery.From.Id + '.' + accountId)) : 
+						'G' + accountId)) : 
 					null;
-				PasswordManager.UpdatingAccounts[callbackQuery.From.Id] = update;
-				await RequestUpdateData(callbackQuery.From.Id, update.ToString(), user.Lang, inlineKeyboardMarkup);
+				PasswordManager.UpdatingAccounts[callbackQuery.From.Id] = dataType;
+				await RequestUpdateData(callbackQuery.From.Id, dataType.ToString(), user.Lang, inlineKeyboardMarkup);
 			}
 		}
 
