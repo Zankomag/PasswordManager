@@ -31,9 +31,9 @@ namespace UPwdBot.Commands {
 				var inlineKeyBoard = new InlineKeyboardMarkup(
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
-							"G"),
+							callbackQuery.Data),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-							"Z")});
+							'Z' + callbackQuery.Data.Substring(1))});
 
 				await BotHandler.Bot.EditMessageTextAsync(
 					callbackQuery.From.Id,

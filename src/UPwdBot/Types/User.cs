@@ -7,7 +7,16 @@ namespace UPwdBot.Types {
 		Update
 	}
 
+	public enum Updates : byte {
+		Password = 80,	//'P' code
+		AccountName = 78,		//'N' code
+		Link = 82,		//'R' code
+		Login = 76		//'L' code
+	}
+
 	public class User {
+		public const Actions DefaultAction = Actions.Search;
+
 		public int Id { get; set; }
 		/// <summary>
 		/// Language code

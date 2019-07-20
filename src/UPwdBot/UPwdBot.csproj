@@ -22,7 +22,7 @@
     <Content Update="Locales\ru.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="Locales\en-US.json">
+    <Content Update="Locales\en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Properties\launchSettings.json">

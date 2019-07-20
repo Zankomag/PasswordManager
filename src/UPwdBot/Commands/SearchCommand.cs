@@ -22,7 +22,7 @@ namespace UPwdBot.Commands {
 			} else {
 				await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 					Localization.GetMessage("SearchAgain", user.Lang), showAlert: true);
-				await BotHandler.DeleteMessageAsync(
+				await BotHandler.TryDeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 			}
 		}

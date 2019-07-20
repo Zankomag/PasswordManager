@@ -81,8 +81,13 @@ namespace UPwdBot {
 				//User must choose language before be added to db and using any command
 				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
 				if (user == null) {
-					await selectLangCommand.ExecuteAsync(message, new Types.User { Lang = Localization.defaultLanguage });
-					return;
+					if (Localization.ContainsLanguage(message.From.LanguageCode)) {
+						user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
+					}
+					else {
+						await selectLangCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
+						return;
+					}
 				}
 			}
 
@@ -112,8 +117,19 @@ namespace UPwdBot {
 					new { callbackQuery.From.Id });
 				if (user == null) {
 					//Add new user to db when he selected language for the first time
-					await selectLangCommand.ExecuteAsync(callbackQuery, user);
-					return;
+					if (callbackQuery.Data[0] == 'L') {
+						await selectLangCommand.ExecuteAsync(callbackQuery, user);
+						return;
+					} else {
+						if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode)) {
+							user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
+						}
+						else {
+							await selectLangCommand.ExecuteAsync(new Message() {From = new Telegram.Bot.Types.User() { Id = callbackQuery.From.Id} },
+								new User { Lang = Localization.defaultLanguage });
+							return;
+						}
+					}
 				}
 			}
 
@@ -132,7 +148,7 @@ namespace UPwdBot {
 		/// <summary>
 		/// Tries to delete message. If unsuccessfully - edit it.
 		/// </summary>
-		public static async Task DeleteMessageAsync(ChatId chatId, int messageId) {
+		public static async Task TryDeleteMessageAsync(ChatId chatId, int messageId) {
 			try {
 				await Bot.DeleteMessageAsync(chatId, messageId);
 			}

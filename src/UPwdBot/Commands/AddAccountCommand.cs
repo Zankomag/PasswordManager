@@ -29,7 +29,7 @@ namespace UPwdBot.Commands {
 					message.Text.Substring(0, message.Text.IndexOf('\n'));
 				if (account.AccountName == null) {
 					if (await IsLengthExceeded(message.Text.Length,
-							Account.maxAccountNameLength,"AccName",
+							Account.maxAccountNameLength,"AccountName",
 							message.From.Id, user.Lang)) {
 						return;
 					}
@@ -93,7 +93,7 @@ namespace UPwdBot.Commands {
 		private async Task AssembleAccountAsync(Message message, Types.User user) {
 			string[] accountData = message.Text.Remove(0, 5).Split('\n', StringSplitOptions.RemoveEmptyEntries);
 			if (await IsLengthExceeded(accountData[0].Length,
-							Account.maxAccountNameLength, "AccName",
+							Account.maxAccountNameLength, "AccountName",
 							message.From.Id, user.Lang)) {
 				return;
 			}

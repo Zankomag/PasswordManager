@@ -8,7 +8,7 @@ namespace Uten.Localization.MultiUser {
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }
 
-		public static readonly string defaultLanguage = "en-US";
+		public static readonly string defaultLanguage = "en";
 		private const string defaultIcon = "❔";
 		/// <summary>
 		/// </summary>

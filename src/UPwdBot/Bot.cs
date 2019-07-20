@@ -37,7 +37,7 @@ namespace UPwdBot {
 				allowedUpdates:  new UpdateType[] {
 					UpdateType.Message,
 					UpdateType.CallbackQuery});
-			await Client.SendTextMessageAsync(AdminId, "🔴\n");
+			await Client.SendTextMessageAsync(AdminId, "🔴");
 		}
 
 		public bool IsTokenCorrect(string token) {

@@ -27,7 +27,6 @@
 	"NotFound": "There are no accounts you are searching for.\nAdd a new one: {0}",
 	"MaxLength": "Max {0} length is {1} characters. Try again.",
 	"Link": "Link",
-	"AccName": "Account name",
 	"DeleteMsg": "Delete message",
 	"UpdateAcc": "Update account",
 	"DeleteAcc": "Delete account",

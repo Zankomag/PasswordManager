@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Uten.Localization.MultiUser;
 using UPwdBot.Types;
@@ -20,64 +21,50 @@ namespace UPwdBot.Commands {
 					callbackQuery.Data[2],
 					callbackQuery.Message.Text);
 			}
+			else if(callbackQuery.Data[1] == 'E') {
+				//Delete Link
+				List<string> accountData = callbackQuery.Message.Text.Split('\n').Skip(2).ToList();
+				accountData.RemoveAt(accountData.Count - 2);
+
+				PasswordManager.DeleteAccountLink(user, accountId);
+				await PasswordManager.UpdateAccountAsync(
+					callbackQuery.Message.Chat.Id,
+					callbackQuery.Message.MessageId,
+					accountId,
+					Localization.GetMessage("LinkDeleted", user.Lang),
+					user.Lang,
+					'0',
+					string.Join('\n', accountData));
+			}
 			else {
-				string accountDataMessage = callbackQuery.Message.Text.Substring(callbackQuery.Message.Text.IndexOf('\n')+2);
-				switch (callbackQuery.Data[1]) {
-					case 'P': {
-						//Password
-						PasswordManager.SetUserAction(user, Actions.Update);
-						break;
-					}
-					case 'N': {
-						//Account Name
-						//
-						//TODO:
-						//add to list of waiting for update enum AccountUpdates.AccountName
-						//
-						await Bot.Instance.Client.EditMessageTextAsync(
-							callbackQuery.From.Id,
-							callbackQuery.Message.MessageId,
-							string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-								"*" + Localization.GetMessage("AccountName", user.Lang) + "*") + accountDataMessage,
-							disableWebPagePreview: true,
-							parseMode: ParseMode.Markdown);
-						PasswordManager.SetUserAction(user, Actions.Update);
-						break;
-					}
-					case 'R': {
-						//Link
-						PasswordManager.SetUserAction(user, Actions.Update);
-						break;
-					}
-					case 'L': {
-						//Login
-						PasswordManager.SetUserAction(user, Actions.Update);
-						break;
-					}
-					case 'E': {
-						//Delete Link
-						List<string> accountData = accountDataMessage.Split('\n').ToList();
-						accountData.RemoveAt(accountData.Count - 2);
-
-						PasswordManager.DeleteAccountLink(user, accountId);
-
-						await PasswordManager.UpdateAccountAsync(
-							callbackQuery.Message.Chat.Id,
-							callbackQuery.Message.MessageId,
-							accountId,
-							Localization.GetMessage("LinkDeleted", user.Lang),
-							user.Lang,
-							'0',
-							string.Join('\n', accountData));
-						break;
-					}
-				}
-				
+				//
+				//TODO:
+				//
+				//DELETE MESSAGE AFTER NEW DATA HAS ACCEPTED 
+				//
+				//await BotHandler.TryDeleteMessageAsync(callbackQuery.From.Id, callbackQuery.Message.MessageId);
+				PasswordManager.SetUserAction(user, Actions.Update);
+				Updates update = (Updates)(byte)callbackQuery.Data[1];
+				InlineKeyboardMarkup inlineKeyboardMarkup = update == Updates.Password ? 
+					new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
+						'G' + callbackQuery.From.Id + '.' + accountId)) : 
+					null;
+				PasswordManager.UpdatingAccounts[callbackQuery.From.Id] = update;
+				await RequestUpdateData(callbackQuery.From.Id, update.ToString(), user.Lang, inlineKeyboardMarkup);
 			}
 		}
 
 		public async Task ExecuteAsync(Message message, Types.User user) {
 
 		}
+
+		private async Task RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
+			await Bot.Instance.Client.SendTextMessageAsync(
+				chatId,
+				string.Format(Localization.GetMessage("UpdateAccData", langCode), "*" + Localization.GetMessage(dataKey, langCode) + "*"),
+				parseMode: ParseMode.Markdown,
+				replyMarkup: inlineKeyboardMarkup);
+		}
+
 	}
 }

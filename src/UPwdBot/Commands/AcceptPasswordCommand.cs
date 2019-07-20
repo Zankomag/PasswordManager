@@ -9,7 +9,11 @@ namespace UPwdBot.Commands {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
 			if (PasswordManager.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				account.Password = callbackQuery.Message.Text.Encrypt();
-				PasswordManager.AssemblingAccounts[user.Id] = account;
+				if (callbackQuery.Data.Length == 1) {
+					PasswordManager.AssemblingAccounts[user.Id] = account;
+				} else {
+					//Update password is existing account
+				}
 				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
 				await AddAccountCommand.UpdateCallBackMessageAsync(
 					callbackQuery.Message.Chat.Id,

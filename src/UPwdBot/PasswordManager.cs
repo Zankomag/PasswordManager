@@ -18,6 +18,7 @@ namespace UPwdBot {
 		private const int maxAccsByPage = 3;
 
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
+		public static Dictionary<int, Updates> UpdatingAccounts { get; set; } = new Dictionary<int, Updates>();
 
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
@@ -291,11 +292,18 @@ namespace UPwdBot {
 			}
 		}
 
-		public static void AddUser(int userId, string langCode) {
+		/// <returns>User that has been added</returns>
+		public static Types.User AddUser(int userId, string langCode) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				conn.Execute("Insert into User (Id, Lang) values (@userId, @langCode)",
 					new { userId, langCode });
 			}
+			return new Types.User() {
+				Id = userId,
+				Lang = langCode,
+				GenPattern = Password.defaultPasswordGeneratorPattern,
+				ActionType = Types.User.DefaultAction
+			};
 		}
 
 		public static void DeleteAccountLink(Types.User user, string accountId) {

@@ -31,7 +31,7 @@ namespace UPwdBot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, Types.User user) {
-			await BotHandler.Bot.SendTextMessageAsync(message.Chat.Id, Localization.GetMessage("ChooseLang", user.Lang),
+			await BotHandler.Bot.SendTextMessageAsync(message.From.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
