@@ -7,7 +7,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using UPwdBot.Commands;
-using UPwdBot.Types;
+using UPwdBot.Types.Enums;
 using Uten.Localization.MultiUser;
 using User = UPwdBot.Types.User;
 
@@ -15,10 +15,10 @@ namespace UPwdBot {
 	public class BotHandler {
 		public static BotHandler Instance { get; private set; }
 		public static TelegramBotClient Bot { get => UPwdBot.Bot.Instance.Client; }
-		public static Dictionary<string, IMessageCommand> MessageCommands { get; private set; } = new Dictionary<string, IMessageCommand>();
-		public static Dictionary<char, ICallBackQueryCommand> CallBackCommands { get; private set; } = new Dictionary<char, ICallBackQueryCommand>();
+		public static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
+		private static Dictionary<char, ICallBackQueryCommand> callBackCommands = new Dictionary<char, ICallBackQueryCommand>();
 
-		private static Dictionary<Actions, IMessageCommand> ActionCommands = new Dictionary<Actions, IMessageCommand>();
+		private static readonly Dictionary<UserAction, IMessageCommand> ActionCommands = new Dictionary<UserAction, IMessageCommand>();
 
 
 		private static readonly SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
@@ -37,30 +37,31 @@ namespace UPwdBot {
 			IMessageCommand helpCommand = new HelpCommand();
 			SearchCommand searchCommand = new SearchCommand();
 			IMessageCommand addAccountCommand = new AddAccountCommand();
+			UpdateAccountCommand updateAccountCommand = new UpdateAccountCommand();
 
-			ActionCommands.Add(Actions.Assemble, addAccountCommand);
-			ActionCommands.Add(Actions.Search, searchCommand);
-			ActionCommands.Add(Actions.Update, new UpdateAccountCommand());
+			ActionCommands.Add(UserAction.Assemble, addAccountCommand);
+			ActionCommands.Add(UserAction.Search, searchCommand);
+			ActionCommands.Add(UserAction.Update, updateAccountCommand);
 
-			MessageCommands.Add("/help", helpCommand);
-			MessageCommands.Add("/start", helpCommand);
-			MessageCommands.Add("/language", selectLangCommand);
-			MessageCommands.Add("/all", new ShowAllCommand());
-			MessageCommands.Add("/add", addAccountCommand);
-			MessageCommands.Add("/cancel", new CancelCommand());
-			MessageCommands.Add("/delete", new DeleteAllMessagesCommand());
+			messageCommands.Add("/help", helpCommand);
+			messageCommands.Add("/start", helpCommand);
+			messageCommands.Add("/language", selectLangCommand);
+			messageCommands.Add("/all", new ShowAllCommand());
+			messageCommands.Add("/add", addAccountCommand);
+			messageCommands.Add("/cancel", new CancelCommand());
+			//messageCommands.Add("/delete", new DeleteAllMessagesCommand()); //EXPERIMENTAL
 
-			CallBackCommands.Add('L', selectLangCommand);
-			CallBackCommands.Add('S', new SkipLinkCommand());
-			CallBackCommands.Add('A', new AutoLinkCommand());
-			CallBackCommands.Add('G', new GeneratePasswordCommand());
-			CallBackCommands.Add('Z', new AcceptPasswordCommand());
-			CallBackCommands.Add('Q', searchCommand);
-			CallBackCommands.Add('P', new ShowPasswordCommand());
-			CallBackCommands.Add('O', new ShowAccountCommand());
-			CallBackCommands.Add('D', new DeleteMessageCommand());
-			CallBackCommands.Add('U', new UpdateAccountCommand());
-			CallBackCommands.Add('X', new DeleteAccountCommand());
+			callBackCommands.Add('L', selectLangCommand);
+			callBackCommands.Add('S', new SkipLinkCommand());
+			callBackCommands.Add('A', new AutoLinkCommand());
+			callBackCommands.Add('G', new GeneratePasswordCommand());
+			callBackCommands.Add('Z', new AcceptPasswordCommand());
+			callBackCommands.Add('Q', searchCommand);
+			callBackCommands.Add('P', new ShowPasswordCommand());
+			callBackCommands.Add('O', new ShowAccountCommand());
+			callBackCommands.Add('D', new DeleteMessageCommand());
+			callBackCommands.Add('U', updateAccountCommand);
+			callBackCommands.Add('X', new DeleteAccountCommand());
 		}
 
 		public void HandleUpdate(Update update) {
@@ -91,16 +92,20 @@ namespace UPwdBot {
 				}
 			}
 
-			string commandText = message.Text.ToLower();
+			string commandText = null;
 
 			//Command that starts with '/' may contain args and must be separated
 			if (message.Text.StartsWith('/')){
-				int cIndex = commandText.IndexOfAny(new char[] { ' ', '\n' });
-				if(cIndex != -1)
-					commandText = commandText.Substring(0, cIndex);
+				string commandString = message.Text.ToLower();
+				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
+				if (cIndex != -1) {
+					commandText = commandString.Substring(0, cIndex);
+				} else {
+					commandText = commandString;
+				}
 			}
 
-			if (MessageCommands.TryGetValue(commandText, out IMessageCommand command)) {
+			if (commandText != null && messageCommands.TryGetValue(commandText, out IMessageCommand command)) {
 				await command.ExecuteAsync(message, user);
 			}
 			else {
@@ -135,7 +140,7 @@ namespace UPwdBot {
 
 			try {
 				ICallBackQueryCommand command;
-				if (CallBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
+				if (callBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
 					await command.ExecuteAsync(callbackQuery, user);
 				}
 				else {

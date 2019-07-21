@@ -9,8 +9,11 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using UPwdBot.Types;
+using UPwdBot.Types.Enums;
+using UPwdBot.Extensions;
 using Uten.Localization.MultiUser;
 using Uten.Passwords;
+using Uten.Encryption;
 
 namespace UPwdBot {
 	public static class PasswordManager {
@@ -18,7 +21,7 @@ namespace UPwdBot {
 		private const int maxAccsByPage = 3;
 
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
-		public static Dictionary<int, AccountDataTypes> UpdatingAccounts { get; set; } = new Dictionary<int, AccountDataTypes>();
+		public static Dictionary<int, AccountUpdate> UpdatingAccounts { get; set; } = new Dictionary<int, AccountUpdate>();
 
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
@@ -232,7 +235,7 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
-								"U0" + (account.Link != null ? '1' : '0') + account.Id) },
+								"U0" + account.Id) },
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
@@ -252,7 +255,7 @@ namespace UPwdBot {
 			}
 		}
 
-		public static async Task ShowAccountById(int userId, string accountId, string langCode, int messageToEditId = 0) {
+		public static async Task ShowAccountById(int userId, string accountId, string langCode, int messageToEditId = 0, string extraMessage = null) {
 			Account account;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
@@ -262,7 +265,7 @@ namespace UPwdBot {
 						userId
 					});
 			}
-			await ShowAccount(userId, account, langCode, messageToEditId);
+			await ShowAccount(userId, account, langCode, messageToEditId, extraMessage);
 		}
 
 		public static void SetUserPasswordPattern(Types.User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
@@ -283,12 +286,19 @@ namespace UPwdBot {
 			}
 		}
 
-		public static void SetUserAction(Types.User user, Actions action) {
+		/// <summary>
+		/// Checks if user.ActionType != action and writes it to DataBase.
+		/// </summary>
+		public static void SetUserAction(Types.User user, UserAction action) {
 			if (user?.ActionType != action) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-					conn.Execute("update User set Action = @action where Id = @Id",
-						new { action, user.Id });
-				}
+				SetUserAction(user.Id, action);
+			}
+		}
+
+		public static void SetUserAction(int userId, UserAction action) {
+			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				conn.Execute("update User set Action = @action where Id = @userId",
+					new { action, userId });
 			}
 		}
 
@@ -317,42 +327,42 @@ namespace UPwdBot {
 
 		public static async Task UpdateAccountAsync(
 			ChatId chatId, int messageId, string accountId, string message, 
-			string langCode, char containsDeleteLinkButton, string messageText) {
+			string langCode, bool containsDeleteLinkButton, string messageText) {
 
 			InlineKeyboardButton[] accNameButton =
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"📝 " + Localization.GetMessage("AccountName", langCode),
-							"UN" + containsDeleteLinkButton + accountId)};
+							"UN" + accountId)};
 			InlineKeyboardButton[] linkButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🔗 " + Localization.GetMessage("Link", langCode),
-							"UR" + containsDeleteLinkButton + accountId) };
+							"UR" + accountId) };
 			InlineKeyboardButton[] loginButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"📇 " + Localization.GetMessage("Login", langCode),
-							"UL" + containsDeleteLinkButton + accountId) };
+							"UL" + accountId) };
 			InlineKeyboardButton[] passwordButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🔐 " + Localization.GetMessage("Password", langCode),
-							"UP" + containsDeleteLinkButton + accountId) };
+							"UP" + accountId) };
 			InlineKeyboardButton[] backButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"⏪ " + Localization.GetMessage("Back", langCode),
 							"O" + accountId) };
 
-			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton == '1' ?
+			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton ?
 				new InlineKeyboardButton[][] {
 						accNameButton,
 						linkButton,
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteLink", langCode),
-								"UE" + containsDeleteLinkButton + accountId) },
+								"UE" + accountId) },
 						loginButton,
 						passwordButton,
 						backButton
@@ -375,11 +385,40 @@ namespace UPwdBot {
 				disableWebPagePreview: true);
 		}
 
-		public static void UpdateAccountData(AccountDataTypes updateType, string data, string accountId, int userId) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				conn.Execute($"update Account set {updateType.ToString()} = @data where Id = @accountId and UserId = @userId",
-					new {data, accountId, userId});	
+		public static async Task UpdateAccountDataAsync(string data, string accountId, int userId, string langCode) {
+			if (UpdatingAccounts.ContainsKey(userId)) {
+				AccountUpdate accountUpdate = UpdatingAccounts[userId];
+				if(accountUpdate.AccountDataType == AccountDataType.Password) {
+					data = Encryption.Encrypt(data.Trim());
+				}
+				else if(accountUpdate.AccountDataType == AccountDataType.Link) {
+					data = data.BuildLink();
+				} else {
+					data = data.Trim();
+				}
+				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+					conn.Execute($"update Account set {accountUpdate.AccountDataType.ToString()} = @data where Id = @accountId and UserId = @userId",
+						new { data, accountId, userId });
+				}
+				UpdatingAccounts.Remove(userId);
+				SetUserAction(userId, UserAction.Search);
+				await ShowAccountById(userId, accountId, langCode, extraMessage: Localization.GetMessage("AccountUpdated", langCode));
+				await BotHandler.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[0]);
+				await BotHandler.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[1]);
 			}
+		}
+
+		public static async Task<bool> IsLengthExceededAsync(int paramLength, MaxAccountDataLength maxAccountDataLength, int userId, string langCode) {
+			if (paramLength > (int)maxAccountDataLength) {
+				await ReportExceededLength(userId, langCode, maxAccountDataLength);
+				return true;
+			}
+			return false;
+		}
+
+		private static async Task ReportExceededLength(ChatId chatid, string langCode, MaxAccountDataLength maxAccountDataLength) {
+			await Bot.Instance.Client.SendTextMessageAsync(chatid,
+				String.Format(Localization.GetMessage("MaxLength", langCode), Localization.GetMessage(maxAccountDataLength.ToString(), langCode), (int)maxAccountDataLength));
 		}
 
 	}

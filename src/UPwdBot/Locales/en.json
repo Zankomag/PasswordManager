@@ -40,5 +40,6 @@
 	"AccountDeleted": "Account has been deleted successfully!",
 	"UpdateAccData": "Send me new {0} for this account.",
 	"DefaultPattern": "Pattern has been set to default.",
-	"LinkDeleted": "Link has been deleted."
+	"LinkDeleted": "Link has been deleted.",
+	"AccountUpdated": "Account has been updated."
 }

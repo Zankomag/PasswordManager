@@ -8,6 +8,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Uten.Encryption;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
+using UPwdBot.Types.Enums;
+using UPwdBot.Extensions;
 
 namespace UPwdBot.Commands {
 	public class AddAccountCommand : IMessageCommand {
@@ -18,7 +20,7 @@ namespace UPwdBot.Commands {
 			}
 			else if (message.Text == "/add") {
 				PasswordManager.AssemblingAccounts[message.From.Id] = new Account() { UserId = message.From.Id };
-				PasswordManager.SetUserAction(user, Actions.Assemble);
+				PasswordManager.SetUserAction(user, UserAction.Assemble);
 				await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 					"📝 " + Localization.GetMessage("AddAccount", user.Lang));
 			}
@@ -28,130 +30,91 @@ namespace UPwdBot.Commands {
 				string data = !message.Text.Contains('\n') ? message.Text :
 					message.Text.Substring(0, message.Text.IndexOf('\n'));
 				if (account.AccountName == null) {
-					if (await IsLengthExceeded(message.Text.Length,
-							Account.maxAccountNameLength,"AccountName",
-							message.From.Id, user.Lang)) {
-						return;
+					if (!await PasswordManager.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.AccountName, message.From.Id, user.Lang)) {
+						account.AccountName = data.Trim();
+						PasswordManager.AssemblingAccounts[message.From.Id] = account;
+						PasswordManager.SetUserAction(user, UserAction.Assemble);
+						await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 					}
-
-					account.AccountName = data;
-					PasswordManager.AssemblingAccounts[message.From.Id] = account;
-					PasswordManager.SetUserAction(user, Actions.Assemble);
-					await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
-
 				} else if(!account.SkipLink && account.Link == null){
-					if (await IsLengthExceeded(message.Text.Length,
-							Account.maxLinkLength, "Link",
-							message.From.Id, user.Lang)) {
-						return;
-					}
-
-					account.Link = data.BuildLink();
-					PasswordManager.AssemblingAccounts[message.From.Id] = account;
-					PasswordManager.SetUserAction(user, Actions.Assemble);
-					if (account.Login == null) {
-						await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-							"📇 " + Localization.GetMessage("AddLogin", user.Lang));
-					}
-					else {
-						await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-						"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
-					replyMarkup: new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-							"G")));
+					if (!await PasswordManager.IsLengthExceededAsync(message.Text.Length,MaxAccountDataLength.Link, message.From.Id, user.Lang)) {
+						account.Link = data.BuildLink();
+						PasswordManager.AssemblingAccounts[message.From.Id] = account;
+						PasswordManager.SetUserAction(user, UserAction.Assemble);
+						if (account.Login == null) {
+							await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
+								"📇 " + Localization.GetMessage("AddLogin", user.Lang));
+						}
+						else {
+							await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
+							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
+						replyMarkup: new InlineKeyboardMarkup(
+							InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
+								"G")));
+						}
 					}
 				} else if (account.Login == null) {
-					if (await IsLengthExceeded(message.Text.Length,
-							Account.maxLoginLength, "Login",
-							message.From.Id, user.Lang)) {
-						return;
+					if (!await PasswordManager.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.Login, message.From.Id, user.Lang)) {
+						account.Login = data.Trim();
+						PasswordManager.AssemblingAccounts[message.From.Id] = account;
+						PasswordManager.SetUserAction(user, UserAction.Assemble);
+						await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
+							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
+						replyMarkup: new InlineKeyboardMarkup(
+							InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
+								"G")));
 					}
-					
-					account.Login = data;
-					PasswordManager.AssemblingAccounts[message.From.Id] = account;
-					PasswordManager.SetUserAction(user, Actions.Assemble);
-					await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-						"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
-					replyMarkup: new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-							"G")));
-
 				} else if (account.Password == null) {
-					if (await IsLengthExceeded(message.Text.Length,
-							Account.maxPasswordLength, "Password",
-							message.From.Id, user.Lang)) {
-						return;
+					if (!await PasswordManager.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.Password, message.From.Id, user.Lang)) {
+						account.Password = Encryption.Encrypt(data.Trim());
+						await SaveToDBAsync(account, user);
+						PasswordManager.AssemblingAccounts.Remove(message.From.Id);
 					}
-
-					account.Password = Encryption.Encrypt(data);
-					await SaveToDBAsync(account, user);
-					PasswordManager.AssemblingAccounts.Remove(message.From.Id);
 				}
 			}
 		}
 
 		private async Task AssembleAccountAsync(Message message, Types.User user) {
 			string[] accountData = message.Text.Remove(0, 5).Split('\n', StringSplitOptions.RemoveEmptyEntries);
-			if (await IsLengthExceeded(accountData[0].Length,
-							Account.maxAccountNameLength, "AccountName",
-							message.From.Id, user.Lang)) {
+			if (await PasswordManager.IsLengthExceededAsync(accountData[0].Length, MaxAccountDataLength.AccountName, message.From.Id, user.Lang)) {
 				return;
 			}
 			Account account = new Account {
-				AccountName = accountData[0],
+				AccountName = accountData[0].Trim(),
 				UserId = message.From.Id
 			};
 
 			if (accountData.Length > 3) {
-				if (await IsLengthExceeded(accountData[1].Length, Account.maxLinkLength, "Link", message.From.Id, user.Lang) ||
-					await IsLengthExceeded(accountData[2].Length, Account.maxLoginLength, "Login", message.From.Id, user.Lang) ||
-					await IsLengthExceeded(accountData[3].Length, Account.maxPasswordLength, "Password", message.From.Id, user.Lang)) {
+				if (!await PasswordManager.IsLengthExceededAsync(accountData[1].Length, MaxAccountDataLength.Link,		message.From.Id, user.Lang) &&
+					!await PasswordManager.IsLengthExceededAsync(accountData[2].Length, MaxAccountDataLength.Login,		message.From.Id, user.Lang) &&
+					!await PasswordManager.IsLengthExceededAsync(accountData[3].Length, MaxAccountDataLength.Password,	message.From.Id, user.Lang)) {
 
-					return;
+					account.Link = accountData[1].BuildLink();
+					account.Login = accountData[2].Trim();
+					account.Password = Encryption.Encrypt(accountData[3].Trim());
+					await SaveToDBAsync(account, user);
 				}
-				account.Link = accountData[1].BuildLink();
-				account.Login = accountData[2].Trim();
-				account.Password = Encryption.Encrypt(accountData[3].Trim());
-				await SaveToDBAsync(account, user);
 			} else if(accountData.Length == 3) {
-				if (accountData[1].Length > Account.maxLoginLength) {
-					await ReportExceededLength(message.From.Id, user.Lang,
-						Localization.GetMessage("Login", user.Lang), Account.maxLoginLength);
-					return;
+				if (!await PasswordManager.IsLengthExceededAsync(accountData[2].Length, MaxAccountDataLength.Password,	message.From.Id, user.Lang) &&
+					!await PasswordManager.IsLengthExceededAsync(accountData[1].Length, MaxAccountDataLength.Login,		message.From.Id, user.Lang)) {
+					
+					account.Login = accountData[1].Trim();
+					account.Password = Encryption.Encrypt(accountData[2].Trim());
+					await SaveToDBAsync(account, user);
 				}
-				else if (accountData[2].Length > Account.maxPasswordLength) {
-					await ReportExceededLength(message.From.Id, user.Lang,
-						Localization.GetMessage("Password", user.Lang), Account.maxPasswordLength);
-					return;
-				}
-				account.Login = accountData[1];
-				account.Password = Encryption.Encrypt(accountData[2]);
-				await SaveToDBAsync(account, user);
 			} else if(accountData.Length == 2) {
-				if (accountData[1].Length > Account.maxLoginLength) {
-					await ReportExceededLength(message.From.Id, user.Lang,
-						Localization.GetMessage("Login", user.Lang), Account.maxLoginLength);
-					return;
+				if (!await PasswordManager.IsLengthExceededAsync(accountData[1].Length, MaxAccountDataLength.Login, message.From.Id, user.Lang)) {
+					account.Login = accountData[1].Trim();
+					PasswordManager.AssemblingAccounts[message.From.Id] = account;
+					PasswordManager.SetUserAction(user, UserAction.Assemble);
+					await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 				}
-				account.Login = accountData[1].Trim();
-				PasswordManager.AssemblingAccounts[message.From.Id] = account;
-				PasswordManager.SetUserAction(user, Actions.Assemble);
-				await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 			} else {
 				PasswordManager.AssemblingAccounts[message.From.Id] = account;
-				PasswordManager.SetUserAction(user, Actions.Assemble);
+				PasswordManager.SetUserAction(user, UserAction.Assemble);
 				await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 			}
 
-		}
-
-		private async Task<bool> IsLengthExceeded(int paramLength, int maxParamLength, string paramName, int userId, string langCode) {
-			if (paramLength > maxParamLength) {
-				await ReportExceededLength(userId, langCode,
-					Localization.GetMessage("Login", langCode), Account.maxLoginLength);
-				return true;
-			}
-			return false;
 		}
 
 		private static async Task SaveToDBAsync(Account account, Types.User user, int messageToEditId = 0) {
@@ -162,7 +125,7 @@ namespace UPwdBot.Commands {
 					account);
 			}
 
-			PasswordManager.SetUserAction(user, Actions.Search);
+			PasswordManager.SetUserAction(user, UserAction.Search);
 
 			await PasswordManager.ShowAccount(account.UserId, account, user.Lang, messageToEditId: messageToEditId,
 				extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", user.Lang), account.AccountName));
@@ -209,11 +172,6 @@ namespace UPwdBot.Commands {
 				PasswordManager.AssemblingAccounts.Remove(account.UserId);
 				await SaveToDBAsync(account, user, messageId);
 			}
-		}
-
-		public static async Task ReportExceededLength(ChatId chatid, string langCode, string paramName, int maxLength) {
-			await Bot.Instance.Client.SendTextMessageAsync(chatid,
-				String.Format(Localization.GetMessage("MaxLength", langCode), paramName, maxLength));
 		}
 
 	}

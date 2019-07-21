@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Uten.Passwords;
 using Uten.Localization.MultiUser;
-using UPwdBot.Types;
+using UPwdBot.Types.Enums;
 
 namespace UPwdBot.Commands {
 	public class GeneratePasswordCommand : ICallBackQueryCommand {
@@ -21,18 +21,27 @@ namespace UPwdBot.Commands {
 				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
 			}
 
-			if (password.Length > Account.maxPasswordLength) {
-				string genPattern = user.GenPattern.Remove(6) + Account.maxPasswordLength;
+			if (password.Length > (int)MaxAccountDataLength.Password) {
+				string genPattern = user.GenPattern.Remove(6) + ((int)MaxAccountDataLength.Password).ToString();
 				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
 				PasswordManager.SetUserPasswordPattern(user, genPattern);
 			}
 
+			password = password.Trim();
+
 			var inlineKeyBoard = new InlineKeyboardMarkup(
-				new InlineKeyboardButton[] {
-					InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
-						callbackQuery.Data),
-					InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-						'Z' + callbackQuery.Data.Substring(1))});
+				new InlineKeyboardButton[][] {
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
+							"G"),
+						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
+							"Z")
+					},
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+							"D"),
+					}
+				});
 
 			await BotHandler.Bot.EditMessageTextAsync(
 				callbackQuery.From.Id,

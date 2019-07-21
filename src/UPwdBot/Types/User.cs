@@ -1,14 +1,9 @@
-﻿
+﻿using UPwdBot.Types.Enums;
+
 namespace UPwdBot.Types {
 
-	public enum Actions : byte {
-		Search = 0,
-		Assemble,
-		Update
-	}
-
 	public class User {
-		public const Actions DefaultAction = Actions.Search;
+		public const UserAction DefaultAction = UserAction.Search;
 
 		public int Id { get; set; }
 		/// <summary>
@@ -23,10 +18,10 @@ namespace UPwdBot.Types {
 
 		public byte Action {
 			get => (byte)ActionType;
-			set => ActionType = (Actions)value;
+			set => ActionType = (UserAction)value;
 		}
 
-		public Actions ActionType { get; set; }
+		public UserAction ActionType { get; set; }
 
 	}
 }

@@ -1,20 +1,6 @@
-﻿
-
-namespace UPwdBot.Types {
-
-	public enum AccountDataTypes : byte {
-		Password = 80,		//'P' code
-		AccountName = 78,	//'N' code
-		Link = 82,			//'R' code
-		Login = 76			//'L' code
-	}
+﻿namespace UPwdBot.Types {
 
 	public class Account {
-
-		public const int maxAccountNameLength = 50;
-		public const int maxLinkLength = 54; //AccountName + ".com"
-		public const int maxLoginLength = 35;
-		public const int maxPasswordLength = 63;
 
 		public long Id { get; set; }
 		public int UserId { get; set; }

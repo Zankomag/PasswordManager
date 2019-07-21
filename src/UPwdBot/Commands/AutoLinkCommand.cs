@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using UPwdBot.Extensions;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
 

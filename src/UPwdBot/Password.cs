@@ -3,6 +3,7 @@
 namespace Uten.Passwords {
 	public static class Password {
 		public const string defaultPasswordGeneratorPattern = "11111032";
+
 		public static string Generate(uint length = 32,
 			bool containsLowerChars = true,
 			bool containsUpperChars = true,
@@ -41,8 +42,10 @@ namespace Uten.Passwords {
 				length--;
 			}
 
-			for (int i = 0; i < length; i++)
+			for (int i = 0; i < length; i++) {
+
 				pwd += charList[random.Next(0, charList.Length)];
+			}
 
 			return pwd;
 		}
