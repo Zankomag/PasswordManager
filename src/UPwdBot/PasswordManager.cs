@@ -23,6 +23,12 @@ namespace UPwdBot {
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
 		public static Dictionary<int, AccountUpdate> UpdatingAccounts { get; set; } = new Dictionary<int, AccountUpdate>();
 
+		public static InlineKeyboardMarkup GeneratePasswordButtonMarkup(string langCode) {
+			return new InlineKeyboardMarkup(
+						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
+							CallbackCommandCode.GeneratePassword.ToStringCode()));
+		}
+
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
 			if (accountName != null) {
@@ -110,7 +116,7 @@ namespace UPwdBot {
 				message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
 				keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
 					(i + 1) + "⃣ " + accounts[i].AccountName,
-					"O" + accounts[i].Id.ToString()) };
+					CallbackCommandCode.ShowAccount.ToStringCode() + accounts[i].Id.ToString()) };
 			}
 			return message;
 		}
@@ -217,7 +223,7 @@ namespace UPwdBot {
 			return InlineKeyboardButton.WithCallbackData(
 				next ? "▶️ " + Localization.GetMessage("Next", langCode) :
 					"◀️ " + Localization.GetMessage("Prev", langCode),
-				"Q" + (next ? (page + 1).ToString() : (page - 1).ToString()) + 
+				CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) + 
 				"." + accountName);
 		}
 
@@ -231,15 +237,15 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🔑 " + Localization.GetMessage("Password", langCode),
-								"P" + account.Id)},
+								CallbackCommandCode.ShowPassword.ToStringCode() + account.Id)},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
-								"U0" + account.Id) },
+								CallbackCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
-								"X0" + account.Id) },
+								CallbackCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
 					});
 				if(extraMessage != null) {
 					message = extraMessage + "\n\n" + message;
@@ -329,31 +335,33 @@ namespace UPwdBot {
 			ChatId chatId, int messageId, string accountId, string message, 
 			string langCode, bool containsDeleteLinkButton, string messageText) {
 
+			string updateCommandCode = CallbackCommandCode.UpdateAccount.ToStringCode();
+
 			InlineKeyboardButton[] accNameButton =
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"📝 " + Localization.GetMessage("AccountName", langCode),
-							"UN" + accountId)};
+							updateCommandCode + 'N' + accountId)};
 			InlineKeyboardButton[] linkButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🔗 " + Localization.GetMessage("Link", langCode),
-							"UR" + accountId) };
+							updateCommandCode + 'R' + accountId) };
 			InlineKeyboardButton[] loginButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"📇 " + Localization.GetMessage("Login", langCode),
-							"UL" + accountId) };
+							updateCommandCode + 'L' + accountId) };
 			InlineKeyboardButton[] passwordButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🔐 " + Localization.GetMessage("Password", langCode),
-							"UP" + accountId) };
+							updateCommandCode + 'P' + accountId) };
 			InlineKeyboardButton[] backButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"⏪ " + Localization.GetMessage("Back", langCode),
-							"O" + accountId) };
+							CallbackCommandCode.ShowAccount.ToStringCode() + accountId) };
 
 			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton ?
 				new InlineKeyboardButton[][] {
@@ -362,7 +370,7 @@ namespace UPwdBot {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteLink", langCode),
-								"UE" + accountId) },
+								updateCommandCode + 'E' + accountId) },
 						loginButton,
 						passwordButton,
 						backButton

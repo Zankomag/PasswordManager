@@ -15,15 +15,15 @@ namespace UPwdBot {
 	public class BotHandler {
 		public static BotHandler Instance { get; private set; }
 		public static TelegramBotClient Bot { get => UPwdBot.Bot.Instance.Client; }
-		public static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
-		private static Dictionary<char, ICallBackQueryCommand> callBackCommands = new Dictionary<char, ICallBackQueryCommand>();
+		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
+		private static Dictionary<CallbackCommandCode, ICallBackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallBackQueryCommand>();
 
 		private static readonly Dictionary<UserAction, IMessageCommand> ActionCommands = new Dictionary<UserAction, IMessageCommand>();
 
 
-		private static readonly SelectLanguageCommand selectLangCommand = new SelectLanguageCommand();
+		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
 
-		private BotHandler() {}
+		private BotHandler() { }
 
 		static BotHandler() {
 			if (Instance == null) {
@@ -32,12 +32,13 @@ namespace UPwdBot {
 			}
 		}
 
-		private static  void InitCommands() {
-			
+		private static void InitCommands() {
+
 			IMessageCommand helpCommand = new HelpCommand();
 			SearchCommand searchCommand = new SearchCommand();
 			IMessageCommand addAccountCommand = new AddAccountCommand();
 			UpdateAccountCommand updateAccountCommand = new UpdateAccountCommand();
+			SetUpPasswordGeneratorCommand setUpPasswordGeneratorCommand = new SetUpPasswordGeneratorCommand();
 
 			ActionCommands.Add(UserAction.Assemble, addAccountCommand);
 			ActionCommands.Add(UserAction.Search, searchCommand);
@@ -45,33 +46,35 @@ namespace UPwdBot {
 
 			messageCommands.Add("/help", helpCommand);
 			messageCommands.Add("/start", helpCommand);
-			messageCommands.Add("/language", selectLangCommand);
+			messageCommands.Add("/language", selectLanguageCommand);
 			messageCommands.Add("/all", new ShowAllCommand());
 			messageCommands.Add("/add", addAccountCommand);
 			messageCommands.Add("/cancel", new CancelCommand());
+			messageCommands.Add("/gen", setUpPasswordGeneratorCommand);
 			//messageCommands.Add("/delete", new DeleteAllMessagesCommand()); //EXPERIMENTAL
 
-			callBackCommands.Add('L', selectLangCommand);
-			callBackCommands.Add('S', new SkipLinkCommand());
-			callBackCommands.Add('A', new AutoLinkCommand());
-			callBackCommands.Add('G', new GeneratePasswordCommand());
-			callBackCommands.Add('Z', new AcceptPasswordCommand());
-			callBackCommands.Add('Q', searchCommand);
-			callBackCommands.Add('P', new ShowPasswordCommand());
-			callBackCommands.Add('O', new ShowAccountCommand());
-			callBackCommands.Add('D', new DeleteMessageCommand());
-			callBackCommands.Add('U', updateAccountCommand);
-			callBackCommands.Add('X', new DeleteAccountCommand());
+			callBackCommands.Add(CallbackCommandCode.SelectLanguage, selectLanguageCommand);
+			callBackCommands.Add(CallbackCommandCode.SkipLink, new SkipLinkCommand());
+			callBackCommands.Add(CallbackCommandCode.AutoLink, new AutoLinkCommand());
+			callBackCommands.Add(CallbackCommandCode.GeneratePassword, new GeneratePasswordCommand());
+			callBackCommands.Add(CallbackCommandCode.AcceptPassword, new AcceptPasswordCommand());
+			callBackCommands.Add(CallbackCommandCode.Search, searchCommand);
+			callBackCommands.Add(CallbackCommandCode.ShowPassword, new ShowPasswordCommand());
+			callBackCommands.Add(CallbackCommandCode.ShowAccount, new ShowAccountCommand());
+			callBackCommands.Add(CallbackCommandCode.DeleteMessage, new DeleteMessageCommand());
+			callBackCommands.Add(CallbackCommandCode.UpdateAccount, updateAccountCommand);
+			callBackCommands.Add(CallbackCommandCode.DeleteAccount, new DeleteAccountCommand());
+			callBackCommands.Add(CallbackCommandCode.SetUpPasswordGenerator, setUpPasswordGeneratorCommand);
 		}
 
 		public void HandleUpdate(Update update) {
 			switch (update.Type) {
 				case UpdateType.Message:
-					if(update.Message.Type == MessageType.Text)
-						HandleMessage(update.Message);
+				if (update.Message.Type == MessageType.Text)
+					HandleMessage(update.Message);
 				return;
 				case UpdateType.CallbackQuery:
-					HandleCallbackQuery(update.CallbackQuery);
+				HandleCallbackQuery(update.CallbackQuery);
 				return;
 			}
 		}
@@ -86,7 +89,7 @@ namespace UPwdBot {
 						user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
 					}
 					else {
-						await selectLangCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
+						await selectLanguageCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
 						return;
 					}
 				}
@@ -95,12 +98,13 @@ namespace UPwdBot {
 			string commandText = null;
 
 			//Command that starts with '/' may contain args and must be separated
-			if (message.Text.StartsWith('/')){
+			if (message.Text.StartsWith('/')) {
 				string commandString = message.Text.ToLower();
 				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
 				if (cIndex != -1) {
 					commandText = commandString.Substring(0, cIndex);
-				} else {
+				}
+				else {
 					commandText = commandString;
 				}
 			}
@@ -123,14 +127,20 @@ namespace UPwdBot {
 				if (user == null) {
 					//Add new user to db when he selected language for the first time
 					if (callbackQuery.Data[0] == 'L') {
-						await selectLangCommand.ExecuteAsync(callbackQuery, user);
+						await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
 						return;
-					} else {
+					}
+					else {
 						if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode)) {
 							user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
 						}
 						else {
-							await selectLangCommand.ExecuteAsync(new Message() {From = new Telegram.Bot.Types.User() { Id = callbackQuery.From.Id} },
+							await selectLanguageCommand.ExecuteAsync(
+								new Message() {
+									From = new Telegram.Bot.Types.User() {
+										Id = callbackQuery.From.Id
+									}
+								},
 								new User { Lang = Localization.defaultLanguage });
 							return;
 						}
@@ -140,14 +150,15 @@ namespace UPwdBot {
 
 			try {
 				ICallBackQueryCommand command;
-				if (callBackCommands.TryGetValue(callbackQuery.Data[0], out command)) {
+				if (callBackCommands.TryGetValue((CallbackCommandCode)callbackQuery.Data[0], out command)) {
 					await command.ExecuteAsync(callbackQuery, user);
 				}
 				else {
 					await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
 				}
-			} catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
-				
+			}
+			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
+
 		}
 
 		/// <summary>

@@ -43,8 +43,7 @@ namespace UPwdBot.Commands {
 				PasswordManager.SetUserAction(user, UserAction.Update);
 				AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
 				InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
-					new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-						"G")) : 
+					PasswordManager.GeneratePasswordButtonMarkup(user.Lang) : 
 					null;
 				Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
 				PasswordManager.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(

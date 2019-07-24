@@ -13,6 +13,7 @@ using UPwdBot.Extensions;
 
 namespace UPwdBot.Commands {
 	public class AddAccountCommand : IMessageCommand {
+
 		public async Task ExecuteAsync(Message message, Types.User user) {
 			if (message.Text.StartsWith("/add") && message.Text.Length > 5) {
 				PasswordManager.AssemblingAccounts.Remove(message.From.Id);
@@ -48,9 +49,7 @@ namespace UPwdBot.Commands {
 						else {
 							await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
-						replyMarkup: new InlineKeyboardMarkup(
-							InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-								"G")));
+						replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 						}
 					}
 				} else if (account.Login == null) {
@@ -60,9 +59,7 @@ namespace UPwdBot.Commands {
 						PasswordManager.SetUserAction(user, UserAction.Assemble);
 						await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
 							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
-						replyMarkup: new InlineKeyboardMarkup(
-							InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-								"G")));
+						replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 					}
 				} else if (account.Password == null) {
 					if (!await PasswordManager.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.Password, message.From.Id, user.Lang)) {
@@ -135,11 +132,11 @@ namespace UPwdBot.Commands {
 			var inlineKeyBoard = new InlineKeyboardMarkup(
 				new InlineKeyboardButton[][] {
 							new InlineKeyboardButton[] {
-								InlineKeyboardButton.WithCallbackData("🔗 " + accountName.AutoLink(), "A")
+								InlineKeyboardButton.WithCallbackData("🔗 " + accountName.AutoLink(), CallbackCommandCode.AutoLink.ToStringCode())
 							},
 							new InlineKeyboardButton[] {
 								InlineKeyboardButton.WithCallbackData(
-									"⏩ " + Localization.GetMessage("Skip",langCode), "S")
+									"⏩ " + Localization.GetMessage("Skip",langCode), CallbackCommandCode.SkipLink.ToStringCode())
 							}
 				}
 			);
@@ -164,9 +161,7 @@ namespace UPwdBot.Commands {
 			else if (account.Password == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
 					"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
-					replyMarkup: new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-							"G")));
+					replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 			}
 			else {
 				PasswordManager.AssemblingAccounts.Remove(account.UserId);

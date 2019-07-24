@@ -8,6 +8,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using UPwdBot.Types;
 using Uten.Localization.MultiUser;
+using UPwdBot.Types.Enums;
+using UPwdBot.Extensions;
 
 namespace UPwdBot.Commands {
 	public class ShowPasswordCommand : ICallBackQueryCommand {
@@ -27,7 +29,7 @@ namespace UPwdBot.Commands {
 					"`" + Uten.Encryption.Encryption.Decrypt(account.Password) + "`",
 					replyMarkup: new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							"D")),
+							CallbackCommandCode.DeleteMessage.ToStringCode())),
 					parseMode: ParseMode.Markdown);
 			}
 		}

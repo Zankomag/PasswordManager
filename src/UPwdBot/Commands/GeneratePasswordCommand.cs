@@ -6,6 +6,7 @@ using Telegram.Bot.Types.Enums;
 using Uten.Passwords;
 using Uten.Localization.MultiUser;
 using UPwdBot.Types.Enums;
+using UPwdBot.Extensions;
 
 namespace UPwdBot.Commands {
 	public class GeneratePasswordCommand : ICallBackQueryCommand {
@@ -33,13 +34,13 @@ namespace UPwdBot.Commands {
 				new InlineKeyboardButton[][] {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
-							"G"),
+							CallbackCommandCode.GeneratePassword.ToStringCode()),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-							"Z")
+							CallbackCommandCode.AcceptPassword.ToStringCode())
 					},
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							"D"),
+							CallbackCommandCode.DeleteMessage.ToStringCode()),
 					}
 				});
 

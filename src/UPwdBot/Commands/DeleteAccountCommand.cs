@@ -7,6 +7,8 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using Uten.Localization.MultiUser;
+using UPwdBot.Extensions;
+using UPwdBot.Types.Enums;
 
 namespace UPwdBot.Commands {
 	public class DeleteAccountCommand : ICallBackQueryCommand {
@@ -19,11 +21,11 @@ namespace UPwdBot.Commands {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								Localization.GetMessage("ImSure", user.Lang),
-								"X1" + accountId)},
+							 CallbackCommandCode.DeleteAccount.ToStringCode() + '1' + accountId)},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"❌ " + Localization.GetMessage("No!", user.Lang),
-								"O" + accountId) },
+								CallbackCommandCode.ShowAccount.ToStringCode() + 'O' + accountId) },
 					});
 
 				await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,

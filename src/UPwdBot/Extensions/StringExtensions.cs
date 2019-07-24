@@ -1,4 +1,4 @@
-﻿
+﻿using UPwdBot.Types.Enums;
 namespace UPwdBot.Extensions {
 	public static class StringExtensions {
 
@@ -15,6 +15,10 @@ namespace UPwdBot.Extensions {
 								value.ToLower();
 			autoLink += ".com";
 			return autoLink;
+		}
+
+		public static string ToStringCode(this CallbackCommandCode callbackCommandCode) {
+			return ((char)callbackCommandCode).ToString();
 		}
 	}
 }

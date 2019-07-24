@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Uten.Localization.MultiUser;
+using UPwdBot.Extensions;
+using UPwdBot.Types.Enums;
 
 namespace UPwdBot.Commands {
 	public class SelectLanguageCommand : IMessageCommand, ICallBackQueryCommand {
@@ -18,12 +20,13 @@ namespace UPwdBot.Commands {
 
 			InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rowNumber][];
 			int currentLang = 0;
+			string commandCode = CallbackCommandCode.SelectLanguage.ToStringCode();
 			for (int i = 0; i < rowNumber; i++) {
 				buttons[i] = new InlineKeyboardButton[colNumber - (((i + 1) * colNumber) - langNumber)];
 
 				for(int j = 0; j < buttons[i].Length; j++) {
 					buttons[i][j] = InlineKeyboardButton
-					.WithCallbackData(icons[currentLang], "L" + langCodes[currentLang]);
+					.WithCallbackData(icons[currentLang], commandCode + langCodes[currentLang]);
 					currentLang++;
 				}	
 			}
