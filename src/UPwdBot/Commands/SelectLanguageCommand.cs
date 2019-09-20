@@ -22,7 +22,7 @@ namespace UPwdBot.Commands {
 			int currentLang = 0;
 			string commandCode = CallbackCommandCode.SelectLanguage.ToStringCode();
 			for (int i = 0; i < rowNumber; i++) {
-				buttons[i] = new InlineKeyboardButton[colNumber - (((i + 1) * colNumber) - langNumber)];
+				buttons[i] = new InlineKeyboardButton[(langNumber - ((i + 1) * colNumber) >= 0) ? colNumber : (langNumber - (i * colNumber))];
 
 				for(int j = 0; j < buttons[i].Length; j++) {
 					buttons[i][j] = InlineKeyboardButton
