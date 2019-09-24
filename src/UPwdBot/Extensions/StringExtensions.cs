@@ -17,8 +17,23 @@ namespace UPwdBot.Extensions {
 			return autoLink;
 		}
 
+		public static string ToZeroOneString(this bool param) {
+			return param ? "1" : "0";
+		}
+
+		public static string ToEmojiString(this bool param, bool addSpace = false) {
+			string result =  param ? "✅" : "✖️";
+			if (addSpace)
+				result += " ";
+			return result;
+		}
+
 		public static string ToStringCode(this CallbackCommandCode callbackCommandCode) {
 			return ((char)callbackCommandCode).ToString();
+		}
+
+		public static string ToStringCode(this SetUpPasswordCommandCode setUpPasswordCommandCode) {
+			return ((char)setUpPasswordCommandCode).ToString();
 		}
 	}
 }

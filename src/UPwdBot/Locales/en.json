@@ -41,5 +41,12 @@
 	"UpdateAccData": "Send me new {0} for this account.",
 	"DefaultPattern": "Pattern has been set to default.",
 	"LinkDeleted": "Link has been deleted.",
-	"AccountUpdated": "Account has been updated."
+	"AccountUpdated": "Account has been updated",
+	"SetUpPassword": "Here you can adjust password generator settings. Select which characters and cases will be used in password",
+	"LowerChars": "lower case",
+	"UpperChars": "UPPER CASE",
+	"Digits": "Digits",
+	"Spaces": "Spaces",
+	"SpecialChars": "Special (#$%)",
+	"FirstChar": "1st character - letter"
 }
