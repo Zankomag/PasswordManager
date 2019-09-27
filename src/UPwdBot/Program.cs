@@ -10,6 +10,7 @@ namespace UPwdBot {
 
 		public static IWebHostBuilder CreateWebHostBuilder() =>
 			WebHost.CreateDefaultBuilder()
-				.UseStartup<Startup>();
+				.UseStartup<Startup>()
+				.UseUrls("http://localhost:7720/");
 	}
 }
