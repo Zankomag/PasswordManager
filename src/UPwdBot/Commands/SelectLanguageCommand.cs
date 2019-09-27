@@ -47,10 +47,11 @@ namespace UPwdBot.Commands {
 			} else {
 				PasswordManager.SetUserLanguage(user, langCode);
 			}
-			
+
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
-				Localization.GetMessage("Help", langCode));
+				string.Format(Localization.GetMessage("Help", user.Lang),
+				"/add", "/all", "/generator", "/language", "/cancel", "/help"));
 		}
 	}
 }

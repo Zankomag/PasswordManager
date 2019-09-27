@@ -55,6 +55,7 @@ namespace Uten.Localization.MultiUser {
 		}
 
 		public static bool ContainsLanguage(string langCode) {
+			if (langCode == null) return false;
 			return stringsByCode.ContainsKey(langCode);
 		}
 	}
