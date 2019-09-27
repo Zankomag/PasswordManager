@@ -1,6 +1,6 @@
 ﻿{
 	"Icon": "🇺🇸",
-	"Help": "Help message",
+	"Help": "I can help you to manage your passwords. You no longer have to write passwords in notebook or remember all the passwords. I will even generate passwords for you, all you need - copy, paste and forget it.\n{0} - add new account\n{1} - show all your accounts\n{2} - password generator settings\n{3} - change language\n{4} - cancel operation\n{5} - show this message\n\nTo get password you need - just send me account name and I'll show needed one.\n\nContact: @Zankomag",
 	"ChooseLang": "Choose your language.",
 	"LangIsSet": "Your language is set to English.",
 	"AddLink": "Good. Now you can add an optional link for your account or use suggested.\nUse {0} to get more info about links.",

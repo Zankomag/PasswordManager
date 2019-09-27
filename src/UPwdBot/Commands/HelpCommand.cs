@@ -5,7 +5,9 @@ using Uten.Localization.MultiUser;
 namespace UPwdBot.Commands {
 	public class HelpCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, Types.User user) {
-			await BotHandler.Bot.SendTextMessageAsync(message.From.Id, Localization.GetMessage("Help", user.Lang));
+			await BotHandler.Bot.SendTextMessageAsync(message.From.Id, 
+				string.Format(Localization.GetMessage("Help", user.Lang), 
+				"/add", "/all", "/generator", "/language", "/cancel","/help"));
 		}
 	}
 }
