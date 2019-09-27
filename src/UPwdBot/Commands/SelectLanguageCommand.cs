@@ -50,7 +50,7 @@ namespace UPwdBot.Commands {
 
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
-				string.Format(Localization.GetMessage("Help", user.Lang),
+				string.Format(Localization.GetMessage("Help", langCode),
 				"/add", "/all", "/generator", "/language", "/cancel", "/help"));
 		}
 	}
