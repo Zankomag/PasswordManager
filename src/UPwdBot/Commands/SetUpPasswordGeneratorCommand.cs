@@ -34,7 +34,7 @@ namespace UPwdBot.Commands {
 				}
 				catch(Exception) {
 					await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
-						"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
+						"⛓️ " + String.Format(Localization.GetMessage("WrongLength", user.Lang),
 						PasswordManager.MinPasswordLength, PasswordManager.MaxPasswordLength));
 				}
 			}
