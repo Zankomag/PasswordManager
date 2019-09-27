@@ -69,14 +69,19 @@ namespace UPwdBot {
 		}
 
 		public void HandleUpdate(Update update) {
-			switch (update.Type) {
-				case UpdateType.Message:
-				if (update.Message.Type == MessageType.Text)
-					HandleMessage(update.Message);
-				return;
-				case UpdateType.CallbackQuery:
-				HandleCallbackQuery(update.CallbackQuery);
-				return;
+			try {
+				switch (update.Type) {
+					case UpdateType.Message:
+					if (update.Message.Type == MessageType.Text)
+						HandleMessage(update.Message);
+					return;
+					case UpdateType.CallbackQuery:
+					HandleCallbackQuery(update.CallbackQuery);
+					return;
+				}
+			} catch (Exception ex) {
+				Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message).Wait();
+				Environment.Exit(47);
 			}
 		}
 
@@ -102,19 +107,20 @@ namespace UPwdBot {
 			if (message.Text.StartsWith('/')) {
 				string commandString = message.Text.ToLower();
 				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
-				if (cIndex != -1) {
-					commandText = commandString.Substring(0, cIndex);
-				}
-				else {
-					commandText = commandString;
-				}
+				commandText = cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
 			}
 
 			if (commandText != null && messageCommands.TryGetValue(commandText, out IMessageCommand command)) {
 				await command.ExecuteAsync(message, user);
 			}
 			else {
-				await ActionCommands[user.ActionType].ExecuteAsync(message, user);
+				try {
+					await ActionCommands[user.ActionType].ExecuteAsync(message, user);
+				}
+				catch (KeyNotFoundException) {
+					PasswordManager.SetUserAction(user, UserAction.Search);
+					await ActionCommands[UserAction.Search].ExecuteAsync(message, user);
+				}
 			}
 		}
 
