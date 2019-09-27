@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
@@ -33,7 +34,6 @@ namespace UPwdBot {
 		}
 
 		private static void InitCommands() {
-
 			IMessageCommand helpCommand = new HelpCommand();
 			SearchCommand searchCommand = new SearchCommand();
 			IMessageCommand addAccountCommand = new AddAccountCommand();
@@ -43,6 +43,7 @@ namespace UPwdBot {
 			ActionCommands.Add(UserAction.Assemble, addAccountCommand);
 			ActionCommands.Add(UserAction.Search, searchCommand);
 			ActionCommands.Add(UserAction.Update, updateAccountCommand);
+			ActionCommands.Add(UserAction.UpdatePasswordLength, setUpPasswordGeneratorCommand);
 
 			messageCommands.Add("/help", helpCommand);
 			messageCommands.Add("/start", helpCommand);
@@ -50,7 +51,7 @@ namespace UPwdBot {
 			messageCommands.Add("/all", new ShowAllCommand());
 			messageCommands.Add("/add", addAccountCommand);
 			messageCommands.Add("/cancel", new CancelCommand());
-			messageCommands.Add("/gen", setUpPasswordGeneratorCommand);
+			messageCommands.Add("/generator", setUpPasswordGeneratorCommand);
 			//messageCommands.Add("/delete", new DeleteAllMessagesCommand()); //EXPERIMENTAL
 
 			callBackCommands.Add(CallbackCommandCode.SelectLanguage, selectLanguageCommand);
@@ -169,7 +170,10 @@ namespace UPwdBot {
 				await Bot.DeleteMessageAsync(chatId, messageId);
 			}
 			catch (Telegram.Bot.Exceptions.ApiRequestException) {
-				await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
+				try {
+					await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
+				}
+				catch (Exception) { }
 			}
 		}
 

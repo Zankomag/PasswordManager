@@ -3,6 +3,6 @@
 		AccountName = 50,
 		Link = AccountName + 4, // + ".com"
 		Login = 35,
-		Password = 63
+		Password = 2048
 	}
 }

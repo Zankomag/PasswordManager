@@ -12,20 +12,20 @@ namespace Uten.Passwords {
 			bool firstCharIsLetter = true,
 			bool containsSpace = false) {
 
-		
-			if (firstCharIsLetter && !containsLowerChars ||
-				firstCharIsLetter && !containsUpperChars)
-				throw new ArgumentNullException("firstCharIsLetter", "Cannot set letter as first character, because it does not exist.");
+
+			if (firstCharIsLetter && !containsLowerChars && !containsUpperChars)
+				firstCharIsLetter = false;
+				//throw new ArgumentNullException("firstCharIsLetter", "Cannot set letter as first character, because it does not exist.");
 
 			string charList = "";
 			if (containsLowerChars)
 				charList += "abcdefghijklmnopqrstuvwxyz";
-			if (containsSpace)
-				charList += ' ';
 			if (containsUpperChars)
 				charList += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if (containsDigits)
 				charList += "0123456789";
+			if (containsSpace)
+				charList += ' ';
 			if (containsSpecialChars)
 				// ` characted deleted from list to prevent markdown errors
 				charList += @"~!@#$%^&*()_-+={}[]\|:;<>,.?/";
@@ -38,7 +38,11 @@ namespace Uten.Passwords {
 			string pwd = "";
 
 			if (firstCharIsLetter) {
-				pwd += charList[random.Next(0, 53)];
+				if (containsLowerChars && containsUpperChars)
+					pwd += charList[random.Next(0, 52)];
+				else if((containsLowerChars && !containsUpperChars) || (!containsLowerChars && containsUpperChars))
+					pwd += charList[random.Next(0, 26)];
+
 				length--;
 			}
 

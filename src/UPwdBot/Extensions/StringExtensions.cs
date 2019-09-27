@@ -21,7 +21,11 @@ namespace UPwdBot.Extensions {
 			return param ? "1" : "0";
 		}
 
-		public static string ToEmojiString(this bool param, bool addSpace = false) {
+		public static string ToReverseZeroOneString(this bool param) {
+			return param ? "0" : "1";
+		}
+
+			public static string ToEmojiString(this bool param, bool addSpace = false) {
 			string result =  param ? "✅" : "✖️";
 			if (addSpace)
 				result += " ";

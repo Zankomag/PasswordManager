@@ -2,6 +2,7 @@
 	public enum UserAction : byte {
 		Search = 0,
 		Assemble,
-		Update
+		Update,
+		UpdatePasswordLength
 	}
 }

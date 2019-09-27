@@ -24,7 +24,7 @@ namespace UPwdBot.Commands {
 
 			if (password.Length > (int)MaxAccountDataLength.Password) {
 				string genPattern = user.GenPattern.Remove(6) + ((int)MaxAccountDataLength.Password).ToString();
-				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
+				password = Password.GeneratePasswordByPattern(genPattern);
 				PasswordManager.SetUserPasswordPattern(user, genPattern);
 			}
 

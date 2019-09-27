@@ -42,11 +42,14 @@
 	"DefaultPattern": "Pattern has been set to default.",
 	"LinkDeleted": "Link has been deleted.",
 	"AccountUpdated": "Account has been updated",
-	"SetUpPassword": "Here you can adjust password generator settings. Select which characters and cases will be used in password",
+	"SetUpPassword": "Here you can adjust password generator settings. Select which characters and cases will be used in password.\nExample of generated password: {0}",
 	"LowerChars": "lower case",
 	"UpperChars": "UPPER CASE",
 	"Digits": "Digits",
 	"Spaces": "Spaces",
 	"SpecialChars": "Special (#$%)",
-	"FirstChar": "1st character - letter"
+	"FirstChar": "1st character - letter",
+	"Length": "Length: ",
+	"EnterLength": "Enter new password length between {0} and {1} characters.",
+	"WrongLength": "Please enter number from {0} to {1}."
 }

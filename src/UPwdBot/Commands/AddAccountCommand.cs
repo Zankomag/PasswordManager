@@ -48,7 +48,7 @@ namespace UPwdBot.Commands {
 						}
 						else {
 							await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
+							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 						replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 						}
 					}
@@ -58,7 +58,7 @@ namespace UPwdBot.Commands {
 						PasswordManager.AssemblingAccounts[message.From.Id] = account;
 						PasswordManager.SetUserAction(user, UserAction.Assemble);
 						await BotHandler.Bot.SendTextMessageAsync(message.From.Id,
-							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
+							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 						replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 					}
 				} else if (account.Password == null) {
@@ -160,7 +160,7 @@ namespace UPwdBot.Commands {
 			}
 			else if (account.Password == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
-					"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/gen"),
+					"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 					replyMarkup: PasswordManager.GeneratePasswordButtonMarkup(user.Lang));
 			}
 			else {

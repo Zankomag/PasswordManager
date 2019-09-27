@@ -18,6 +18,8 @@ using Uten.Encryption;
 namespace UPwdBot {
 	public static class PasswordManager {
 		public const string separator = "\n──────────────────";
+		public const int MinPasswordLength = 1;
+		public const int MaxPasswordLength = 2048;
 		private const int maxAccsByPage = 3;
 
 		public static Dictionary<int, Account> AssemblingAccounts { get; set; } = new Dictionary<int, Account>();
