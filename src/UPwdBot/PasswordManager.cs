@@ -248,6 +248,10 @@ namespace UPwdBot {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
 								CallbackCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
+						new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", langCode),
+							CallbackCommandCode.DeleteMessage.ToStringCode())
+						}
 					});
 				if(extraMessage != null) {
 					message = extraMessage + "\n\n" + message;
@@ -386,12 +390,11 @@ namespace UPwdBot {
 
 			await Bot.Instance.Client.EditMessageTextAsync(chatId,
 				messageId,
-				"*" + message + "* \n\n" +
+				message + "\n\n" +
 				((messageText.Count(x => x == '\n') > 3) ?
 					messageText.Substring(messageText.IndexOf('\n') + 2) :
 					messageText),
 				replyMarkup: keyboardMarkup,
-				parseMode: ParseMode.Markdown,
 				disableWebPagePreview: true);
 		}
 

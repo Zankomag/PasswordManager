@@ -25,14 +25,13 @@ namespace UPwdBot.Commands {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"❌ " + Localization.GetMessage("No!", user.Lang),
-								CallbackCommandCode.ShowAccount.ToStringCode() + 'O' + accountId) },
+								CallbackCommandCode.ShowAccount.ToStringCode() + accountId) },
 					});
 
 				await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
-						"**" + Localization.GetMessage("SureDeleteAcc", user.Lang) + "**\n\n" + callbackQuery.Message.Text,
+						Localization.GetMessage("SureDeleteAcc", user.Lang) + "\n\n" + callbackQuery.Message.Text,
 						replyMarkup: keyboardMarkup,
-						parseMode: ParseMode.Markdown,
 						disableWebPagePreview: true);
 			} else {
 				if (accountId != 0) {

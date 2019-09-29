@@ -7,6 +7,7 @@ namespace UPwdBot.Types.Enums {
 		ContainsSpecialChars = 'S',
 		FirstCharIsLetter = 'F',
 		ContainsSpace = 'A',
-		Length = 'M'
+		Length = 'M',
+		Generate = 'G'
 	}
 }

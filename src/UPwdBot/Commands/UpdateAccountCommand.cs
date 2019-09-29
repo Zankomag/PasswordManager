@@ -68,8 +68,7 @@ namespace UPwdBot.Commands {
 		private async Task<Message> RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
 			return await Bot.Instance.Client.SendTextMessageAsync(
 				chatId,
-				string.Format(Localization.GetMessage("UpdateAccData", langCode), "*" + Localization.GetMessage(dataKey, langCode) + "*"),
-				parseMode: ParseMode.Markdown,
+				string.Format(Localization.GetMessage("UpdateAccData", langCode), Localization.GetMessage(dataKey, langCode)),
 				replyMarkup: inlineKeyboardMarkup);
 		}
 

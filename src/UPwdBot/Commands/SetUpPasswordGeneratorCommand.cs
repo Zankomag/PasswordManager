@@ -112,15 +112,6 @@ namespace UPwdBot.Commands {
 					},
 					new[] {
 						InlineKeyboardButton.WithCallbackData(
-							containsSpecialChars.ToEmojiString(true) +
-							Localization.GetMessage("SpecialChars", user.Lang),
-							CallbackCommandCode.SetUpPasswordGenerator.ToStringCode() +
-							SetUpPasswordCommandCode.ContainsSpecialChars.ToStringCode() +
-							containsSpecialChars.ToReverseZeroOneString()
-						)
-					},
-					new[] {
-						InlineKeyboardButton.WithCallbackData(
 							firstCharIsLetter.ToEmojiString(true) +
 							Localization.GetMessage("FirstChar", user.Lang),
 							CallbackCommandCode.SetUpPasswordGenerator.ToStringCode() +
@@ -130,12 +121,26 @@ namespace UPwdBot.Commands {
 					},
 					new[] {
 						InlineKeyboardButton.WithCallbackData(
+							containsSpecialChars.ToEmojiString(true) +
+							Localization.GetMessage("SpecialChars", user.Lang),
+							CallbackCommandCode.SetUpPasswordGenerator.ToStringCode() +
+							SetUpPasswordCommandCode.ContainsSpecialChars.ToStringCode() +
+							containsSpecialChars.ToReverseZeroOneString()
+						),
+						InlineKeyboardButton.WithCallbackData(
 							"⛓️ " +
 							Localization.GetMessage("Length", user.Lang) + " " + user.GenPattern.Substring(6),
 							CallbackCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.Length.ToStringCode()
 						)
 					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🌋 " + Localization.GetMessage("Generate", user.Lang),
+							CallbackCommandCode.SetUpPasswordGenerator.ToStringCode() +
+							SetUpPasswordCommandCode.Generate.ToStringCode()
+						)
+					}
 				}
 			);
 		}

@@ -37,10 +37,6 @@ namespace UPwdBot.Commands {
 							CallbackCommandCode.GeneratePassword.ToStringCode()),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
 							CallbackCommandCode.AcceptPassword.ToStringCode())
-					},
-					new InlineKeyboardButton[] {
-						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							CallbackCommandCode.DeleteMessage.ToStringCode()),
 					}
 				});
 

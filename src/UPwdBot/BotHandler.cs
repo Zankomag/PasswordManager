@@ -69,102 +69,108 @@ namespace UPwdBot {
 		}
 
 		public void HandleUpdate(Update update) {
-			try {
-				switch (update.Type) {
-					case UpdateType.Message:
-					if (update.Message.Type == MessageType.Text)
-						HandleMessage(update.Message);
-					return;
-					case UpdateType.CallbackQuery:
-					HandleCallbackQuery(update.CallbackQuery);
-					return;
-				}
-			} catch (Exception ex) {
-				Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message).Wait();
-				Environment.Exit(47);
+			switch (update.Type) {
+				case UpdateType.Message:
+				if (update.Message.Type == MessageType.Text)
+					HandleMessage(update.Message);
+				return;
+				case UpdateType.CallbackQuery:
+				HandleCallbackQuery(update.CallbackQuery);
+				return;
 			}
 		}
 
 		private async void HandleMessage(Message message) {
-			User user;
-			using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
-				//User must choose language before be added to db and using any command
-				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
-				if (user == null) {
-					if (Localization.ContainsLanguage(message.From.LanguageCode)) {
-						user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
+			try {
+				User user;
+				using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
+					//User must choose language before be added to db and using any command
+					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
+					if (user == null) {
+						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
+							user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
+						}
+						else {
+							await selectLanguageCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
+							return;
+						}
 					}
-					else {
-						await selectLanguageCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
-						return;
+				}
+
+				string commandText = null;
+
+				//Command that starts with '/' may contain args and must be separated
+				if (message.Text.StartsWith('/')) {
+					string commandString = message.Text.ToLower();
+					int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
+					commandText = cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
+				}
+
+				if (commandText != null && messageCommands.TryGetValue(commandText, out IMessageCommand command)) {
+					await command.ExecuteAsync(message, user);
+				}
+				else {
+					try {
+						await ActionCommands[user.ActionType].ExecuteAsync(message, user);
+					}
+					catch (KeyNotFoundException) {
+						PasswordManager.SetUserAction(user, UserAction.Search);
+						await ActionCommands[UserAction.Search].ExecuteAsync(message, user);
 					}
 				}
 			}
-
-			string commandText = null;
-
-			//Command that starts with '/' may contain args and must be separated
-			if (message.Text.StartsWith('/')) {
-				string commandString = message.Text.ToLower();
-				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
-				commandText = cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
-			}
-
-			if (commandText != null && messageCommands.TryGetValue(commandText, out IMessageCommand command)) {
-				await command.ExecuteAsync(message, user);
-			}
-			else {
-				try {
-					await ActionCommands[user.ActionType].ExecuteAsync(message, user);
-				}
-				catch (KeyNotFoundException) {
-					PasswordManager.SetUserAction(user, UserAction.Search);
-					await ActionCommands[UserAction.Search].ExecuteAsync(message, user);
-				}
+			catch (Exception ex) {
+				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+				Environment.Exit(47);
 			}
 		}
 
 
 		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
-			User user;
-			using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
-				//Check if user exists in User table and add this user if not
-				user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
-					new { callbackQuery.From.Id });
-				if (user == null) {
-					//Add new user to db when he selected language for the first time
-					if (callbackQuery.Data[0] == 'L') {
-						await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
-						return;
-					}
-					else {
-						if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode)) {
-							user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
-						}
-						else {
-							await selectLanguageCommand.ExecuteAsync(
-								new Message() {
-									From = new Telegram.Bot.Types.User() {
-										Id = callbackQuery.From.Id
-									}
-								},
-								new User { Lang = Localization.defaultLanguage });
+			try {
+				User user;
+				using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
+					//Check if user exists in User table and add this user if not
+					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
+						new { callbackQuery.From.Id });
+					if (user == null) {
+						//Add new user to db when he selected language for the first time
+						if (callbackQuery.Data[0] == 'L') {
+							await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
 							return;
 						}
+						else {
+							if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode)) {
+								user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
+							}
+							else {
+								await selectLanguageCommand.ExecuteAsync(
+									new Message() {
+										From = new Telegram.Bot.Types.User() {
+											Id = callbackQuery.From.Id
+										}
+									},
+									new User { Lang = Localization.defaultLanguage });
+								return;
+							}
+						}
 					}
 				}
-			}
 
-			try {
-				ICallBackQueryCommand command;
-				if (callBackCommands.TryGetValue((CallbackCommandCode)callbackQuery.Data[0], out command)) {
-					await command.ExecuteAsync(callbackQuery, user);
-				}
-				else {
-					await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
-				}
+					ICallBackQueryCommand command;
+					if (callBackCommands.TryGetValue((CallbackCommandCode)callbackQuery.Data[0], out command)) {
+						await command.ExecuteAsync(callbackQuery, user);
+					}
+					else {
+						await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, text: "Unknown command", showAlert: true);
+					}
+				
 			}
 			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
+			catch (Exception ex) {
+				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+				Environment.Exit(47);
+			}
 
 		}
 
@@ -179,7 +185,9 @@ namespace UPwdBot {
 				try {
 					await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
 				}
-				catch (Exception) { }
+				catch (Exception ex) {
+					await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+				}
 			}
 		}
 

@@ -47,7 +47,7 @@
 	"UpperChars": "UPPER CASE",
 	"Digits": "Digits",
 	"Spaces": "Spaces",
-	"SpecialChars": "Special (#$%)",
+	"SpecialChars": "Special",
 	"FirstChar": "1st character - letter",
 	"Length": "Length: ",
 	"EnterLength": "Enter new password length between {0} and {1} characters.",
