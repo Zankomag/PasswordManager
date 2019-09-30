@@ -24,7 +24,7 @@ namespace UPwdBot.Commands {
 			}
 			else if(PasswordManager.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)){
 				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
-				await PasswordManager.UpdateAccountDataAsync(callbackQuery.Message.Text.Encrypt(), PasswordManager.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId, callbackQuery.From.Id, user.Lang);
+				await PasswordManager.UpdateAccountDataAsync(callbackQuery.Message.Text, PasswordManager.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId, callbackQuery.From.Id, user.Lang);
 				return;
 			}
 			await AnswerWithWarning(callbackQuery.Id, user.Lang);

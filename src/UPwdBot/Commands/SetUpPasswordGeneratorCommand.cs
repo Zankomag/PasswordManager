@@ -148,7 +148,10 @@ namespace UPwdBot.Commands {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, Types.User user) {
 			await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
-			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length && callbackQuery.Data[2] == '0') {
+			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length &&
+				(SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Generate &&
+				callbackQuery.Data[2] == '0') {
+
 				string genString = sb.ToString().Remove(4, 1);
 				if (genString.Count(x => x == '1') <= 1)
 					return;

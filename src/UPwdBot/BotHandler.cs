@@ -120,7 +120,7 @@ namespace UPwdBot {
 				}
 			}
 			catch (Exception ex) {
-				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
 				Environment.Exit(47);
 			}
 		}
@@ -168,7 +168,7 @@ namespace UPwdBot {
 			}
 			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
 			catch (Exception ex) {
-				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
 				Environment.Exit(47);
 			}
 
@@ -186,7 +186,7 @@ namespace UPwdBot {
 					await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
 				}
 				catch (Exception ex) {
-					await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.Message);
+					await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
 				}
 			}
 		}
