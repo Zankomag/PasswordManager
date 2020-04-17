@@ -52,6 +52,9 @@ namespace UPwdBot {
 			messageCommands.Add("/add", addAccountCommand);
 			messageCommands.Add("/cancel", new CancelCommand());
 			messageCommands.Add("/generator", setUpPasswordGeneratorCommand);
+			messageCommands.Add("/adduser", new AddUserCommand());
+			messageCommands.Add("/removeuser", new RemoveUserCommand());
+			messageCommands.Add("/userlist", new UserListCommand());
 			//messageCommands.Add("/delete", new DeleteAllMessagesCommand()); //EXPERIMENTAL
 
 			callBackCommands.Add(CallbackCommandCode.SelectLanguage, selectLanguageCommand);
@@ -87,11 +90,22 @@ namespace UPwdBot {
 					//User must choose language before be added to db and using any command
 					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
 					if (user == null) {
-						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
-							user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
+						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
+						if (message.From.Id == UPwdBot.Bot.Instance.AdminId.Identifier)
+						{
+							if (Localization.ContainsLanguage(message.From.LanguageCode))
+							{
+								user = PasswordManager.AddUser(message.From.Id, message.From.LanguageCode);
+							}
+							else
+							{
+								await selectLanguageCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
+								return;
+							}
 						}
-						else {
-							await selectLanguageCommand.ExecuteAsync(message, new User { Lang = Localization.defaultLanguage });
+						else
+						{
+							await Bot.SendTextMessageAsync(message.From.Id, " 👌😉");
 							return;
 						}
 					}
@@ -127,6 +141,7 @@ namespace UPwdBot {
 
 
 		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
+			User logUser = null;
 			try {
 				User user;
 				using (IDbConnection conn = new SQLiteConnection(UPwdBot.Bot.Instance.connString)) {
@@ -135,26 +150,40 @@ namespace UPwdBot {
 						new { callbackQuery.From.Id });
 					if (user == null) {
 						//Add new user to db when he selected language for the first time
-						if (callbackQuery.Data[0] == 'L') {
-							await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
-							return;
-						}
-						else {
-							if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode)) {
-								user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
-							}
-							else {
-								await selectLanguageCommand.ExecuteAsync(
-									new Message() {
-										From = new Telegram.Bot.Types.User() {
-											Id = callbackQuery.From.Id
-										}
-									},
-									new User { Lang = Localization.defaultLanguage });
+						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
+						if (callbackQuery.From.Id == UPwdBot.Bot.Instance.AdminId.Identifier)
+						{
+							if (callbackQuery.Data[0] == 'L')
+							{
+								await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
 								return;
 							}
+							else
+							{
+								if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode))
+								{
+									user = PasswordManager.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
+								}
+								else
+								{
+									await selectLanguageCommand.ExecuteAsync(
+										new Message()
+										{
+											From = new Telegram.Bot.Types.User()
+											{
+												Id = callbackQuery.From.Id
+											}
+										},
+										new User { Lang = Localization.defaultLanguage });
+									return;
+								}
+							}
+						} else
+						{
+							return;
 						}
 					}
+					logUser = user;
 				}
 
 					ICallBackQueryCommand command;
@@ -168,7 +197,7 @@ namespace UPwdBot {
 			}
 			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
 			catch (Exception ex) {
-				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
+				await Bot.SendTextMessageAsync(UPwdBot.Bot.Instance.AdminId, "EXCEPTION: " + ex.ToString() + "\n\nUSER: " + (logUser==null ? "null" : (logUser.Id.ToString() + "\n\n  [user](tg://user?id=" + logUser.Id + ")")), ParseMode.Markdown);
 				Environment.Exit(47);
 			}
 

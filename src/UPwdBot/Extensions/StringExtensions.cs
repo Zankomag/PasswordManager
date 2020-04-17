@@ -21,6 +21,12 @@ namespace UPwdBot.Extensions {
 			return param ? "1" : "0";
 		}
 
+		/// <summary>
+		/// This function retunrs reverse bool because it will be handled as new setting
+		/// which must be opposite to last setting
+		/// </summary>
+		/// <param name="param"></param>
+		/// <returns></returns>
 		public static string ToReverseZeroOneString(this bool param) {
 			return param ? "0" : "1";
 		}

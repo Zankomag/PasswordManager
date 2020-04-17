@@ -42,17 +42,43 @@ namespace UPwdBot.Commands {
 		}
 
 		async Task SendGeneratorSettings(Types.User user, Message message) {
-			string messageText = GetMessageText(ref user);
+			string messageText = GetMessageText(ref user, message.Text);
 
 			InlineKeyboardMarkup keyboard = GetGeneratorSettingsKeyboard(user);
 
 			await Bot.Instance.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 		}
 
-		string GetMessageText(ref Types.User user) {
-			string password;
+		string GetMessageText(ref Types.User user, string messageText) {
+			string password = null;
 			try {
+				string oldPassword = messageText.Split('\n').Last();
 				password = user.GenPattern.GeneratePasswordByPattern();
+				if (oldPassword == password)
+				{
+					int attempts = 4;
+					while (attempts > 0)
+					{
+						attempts--;
+						password = user.GenPattern.GeneratePasswordByPattern();
+						
+						Task.Delay(300).Wait();
+						if (oldPassword != password)
+						{
+							break;
+						}
+						
+					}
+					if (oldPassword == password)
+					{
+						PasswordManager.SetUserPasswordPattern(user, Password.defaultPasswordGeneratorPattern);
+						password = user.GenPattern.GeneratePasswordByPattern();
+						if(oldPassword != password)
+						{
+							password = System.DateTime.UtcNow.Ticks.ToString();
+						}
+					}
+				}
 			}
 			catch (ArgumentException) {
 				PasswordManager.SetUserPasswordPattern(user);
@@ -60,7 +86,7 @@ namespace UPwdBot.Commands {
 				user.GenPattern = Password.defaultPasswordGeneratorPattern;
 			}
 			return "🛠 " + string.Format(Localization.GetMessage("SetUpPassword", user.Lang),
-				"\n\n`" + Password.GeneratePasswordByPattern(user.GenPattern) + "`");
+				"\n\n`" + password + "`");
 		}
 
 		InlineKeyboardMarkup GetGeneratorSettingsKeyboard(Types.User user) {
@@ -198,7 +224,8 @@ namespace UPwdBot.Commands {
 
 			user.GenPattern = sb.ToString() + user.GenPattern.Substring(6);
 			PasswordManager.SetUserPasswordPattern(user, user.GenPattern);
-			string messageText = GetMessageText(ref user);
+			string messageText = GetMessageText(ref user, callbackQuery.Message.Text);
+			
 			var keyboard = GetGeneratorSettingsKeyboard(user);
 			await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 				callbackQuery.Message.MessageId, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
