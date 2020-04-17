@@ -18,7 +18,7 @@ Next you need to configure Nginx as a reverse proxy to forward requests to ASP.N
 
 ```
 location /api/bots/BOT_TOKEN {
-        proxy_pass         https://localhost:TARGET_PORT;
+        proxy_pass         http://localhost:TARGET_PORT;
         proxy_http_version 1.1;
         proxy_set_header   Upgrade $http_upgrade;
         proxy_set_header   Connection keep-alive;
