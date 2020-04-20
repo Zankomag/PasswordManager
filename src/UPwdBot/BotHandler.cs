@@ -105,7 +105,6 @@ namespace UPwdBot {
 						}
 						else
 						{
-							await Bot.SendTextMessageAsync(message.From.Id, " 👌😉");
 							return;
 						}
 					}
