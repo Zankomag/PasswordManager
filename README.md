@@ -53,14 +53,16 @@ Description=Password Manager Bot
 [Service] 
 WorkingDirectory=/path/to/publish/output/folder 
 ExecStart=/usr/bin/dotnet /path/to/publish/output/folder/UPwdBot.dll 
-Restart=no #change to always if you want
-RestartSec=10 # Restart service after 10 seconds if dotnet service crashes 
+Restart=no
+RestartSec=10
 SyslogIdentifier=offershare-web-app
 Environment=ASPNETCORE_ENVIRONMENT=Production 
 
 [Install] 
 WantedBy=multi-user.target
 ```
+Restart field can be set to "always" instead of "no" if you wish app to be restarted after crash
+
 After service configured type:
 ```
 sudo systemctl PasswordManagerBot.service
