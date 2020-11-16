@@ -63,12 +63,22 @@ WantedBy=multi-user.target
 ```
 Restart field can be set to "always" instead of "no" if you wish app to be restarted after crash
 
-After service configured type:
+To make daemon service start on server boot:
 ```
-sudo systemctl PasswordManagerBot.service
+sudo systemctl enable PasswordManagerBot
+```
+
+You can check if it's enabled via:
+```
+sudo service PasswordManagerBot status
+```
+It must say "Loaded: loaded (/etc/systemd/system/PasswordManagerBot.service; enabled;"
+
+After service configured:
+```
 sudo service PasswordManagerBot start
 ```
-To stop bot type:
+To stop bot:
 ```
 sudo service PasswordManagerBot stop
 ```
