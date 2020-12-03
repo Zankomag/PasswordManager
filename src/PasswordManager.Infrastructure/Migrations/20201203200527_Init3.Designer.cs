@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PasswordManager.Infrastructure.Data;
 
 namespace PasswordManager.Infrastructure.Migrations
 {
     [DbContext(typeof(PasswordManagerDbContext))]
-    partial class PasswordManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201203200527_Init3")]
+    partial class Init3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,29 +26,24 @@ namespace PasswordManager.Infrastructure.Migrations
 
                     b.Property<string>("AccountName")
                         .IsRequired()
-                        .HasMaxLength(60)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Encrypted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Link")
-                        .HasMaxLength(70)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Login")
-                        .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<TimeSpan>("OutdatedTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
-                        .HasMaxLength(2048)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("PasswordUpdatedDate")
@@ -75,7 +72,6 @@ namespace PasswordManager.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("KeyHint")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Lang")
