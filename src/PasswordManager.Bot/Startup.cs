@@ -20,7 +20,7 @@ namespace PasswordManager.Bot {
 
 			//TODO
 			//REPLACE WITH Configuration.GetConnectionString
-			string connection = "Data Source = DB\\pwd.db"; //Configuration.GetConnectionString("PasswordManagerConnectionString");
+			string connection = Bot.Instance.connString; //Configuration.GetConnectionString("PasswordManagerConnectionString");
 			services.AddDbContext<PasswordManagerDbContext>(options => {
 				options.UseSqlite(connection);
 				//Adding "Microsoft.EntityFrameworkCore": "Information" 

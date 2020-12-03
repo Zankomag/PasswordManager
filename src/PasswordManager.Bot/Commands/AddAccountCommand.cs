@@ -42,6 +42,7 @@ namespace PasswordManager.Bot.Commands {
 					}
 					//TODO
 					//ADD SKIPLINK CKECK
+					//CREATE SPECIAL MODEL FOR ADDING NEW ACCOUNT WITH SKIP LINK FIELD
 				} else if(/*!account.SkipLink &&*/ account.Link == null){
 					if (!await PasswordManagerHandler.IsLengthExceededAsync(message.Text.Length,MaxAccountDataLength.Link, message.From.Id, user.Lang)) {
 						account.Link = data.BuildLink();
