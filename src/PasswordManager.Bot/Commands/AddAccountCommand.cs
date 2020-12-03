@@ -40,7 +40,9 @@ namespace PasswordManager.Bot.Commands {
 						PasswordManagerHandler.SetUserAction(user, UserAction.Assemble);
 						await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 					}
-				} else if(!account.SkipLink && account.Link == null){
+					//TODO
+					//ADD SKIPLINK CKECK
+				} else if(/*!account.SkipLink &&*/ account.Link == null){
 					if (!await PasswordManagerHandler.IsLengthExceededAsync(message.Text.Length,MaxAccountDataLength.Link, message.From.Id, user.Lang)) {
 						account.Link = data.BuildLink();
 						PasswordManagerHandler.AssemblingAccounts[message.From.Id] = account;
@@ -157,7 +159,9 @@ namespace PasswordManager.Bot.Commands {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
 					"📝 " + Localization.GetMessage("AddAccount", user.Lang));
 			}
-			else if (!account.SkipLink && account.Link == null) {
+			//TODO
+			//ADD SKIPLINK CKECK
+			else if (/*!account.SkipLink &&*/ account.Link == null) {
 				await AddLinkPrompt(chatId, account.AccountName, user.Lang);
 			}
 			else if (account.Login == null) {

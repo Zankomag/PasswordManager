@@ -11,8 +11,12 @@ namespace PasswordManager.Core.Entities {
 		public string Login { get; set; }
 		public string Password { get; set; }
 		public string Note { get; set; }
+		/// <summary>
+		/// Indicates whether password is encrypted
+		/// </summary>
+		[Required] public bool Encrypted { get; set; }
 
 		
-		public User User { get; set; }
+		public virtual User User { get; set; }
 	}
 }

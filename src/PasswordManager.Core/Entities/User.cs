@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace PasswordManager.Core.Entities {
 	public class User {
@@ -20,6 +21,14 @@ namespace PasswordManager.Core.Entities {
 		/// </summary>
 		[Required] public string GenPattern { get; set; }
 		[Required] public UserAction Action { get; set; }
+		/// <summary>
+		/// Hint for encryption key ib case user don't remember it
+		/// User manually adds his hint
+		/// </summary>
+		public string KeyHint { get; set; }
+
+
+		public virtual List<Account> Accounts { get; set; }
 
 	}
 }

@@ -10,7 +10,9 @@ namespace PasswordManager.Bot.Commands {
 	public class SkipLinkCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
 			if (PasswordManagerHandler.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
-				account.SkipLink = true;
+				//TODO
+				//ADD SKIPLINK CKECK
+				//account.SkipLink = true;
 				if (account.Link != null)
 					account.Link = null;
 				PasswordManagerHandler.AssemblingAccounts[user.Id] = account;

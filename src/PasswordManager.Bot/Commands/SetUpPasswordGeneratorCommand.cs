@@ -58,7 +58,7 @@ namespace PasswordManager.Bot.Commands {
 				string oldPassword = messageText.Split('\n').Last();
 				password = user.GenPattern.GeneratePasswordByPattern();
 				//TODO:
-				//WTF?????
+				//WTF????? DELETE ALL THIS SHIT
 				if (oldPassword == password)
 				{
 					//TODO:

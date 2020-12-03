@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PasswordManager.Infrastructure.Data;
 
 namespace PasswordManager.Bot {
+
 	public class Startup {
 		public Startup(IConfiguration configuration) {
 			Configuration = configuration;
@@ -13,6 +17,17 @@ namespace PasswordManager.Bot {
 		public IConfiguration Configuration { get; }
 
 		public void ConfigureServices(IServiceCollection services) {
+
+			//TODO
+			//REPLACE WITH Configuration.GetConnectionString
+			string connection = "Data Source = DB\\pwd.db"; //Configuration.GetConnectionString("PasswordManagerConnectionString");
+			services.AddDbContext<PasswordManagerDbContext>(options => {
+				options.UseSqlite(connection);
+				//Adding "Microsoft.EntityFrameworkCore": "Information" 
+				//to Serilog MinimumLevel in config  allows to get more convenient output
+				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
+			});
+
 
 			services.AddControllers()
 				.AddNewtonsoftJson(options => {
