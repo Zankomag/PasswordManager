@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PasswordManager.Infrastructure.Data;
 
 namespace PasswordManager.Infrastructure.Migrations
 {
     [DbContext(typeof(PasswordManagerDbContext))]
-    partial class PasswordManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201203202836_Init5")]
+    partial class Init5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

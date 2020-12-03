@@ -29,7 +29,7 @@ namespace PasswordManager.Core.Entities {
 		[StringLength(128)] public string KeyHint { get; set; }
 		/// <summary>
 		/// Time period after which user get notification that he needs to update his password
-		/// If equals to null than outdated checking is disabled
+		/// If equals to 0 than outdated checking is disabled
 		/// Can be overrided individually for each account
 		/// Default is 6 months
 		/// </summary>
