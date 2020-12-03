@@ -1,0 +1,26 @@
+﻿{
+	"iisSettings": {
+		"windowsAuthentication": false,
+		"anonymousAuthentication": true,
+		"iisExpress": {
+			"applicationUrl": "http://localhost:7720/",
+			"sslPort": 0
+		}
+	},
+	"profiles": {
+		"IIS Express": {
+			"commandName": "IISExpress",
+			"launchBrowser": true,
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Production"
+			}
+		},
+		"PasswordManager": {
+			"commandName": "Project",
+			"applicationUrl": "http://localhost:7720/",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		}
+	}
+}

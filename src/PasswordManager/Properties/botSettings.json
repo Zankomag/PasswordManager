@@ -1,6 +1,0 @@
-{
-	"BotToken": "TOKEN",
-	"AdminId": 123456789,
-	"ConnectionString": "Data Source=U:..\\DB\\pwd.db",
-	"Domain": "example.com"
-}
