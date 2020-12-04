@@ -1,12 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Modes;
+using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Crypto.Parameters;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PasswordManager.Application {
+namespace PasswordManager.Application.Encryption {
 
-	//Source: https://stackoverflow.com/a/10177020/11101834
+	//Source1: https://github.com/2Toad/Rijndael256/issues/13#issuecomment-637724412
+	//Source2 (doesn't work with 256 blocks): https://stackoverflow.com/a/10177020/11101834
 	public static class Encryptor {
 
 		/// <summary>
@@ -26,7 +30,7 @@ namespace PasswordManager.Application {
 		/// <param name="text"></param>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public static string Encrypt(string text, string key) {
+		public static string Encrypt(this string text, string key) {
 			// Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
 			// so that the same Salt and IV values can be used when decrypting.  
 			var saltStringBytes = Generate256BitsOfRandomEntropy();
@@ -34,33 +38,26 @@ namespace PasswordManager.Application {
 			var plainTextBytes = Encoding.UTF8.GetBytes(text);
 			using (var password = new Rfc2898DeriveBytes(key, saltStringBytes, derivationIterations)) {
 				var keyBytes = password.GetBytes(keySize / 8);
-				using (var symmetricKey = new RijndaelManaged()) {
-					symmetricKey.BlockSize = 256;
-					symmetricKey.Mode = CipherMode.CBC;
-					symmetricKey.Padding = PaddingMode.PKCS7;
-					using (var encryptor = symmetricKey.CreateEncryptor(keyBytes, ivStringBytes)) {
-						using (var memoryStream = new MemoryStream()) {
-							using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write)) {
-								cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-								cryptoStream.FlushFinalBlock();
-								// Create the final bytes as a concatenation of the random salt bytes, the random iv bytes and the cipher bytes.
-								var cipherTextBytes = saltStringBytes;
-								cipherTextBytes = cipherTextBytes.Concat(ivStringBytes).ToArray();
-								cipherTextBytes = cipherTextBytes.Concat(memoryStream.ToArray()).ToArray();
-								memoryStream.Close();
-								cryptoStream.Close();
-								return Convert.ToBase64String(cipherTextBytes);
-							}
-						}
-					}
-				}
+				var engine = new RijndaelEngine(256);
+				var blockCipher = new CbcBlockCipher(engine);
+				var cipher = new PaddedBufferedBlockCipher(blockCipher, new Pkcs7Padding());
+				var keyParam = new KeyParameter(keyBytes);
+				var keyParamWithIV = new ParametersWithIV(keyParam, ivStringBytes, 0, 32);
+
+				cipher.Init(true, keyParamWithIV);
+				var comparisonBytes = new byte[cipher.GetOutputSize(plainTextBytes.Length)];
+				var length = cipher.ProcessBytes(plainTextBytes, comparisonBytes, 0);
+
+				cipher.DoFinal(comparisonBytes, length);
+				//                return Convert.ToBase64String(comparisonBytes);
+				return Convert.ToBase64String(saltStringBytes.Concat(ivStringBytes).Concat(comparisonBytes).ToArray());
 			}
 		}
 
 		/// <param name="encryptedText">Encrypted string</param>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		public static string Decrypt(string encryptedText, string key) {
+		public static string Decrypt(this string encryptedText, string key) {
 			// Get the complete stream of bytes that represent:
 			// [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
 			var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(encryptedText);
@@ -73,22 +70,28 @@ namespace PasswordManager.Application {
 
 			using (var password = new Rfc2898DeriveBytes(key, saltStringBytes, derivationIterations)) {
 				var keyBytes = password.GetBytes(keySize / 8);
-				using (var symmetricKey = new RijndaelManaged()) {
-					symmetricKey.BlockSize = 256;
-					symmetricKey.Mode = CipherMode.CBC;
-					symmetricKey.Padding = PaddingMode.PKCS7;
-					using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes)) {
-						using (var memoryStream = new MemoryStream(cipherTextBytes)) {
-							using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read)) {
-								var plainTextBytes = new byte[cipherTextBytes.Length];
-								var decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-								memoryStream.Close();
-								cryptoStream.Close();
-								return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
-							}
-						}
-					}
-				}
+				var engine = new RijndaelEngine(256);
+				var blockCipher = new CbcBlockCipher(engine);
+				var cipher = new PaddedBufferedBlockCipher(blockCipher, new Pkcs7Padding());
+				var keyParam = new KeyParameter(keyBytes);
+				var keyParamWithIV = new ParametersWithIV(keyParam, ivStringBytes, 0, 32);
+
+				cipher.Init(false, keyParamWithIV);
+				var comparisonBytes = new byte[cipher.GetOutputSize(cipherTextBytes.Length)];
+				var length = cipher.ProcessBytes(cipherTextBytes, comparisonBytes, 0);
+
+				cipher.DoFinal(comparisonBytes, length);
+				//return Convert.ToBase64String(saltStringBytes.Concat(ivStringBytes).Concat(comparisonBytes).ToArray());
+
+				var nullIndex = comparisonBytes.Length - 1;
+				while (comparisonBytes[nullIndex] == (byte)0)
+					nullIndex--;
+				comparisonBytes = comparisonBytes.Take(nullIndex + 1).ToArray();
+
+
+				var result = Encoding.UTF8.GetString(comparisonBytes, 0, comparisonBytes.Length);
+
+				return result;
 			}
 		}
 
@@ -100,8 +103,6 @@ namespace PasswordManager.Application {
 			}
 			return randomBytes;
 		}
-
-	
 
 	}
 }
