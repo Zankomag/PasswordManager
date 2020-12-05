@@ -41,7 +41,7 @@ namespace PasswordManager.Bot {
 		}
 
 		public bool IsTokenCorrect(string token) {
-			return token != null ? token == this.token : false;
+			return token != null && token == this.token;
 		}
 
 	}

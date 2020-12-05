@@ -1,8 +1,6 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -38,7 +36,7 @@ namespace PasswordManager.Bot {
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accountCount = conn.ExecuteScalar<int>(
-						"select count(*) from Account where UserId = @UserId and AccountName like @AccountName",
+						"select count(*) from Accounts where UserId = @UserId and AccountName like @AccountName",
 						new {
 							UserId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
@@ -47,7 +45,7 @@ namespace PasswordManager.Bot {
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accountCount = conn.ExecuteScalar<int>(
-						"select count(*) from Account where UserId = @UserId",
+						"select count(*) from Accounts where UserId = @UserId",
 						new {UserId});
 				}
 			}
@@ -87,7 +85,7 @@ namespace PasswordManager.Bot {
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName",
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
 						new {
 							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
@@ -96,7 +94,7 @@ namespace PasswordManager.Bot {
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @userId",
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
 						new {userId});
 				}
 			}
@@ -130,7 +128,7 @@ namespace PasswordManager.Bot {
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName",
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
 						new {
 							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
@@ -139,7 +137,7 @@ namespace PasswordManager.Bot {
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @userId",
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
 						new {userId})
 						.ToList();
 				}
@@ -160,7 +158,7 @@ namespace PasswordManager.Bot {
 			if (accountName != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where UserId = @userId and AccountName like @AccountName " +
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
 							"limit @maxAccsByPage offset @Offset",
 						new {
 							userId,
@@ -173,7 +171,7 @@ namespace PasswordManager.Bot {
 			} else {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 					accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Account where userId = @UserId " +
+						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
 							"limit @maxAccsByPage offset @Offset",
 						new {
 							userId,
@@ -273,7 +271,7 @@ namespace PasswordManager.Bot {
 			Account account;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
-					"select Id, AccountName, Link, Login from Account where Id = @accountId and UserId = @userId",
+					"select Id, AccountName, Link, Login from Accounts where Id = @accountId and UserId = @userId",
 					new {
 						accountId,
 						userId
@@ -285,7 +283,7 @@ namespace PasswordManager.Bot {
 		public static void SetUserPasswordPattern(User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
 			if (user != null) {
 				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-					conn.Execute("update User set GenPattern = @passwordPattern where Id = @Id",
+					conn.Execute("update Users set GenPattern = @passwordPattern where Id = @Id",
 						new { passwordPattern, user.Id });
 				}
 			}
@@ -294,7 +292,7 @@ namespace PasswordManager.Bot {
 		public static void SetUserLanguage(User user, string langCode) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if(user != null) {
-					conn.Execute("update User set Lang = @langCode where Id = @Id",
+					conn.Execute("update Users set Lang = @langCode where Id = @Id",
 						new { langCode, user.Id });
 				}
 			}
@@ -311,7 +309,7 @@ namespace PasswordManager.Bot {
 
 		public static void SetUserAction(int userId, UserAction action) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				conn.Execute("update User set Action = @action where Id = @userId",
+				conn.Execute("update Users set Action = @action where Id = @userId",
 					new { action, userId });
 			}
 		}
@@ -319,7 +317,7 @@ namespace PasswordManager.Bot {
 		/// <returns>User that has been added</returns>
 		public static User AddUser(int userId, string langCode) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				conn.Execute("Insert into User (Id, Lang) values (@userId, @langCode)",
+				conn.Execute("Insert into Users (Id, Lang) values (@userId, @langCode)",
 					new { userId, langCode });
 			}
 			return new User() {
@@ -333,7 +331,7 @@ namespace PasswordManager.Bot {
 		public static void DeleteAccountLink(User user, string accountId) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				if (user != null) {
-					conn.Execute("update Account set Link = NULL where Id = @accountId and UserId = @Id",
+					conn.Execute("update Accounts set Link = NULL where Id = @accountId and UserId = @Id",
 						new { accountId, user.Id });
 				}
 			}

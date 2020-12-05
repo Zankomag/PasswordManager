@@ -1,7 +1,5 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Data;
-using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -13,6 +11,7 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Application.Encryption;
 
 namespace PasswordManager.Bot.Commands {
 	public class ShowPasswordCommand : ICallBackQueryCommand {
@@ -22,20 +21,43 @@ namespace PasswordManager.Bot.Commands {
 			Account account;
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
-					"select Password from Account where Id = @Id and UserId = @UserId",
+					"select Password, Encrypted from Accounts where Id = @Id and UserId = @UserId",
 					new {
 						UserId = callbackQuery.From.Id,
 						Id = accountId});
 			}
 			if(account!= null) {
 				//TODO
-				//ADD DECRYPTION BY KEY
-				await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
-					"`" + account.Password + "`",
-					replyMarkup: new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							CallbackCommandCode.DeleteMessage.ToStringCode())),
-					parseMode: ParseMode.Markdown);
+				//If user does not have hint - don't show "show hint" button, but remember that user failed his key
+				//after he enters right key - send invintation to create hint
+				//
+
+				//TODO
+				//ADD **GOOD CODED** DECRYPTION BY KEY (this is temporary messed working code)
+				if(!account.Encrypted)
+					await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
+						"`" + account.Password + "`",
+						replyMarkup: new InlineKeyboardMarkup(
+							InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+								CallbackCommandCode.DeleteMessage.ToStringCode())),
+						parseMode: ParseMode.Markdown);
+				else {
+					try {
+						string decryptedPassword = account.Password.Decrypt("supa dupa secret ke");
+					} catch {
+						await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
+						"`" + account.Password + "`",
+						replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
+							new InlineKeyboardButton[]{
+								InlineKeyboardButton.WithCallbackData("🔁 " + Localization.GetMessage("TryAgain", user.Lang),
+									CallbackCommandCode.EnterEncryptionyonKey.ToStringCode()) },
+							new InlineKeyboardButton[] {
+								InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
+										CallbackCommandCode.ShowEncryptionKeyHint.ToStringCode()) }
+						}),
+						parseMode: ParseMode.Markdown);
+					}
+				}
 			}
 		}
 

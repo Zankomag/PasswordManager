@@ -1,8 +1,6 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -17,7 +15,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 namespace PasswordManager.Bot {
 	public class BotHandler {
 		public static BotHandler Instance { get; private set; }
-		public static TelegramBotClient Bot { get => PasswordManager.Bot.Bot.Instance.Client; }
+		public static TelegramBotClient Bot => PasswordManager.Bot.Bot.Instance.Client;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
 		private static Dictionary<CallbackCommandCode, ICallBackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallBackQueryCommand>();
 
@@ -90,7 +88,7 @@ namespace PasswordManager.Bot {
 				User user;
 				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.Bot.Instance.connString)) {
 					//User must choose language before be added to db and using any command
-					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id", new { message.From.Id });
+					user = conn.QuerySingleOrDefault<User>("SELECT * FROM Users WHERE Id = @Id", new { message.From.Id });
 					if (user == null) {
 						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
 						if (message.From.Id == PasswordManager.Bot.Bot.Instance.AdminId.Identifier)

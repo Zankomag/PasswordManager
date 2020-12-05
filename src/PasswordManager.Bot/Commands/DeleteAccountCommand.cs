@@ -1,7 +1,5 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Data;
-using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -38,7 +36,7 @@ namespace PasswordManager.Bot.Commands {
 			} else {
 				if (accountId != 0) {
 					using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-						conn.Execute("delete from Account where Id = @Id and UserId = @UserId",
+						conn.Execute("delete from Accounts where Id = @Id and UserId = @UserId",
 							new {
 								Id = accountId,
 								UserId = user.Id});

@@ -4,8 +4,6 @@ using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using System;
 using System.Data;
-using System.Data.SQLite;
-using Dapper;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Commands.Abstractions;
 
@@ -26,10 +24,8 @@ namespace PasswordManager.Bot.Commands {
 
 					using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString))
 					{
-						conn.Execute("delete from User where Id = @userId",
+						conn.Execute("delete from Users where Id = @userId",
 							new { userId});
-						conn.Execute("delete from Account where UserId = @userId",
-							new { userId });
 					}
 					await Bot.Instance.Client.SendTextMessageAsync(Bot.Instance.AdminId, "User and their data have been removed.");
 				}

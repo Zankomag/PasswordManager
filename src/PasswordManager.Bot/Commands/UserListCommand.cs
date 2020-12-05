@@ -4,8 +4,6 @@ using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using System;
 using System.Data;
-using System.Data.SQLite;
-using Dapper;
 using System.Collections.Generic;
 using System.Linq;
 using PasswordManager.Core.Entities;
@@ -22,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 					List<User> users = null;
 					using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString))
 					{
-						users = conn.Query<User>("select Id from User").ToList();
+						users = conn.Query<User>("select Id from Users").ToList();
 					}
 					string response = string.Empty;
 					for(int i = 0; i < users.Count; i++)

@@ -1,7 +1,5 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Data;
-using System.Data.SQLite;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -125,7 +123,7 @@ namespace PasswordManager.Bot.Commands {
 
 		private static async Task SaveToDBAsync(Account account, User user, int messageToEditId = 0) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
-				account.Id = (long)conn.ExecuteScalar("Insert into Account (UserId, AccountName, Link, Login, Password) " +
+				account.Id = (long)conn.ExecuteScalar("Insert into Accounts (UserId, AccountName, Link, Login, Password) " +
 					"values (@UserId, @AccountName, @Link, @Login, @Password);" +
 					"select last_insert_rowid()",
 					account);

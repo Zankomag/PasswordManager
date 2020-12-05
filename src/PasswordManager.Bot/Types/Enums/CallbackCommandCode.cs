@@ -11,6 +11,8 @@
 		 DeleteMessage = 'D',
 		 UpdateAccount = 'U',
 		 DeleteAccount = 'X',
-		 SetUpPasswordGenerator = 'T'
+		 SetUpPasswordGenerator = 'T',
+		 EnterEncryptionyonKey = 'E',
+		 ShowEncryptionKeyHint = 'H'
 	}
 }
