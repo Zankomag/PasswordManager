@@ -8,7 +8,7 @@
 	"CantWithoutNewAcc": "Add a new account first.",
 	"NoAccName": "You have to choose account name first.",
 	"AddLogin": "Nice. Choose a login for your account.\n",
-	"AddPassword": "Now you should send or generate a password for your account.\nCreate strong password with upper and lower case, numbers and special characters, you do NOT need to remember this password.\nUse {0} to set up password generator.",
+	"AddPassword": "Now you should send or generate a password for your account.\nUse a strong password with upper and lower case, numbers and special characters, you do NOT need to remember this password.\nUse {0} to set up password generator.",
 	"Generate": "Generate",
 	"Accept": "Accept",
 	"TryAgain": "Try again",
