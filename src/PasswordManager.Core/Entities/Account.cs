@@ -10,8 +10,8 @@ namespace PasswordManager.Core.Entities {
 		[Required] [StringLength(60)] public string AccountName { get; set; }
 		[StringLength(70)] public string Link { get; set; }
 		[Required] [StringLength(40)] public string Login { get; set; }
-		[Required] [StringLength(2048)] public string Password { get; set; }
-		[StringLength(512)] public string Note { get; set; }
+		[Required] [StringLength(8096)] public string Password { get; set; }
+		[StringLength(1024)] public string Note { get; set; }
 		/// <summary>
 		/// Indicates whether password is encrypted
 		/// </summary>

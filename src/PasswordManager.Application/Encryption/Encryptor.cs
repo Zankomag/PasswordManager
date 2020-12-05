@@ -22,15 +22,20 @@ namespace PasswordManager.Application.Encryption {
 		/// <summary>
 		/// This constant determines the number of iterations for the password bytes generation function.
 		/// </summary>
-		private const int derivationIterations = 1000;
+		private const int derivationIterations = 40000;
 
 		/// <summary>
 		/// Returns AES encrypted string
 		/// </summary>
 		/// <param name="text"></param>
 		/// <param name="key"></param>
-		/// <returns></returns>
+		/// <returns>Encrypted string</returns>
 		public static string Encrypt(this string text, string key) {
+			if (string.IsNullOrEmpty(text))
+				throw new ArgumentException("string cannot be null or empty", nameof(text));
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("string cannot be null or empty", nameof(key));
+
 			// Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
 			// so that the same Salt and IV values can be used when decrypting.  
 			var saltStringBytes = Generate256BitsOfRandomEntropy();
@@ -56,8 +61,13 @@ namespace PasswordManager.Application.Encryption {
 
 		/// <param name="encryptedText">Encrypted string</param>
 		/// <param name="key"></param>
-		/// <returns></returns>
+		/// <returns>Decrypted string</returns>
 		public static string Decrypt(this string encryptedText, string key) {
+			if (string.IsNullOrEmpty(encryptedText))
+				throw new ArgumentException("string cannot be null or empty", nameof(encryptedText));
+			if (string.IsNullOrEmpty(key))
+				throw new ArgumentException("string cannot be null or empty", nameof(key));
+
 			// Get the complete stream of bytes that represent:
 			// [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
 			var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(encryptedText);
