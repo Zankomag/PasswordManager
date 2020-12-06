@@ -10,7 +10,6 @@ namespace PasswordManager.Bot {
 
 		public static IWebHostBuilder CreateWebHostBuilder() =>
 			WebHost.CreateDefaultBuilder()
-				.UseStartup<Startup>()
-				.UseUrls("http://localhost:7720/");
+				.UseStartup<Startup>();
 	}
 }
