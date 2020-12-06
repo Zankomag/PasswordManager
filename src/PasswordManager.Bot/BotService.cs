@@ -22,9 +22,9 @@ namespace PasswordManager.Bot {
 		public BotService(IOptions<BotSettings> botSettingsConfig) {
 			BotSettings botSettings = botSettingsConfig.Value;
 
-			token = botSettings.BotToken;
+			token = botSettings.Token;
 			try {
-				Client = new TelegramBotClient(botSettings.BotToken);
+				Client = new TelegramBotClient(botSettings.Token);
 			} catch (ArgumentException exception) {
 				//TODO
 				//Log exception
