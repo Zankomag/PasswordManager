@@ -20,9 +20,15 @@ namespace PasswordManager.Core.Repositories {
 
 		Task AddAsync(TEntity entity);
 
-		Task UpdateAsync(TEntity entity);
+		///<summary>This method does not update navigation properties of <paramref name="entity"/>.
+		///Override it for this purpose.</summary>
+		/// <returns>False if record not found</returns>
+		bool Update(TEntity entity);
 
-		Task DeleteAsync(TEntity entity);
+		///<summary>This method does not delete navigation properties of <paramref name="entity"/>that are not have cascade deletion. 
+		///Override it for this purpose.</summary>
+		/// <returns>False if record not found</returns>
+		bool Delete(TEntity entity);
 
 
 		bool HasDataChanged { get; }
