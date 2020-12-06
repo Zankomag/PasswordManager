@@ -12,11 +12,11 @@ namespace PasswordManager.Bot.Commands {
 	public class AcceptPasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
 			if (user.Action == UserAction.Assemble) {
-				if (PasswordManagerHandler.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
+				if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 					//TODO:
 					//ENCRYPT PASSWORD
 					account.Password = callbackQuery.Message.Text;
-					PasswordManagerHandler.AssemblingAccounts[user.Id] = account;
+					PasswordManagerService.AssemblingAccounts[user.Id] = account;
 					await AddAccountCommand.UpdateCallBackMessageAsync(
 						callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
@@ -27,16 +27,16 @@ namespace PasswordManager.Bot.Commands {
 				}
 				return;
 			}
-			else if(PasswordManagerHandler.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)){
-				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
-				await PasswordManagerHandler.UpdateAccountDataAsync(callbackQuery.Message.Text, PasswordManagerHandler.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId, callbackQuery.From.Id, user.Lang);
+			else if(PasswordManagerService.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)){
+				await BotHandlerService.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
+				await PasswordManagerService.UpdateAccountDataAsync(callbackQuery.Message.Text, PasswordManagerService.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId, callbackQuery.From.Id, user.Lang);
 				return;
 			}
 			await AnswerWithWarning(callbackQuery.Id, user.Lang);
 		}
 
 		private async Task AnswerWithWarning(string callbackQueryId, string langCode) {
-			await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQueryId,
+			await BotHandlerService.Bot.AnswerCallbackQueryAsync(callbackQueryId,
 						text: Localization.GetMessage("CantWithoutNewAcc", langCode), showAlert: true);
 		}
 	}

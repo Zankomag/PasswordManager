@@ -7,7 +7,7 @@ namespace PasswordManager.Bot.Commands {
 	public class ShowAllCommand : IMessageCommand {
 
 		public async Task ExecuteAsync(Message message, User user) {
-			await PasswordManagerHandler.SearchAccounts(message.From.Id, user.Lang);
+			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang);
 		}
 
 	}

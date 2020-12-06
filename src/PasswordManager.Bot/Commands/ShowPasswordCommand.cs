@@ -16,10 +16,10 @@ using PasswordManager.Application.Encryption;
 namespace PasswordManager.Bot.Commands {
 	public class ShowPasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
-			await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));
 			Account account;
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
 					"select Password, Encrypted from Accounts where Id = @Id and UserId = @UserId",
 					new {
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Commands {
 				//TODO
 				//ADD **GOOD CODED** DECRYPTION BY KEY (this is temporary messed working code)
 				if(!account.Encrypted)
-					await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
+					await BotService.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
 						"`" + account.Password + "`",
 						replyMarkup: new InlineKeyboardMarkup(
 							InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
@@ -45,7 +45,7 @@ namespace PasswordManager.Bot.Commands {
 					try {
 						string decryptedPassword = account.Password.Decrypt("supa dupa secret ke");
 					} catch {
-						await Bot.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
+						await BotService.Instance.Client.SendTextMessageAsync(callbackQuery.From.Id,
 						"`" + account.Password + "`",
 						replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
 							new InlineKeyboardButton[]{

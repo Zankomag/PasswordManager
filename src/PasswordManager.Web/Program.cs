@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace PasswordManager.Bot {
 	public class Program {
 		public static void Main() {
-			Bot.Instance.ReportStart().Wait();
+			BotService.Instance.ReportStart().Wait();
 			CreateWebHostBuilder().Build().Run();
 		}
 

@@ -24,21 +24,21 @@ namespace PasswordManager.Bot.Commands {
 				int length;
 				try {
 					length = Convert.ToInt32(message.Text);
-					if(length < PasswordManagerHandler.MinPasswordLength || length > PasswordManagerHandler.MaxPasswordLength) {
-						await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
+					if(length < PasswordManagerService.MinPasswordLength || length > PasswordManagerService.MaxPasswordLength) {
+						await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
 							"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
-							PasswordManagerHandler.MinPasswordLength, PasswordManagerHandler.MaxPasswordLength));
+							PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
 						return;
 					}
 					user.GenPattern = user.GenPattern.Substring(0, 6) + length.ToString();
-					PasswordManagerHandler.SetUserPasswordPattern(user, user.GenPattern);
-					PasswordManagerHandler.SetUserAction(user, UserAction.Search);
+					PasswordManagerService.SetUserPasswordPattern(user, user.GenPattern);
+					PasswordManagerService.SetUserAction(user, UserAction.Search);
 					await SendGeneratorSettings(user, message);
 				}
 				catch(Exception) {
-					await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
+					await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
 						"⛓️ " + String.Format(Localization.GetMessage("WrongLength", user.Lang),
-						PasswordManagerHandler.MinPasswordLength, PasswordManagerHandler.MaxPasswordLength));
+						PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
 				}
 			}
 			
@@ -49,7 +49,7 @@ namespace PasswordManager.Bot.Commands {
 
 			InlineKeyboardMarkup keyboard = GetGeneratorSettingsKeyboard(user);
 
-			await Bot.Instance.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
+			await BotService.Instance.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 		}
 
 		string GetMessageText(ref User user, string messageText) {
@@ -76,7 +76,7 @@ namespace PasswordManager.Bot.Commands {
 					//WTF?????
 					if (oldPassword == password)
 					{
-						PasswordManagerHandler.SetUserPasswordPattern(user, Password.defaultPasswordGeneratorPattern);
+						PasswordManagerService.SetUserPasswordPattern(user, Password.defaultPasswordGeneratorPattern);
 						password = user.GenPattern.GeneratePasswordByPattern();
 						if(oldPassword != password)
 						{
@@ -86,7 +86,7 @@ namespace PasswordManager.Bot.Commands {
 				}
 			}
 			catch (ArgumentException) {
-				PasswordManagerHandler.SetUserPasswordPattern(user);
+				PasswordManagerService.SetUserPasswordPattern(user);
 				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
 				user.GenPattern = Password.defaultPasswordGeneratorPattern;
 			}
@@ -177,7 +177,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
-			await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
 			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length &&
 				(SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Generate &&
@@ -220,19 +220,19 @@ namespace PasswordManager.Bot.Commands {
 				break;
 
 				case SetUpPasswordCommandCode.Length:
-					await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+					await BotService.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 						"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
-						PasswordManagerHandler.MinPasswordLength, PasswordManagerHandler.MaxPasswordLength));
-					PasswordManagerHandler.SetUserAction(user, UserAction.UpdatePasswordLength);
+						PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
+					PasswordManagerService.SetUserAction(user, UserAction.UpdatePasswordLength);
 				return;
 			}
 
 			user.GenPattern = sb.ToString() + user.GenPattern.Substring(6);
-			PasswordManagerHandler.SetUserPasswordPattern(user, user.GenPattern);
+			PasswordManagerService.SetUserPasswordPattern(user, user.GenPattern);
 			string messageText = GetMessageText(ref user, callbackQuery.Message.Text);
 			
 			var keyboard = GetGeneratorSettingsKeyboard(user);
-			await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+			await BotService.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 				callbackQuery.Message.MessageId, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 
 		}

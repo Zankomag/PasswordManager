@@ -10,14 +10,14 @@ namespace PasswordManager.Bot.Commands {
 	public class CancelCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, User user) {
 			if (user.Action != UserAction.Search) {
-				PasswordManagerHandler.AssemblingAccounts.Remove(message.From.Id);
+				PasswordManagerService.AssemblingAccounts.Remove(message.From.Id);
 
-				PasswordManagerHandler.SetUserAction(user.Id, UserAction.Search);
-				await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
+				PasswordManagerService.SetUserAction(user.Id, UserAction.Search);
+				await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 			else {
-				await Bot.Instance.Client.SendTextMessageAsync(message.From.Id,
+				await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("NoCancel", user.Lang));
 			}
 		}

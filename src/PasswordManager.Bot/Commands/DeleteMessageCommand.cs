@@ -6,7 +6,7 @@ using User = PasswordManager.Core.Entities.User;
 namespace PasswordManager.Bot.Commands {
 	public class DeleteMessageCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
-			await BotHandler.TryDeleteMessageAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
+			await BotHandlerService.TryDeleteMessageAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 		}
 	}
 }

@@ -17,8 +17,8 @@ namespace PasswordManager.Bot.Commands {
 			try {
 				password = user.GenPattern.GeneratePasswordByPattern();
 			} catch (ArgumentException ex) {
-				PasswordManagerHandler.SetUserPasswordPattern(user);
-				await Bot.Instance.Client.SendTextMessageAsync(
+				PasswordManagerService.SetUserPasswordPattern(user);
+				await BotService.Instance.Client.SendTextMessageAsync(
 					callbackQuery.From.Id,
 					ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
 				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
@@ -27,7 +27,7 @@ namespace PasswordManager.Bot.Commands {
 			if (password.Length > (int)MaxAccountDataLength.Password) {
 				string genPattern = user.GenPattern.Remove(6) + ((int)MaxAccountDataLength.Password).ToString();
 				password = Password.GeneratePasswordByPattern(genPattern);
-				PasswordManagerHandler.SetUserPasswordPattern(user, genPattern);
+				PasswordManagerService.SetUserPasswordPattern(user, genPattern);
 			}
 
 			password = password.Trim();
@@ -42,7 +42,7 @@ namespace PasswordManager.Bot.Commands {
 					}
 				});
 
-			await BotHandler.Bot.EditMessageTextAsync(
+			await BotHandlerService.Bot.EditMessageTextAsync(
 				callbackQuery.From.Id,
 				callbackQuery.Message.MessageId,
 				"`" + password + "`",

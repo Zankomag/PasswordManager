@@ -18,9 +18,11 @@ namespace PasswordManager.Bot {
 
 		public void ConfigureServices(IServiceCollection services) {
 
+			services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
+
 			//TODO
 			//REPLACE WITH Configuration.GetConnectionString
-			string connection = Bot.Instance.connString; //Configuration.GetConnectionString("PasswordManagerConnectionString");
+			string connection = BotService.Instance.connString; //Configuration.GetConnectionString("PasswordManagerConnectionString");
 			services.AddDbContext<PasswordManagerDbContext>(options => {
 				options.UseSqlite(connection);
 				//Adding "Microsoft.EntityFrameworkCore": "Information" 

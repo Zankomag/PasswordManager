@@ -13,9 +13,9 @@ using UserAction = PasswordManager.Core.Entities.User.UserAction;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot {
-	public class BotHandler {
-		public static BotHandler Instance { get; private set; }
-		public static TelegramBotClient Bot => PasswordManager.Bot.Bot.Instance.Client;
+	public class BotHandlerService {
+		public static BotHandlerService Instance { get; private set; }
+		public static TelegramBotClient Bot => PasswordManager.Bot.BotService.Instance.Client;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
 		private static Dictionary<CallbackCommandCode, ICallBackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallBackQueryCommand>();
 
@@ -24,11 +24,11 @@ namespace PasswordManager.Bot {
 
 		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
 
-		private BotHandler() { }
+		private BotHandlerService() { }
 
-		static BotHandler() {
+		static BotHandlerService() {
 			if (Instance == null) {
-				Instance = new BotHandler();
+				Instance = new BotHandlerService();
 				InitCommands();
 			}
 		}
@@ -86,16 +86,16 @@ namespace PasswordManager.Bot {
 		private async void HandleMessage(Message message) {
 			try {
 				User user;
-				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.BotService.Instance.connString)) {
 					//User must choose language before be added to db and using any command
 					user = conn.QuerySingleOrDefault<User>("SELECT * FROM Users WHERE Id = @Id", new { message.From.Id });
 					if (user == null) {
 						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
-						if (message.From.Id == PasswordManager.Bot.Bot.Instance.AdminId.Identifier)
+						if (message.From.Id == PasswordManager.Bot.BotService.Instance.AdminId.Identifier)
 						{
 							if (Localization.ContainsLanguage(message.From.LanguageCode))
 							{
-								user = PasswordManagerHandler.AddUser(message.From.Id, message.From.LanguageCode);
+								user = PasswordManagerService.AddUser(message.From.Id, message.From.LanguageCode);
 							}
 							else
 							{
@@ -127,13 +127,13 @@ namespace PasswordManager.Bot {
 						await actionCommands[user.Action].ExecuteAsync(message, user);
 					}
 					catch (KeyNotFoundException) {
-						PasswordManagerHandler.SetUserAction(user, UserAction.Search);
+						PasswordManagerService.SetUserAction(user, UserAction.Search);
 						await actionCommands[UserAction.Search].ExecuteAsync(message, user);
 					}
 				}
 			}
 			catch (Exception ex) {
-				await Bot.SendTextMessageAsync(PasswordManager.Bot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
+				await Bot.SendTextMessageAsync(PasswordManager.Bot.BotService.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
 				Environment.Exit(47);
 			}
 		}
@@ -143,14 +143,14 @@ namespace PasswordManager.Bot {
 			User logUser = null;
 			try {
 				User user;
-				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.BotService.Instance.connString)) {
 					//Check if user exists in User table and add this user if not
 					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
 						new { callbackQuery.From.Id });
 					if (user == null) {
 						//Add new user to db when he selected language for the first time
 						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
-						if (callbackQuery.From.Id == PasswordManager.Bot.Bot.Instance.AdminId.Identifier)
+						if (callbackQuery.From.Id == PasswordManager.Bot.BotService.Instance.AdminId.Identifier)
 						{
 							if (callbackQuery.Data[0] == 'L')
 							{
@@ -161,7 +161,7 @@ namespace PasswordManager.Bot {
 							{
 								if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode))
 								{
-									user = PasswordManagerHandler.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
+									user = PasswordManagerService.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
 								}
 								else
 								{
@@ -196,7 +196,7 @@ namespace PasswordManager.Bot {
 			}
 			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
 			catch (Exception ex) {
-				await Bot.SendTextMessageAsync(PasswordManager.Bot.Bot.Instance.AdminId, "EXCEPTION: " + ex.ToString() + "\n\nUSER: " + (logUser == null ? "null" : (logUser.Id.ToString() + "\n\n  [user](tg://user?id=" + logUser.Id + ")")), ParseMode.Markdown);
+				await Bot.SendTextMessageAsync(PasswordManager.Bot.BotService.Instance.AdminId, "EXCEPTION: " + ex.ToString() + "\n\nUSER: " + (logUser == null ? "null" : (logUser.Id.ToString() + "\n\n  [user](tg://user?id=" + logUser.Id + ")")), ParseMode.Markdown);
 				Environment.Exit(47);
 			}
 
@@ -214,7 +214,7 @@ namespace PasswordManager.Bot {
 					await Bot.EditMessageTextAsync(chatId, messageId, "🗑️");
 				}
 				catch (Exception ex) {
-					await Bot.SendTextMessageAsync(PasswordManager.Bot.Bot.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
+					await Bot.SendTextMessageAsync(PasswordManager.Bot.BotService.Instance.AdminId, ex.ToString() + "\n\n" + ex.Message);
 				}
 			}
 		}

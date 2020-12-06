@@ -9,8 +9,8 @@ namespace PasswordManager.Bot.Controllers
 
 		[HttpPost("{token}")]
 		public IActionResult Post([FromBody]Update update, string token) {
-			if (Bot.Instance.IsTokenCorrect(token)) {
-				BotHandler.Instance.HandleUpdate(update);
+			if (BotService.Instance.IsTokenCorrect(token)) {
+				BotHandlerService.Instance.HandleUpdate(update);
 			}
 			return Ok();
 		}

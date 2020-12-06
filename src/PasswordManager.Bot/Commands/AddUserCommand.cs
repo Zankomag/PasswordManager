@@ -9,7 +9,7 @@ using User = PasswordManager.Core.Entities.User;
 namespace PasswordManager.Bot.Commands {
 	public class AddUserCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, User user) {
-			if(user.Id == Bot.Instance.AdminId.Identifier)
+			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{
 				if (message.Text.Contains(' '))
 				{
@@ -17,12 +17,12 @@ namespace PasswordManager.Bot.Commands {
 					{
 						string newUserIdStr = message.Text.Split(' ')[1];
 						int newUserId = Convert.ToInt32(newUserIdStr);
-						PasswordManagerHandler.AddUser(newUserId, Localization.defaultLanguage);
-						await Bot.Instance.Client.SendTextMessageAsync(Bot.Instance.AdminId, "Added new user.\n/userlist");
+						PasswordManagerService.AddUser(newUserId, Localization.defaultLanguage);
+						await BotService.Instance.Client.SendTextMessageAsync(BotService.Instance.AdminId, "Added new user.\n/userlist");
 					}
 					catch
 					{
-						await Bot.Instance.Client.SendTextMessageAsync(Bot.Instance.AdminId, "Invalid User Id");
+						await BotService.Instance.Client.SendTextMessageAsync(BotService.Instance.AdminId, "Invalid User Id");
 					}
 					
 				}

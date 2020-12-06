@@ -28,20 +28,20 @@ namespace PasswordManager.Bot.Commands {
 								CallbackCommandCode.ShowAccount.ToStringCode() + accountId) },
 					});
 
-				await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+				await BotService.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						Localization.GetMessage("SureDeleteAcc", user.Lang) + "\n\n" + callbackQuery.Message.Text,
 						replyMarkup: keyboardMarkup,
 						disableWebPagePreview: true);
 			} else {
 				if (accountId != 0) {
-					using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+					using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 						conn.Execute("delete from Accounts where Id = @Id and UserId = @UserId",
 							new {
 								Id = accountId,
 								UserId = user.Id});
 					}
-					await Bot.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+					await BotService.Instance.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
 				}

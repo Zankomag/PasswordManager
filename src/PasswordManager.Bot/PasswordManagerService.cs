@@ -16,7 +16,7 @@ using User = PasswordManager.Core.Entities.User;
 using UserAction = PasswordManager.Core.Entities.User.UserAction;
 
 namespace PasswordManager.Bot {
-	public static class PasswordManagerHandler {
+	public static class PasswordManagerService {
 		public const string separator = "\n──────────────────";
 		public const int MinPasswordLength = 1;
 		public const int MaxPasswordLength = 2048;
@@ -34,7 +34,7 @@ namespace PasswordManager.Bot {
 		public static int GetAccountCount(int UserId, string accountName = null) {
 			int accountCount;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accountCount = conn.ExecuteScalar<int>(
 						"select count(*) from Accounts where UserId = @UserId and AccountName like @AccountName",
 						new {
@@ -43,7 +43,7 @@ namespace PasswordManager.Bot {
 						});
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accountCount = conn.ExecuteScalar<int>(
 						"select count(*) from Accounts where UserId = @UserId",
 						new {UserId});
@@ -69,7 +69,7 @@ namespace PasswordManager.Bot {
 				await ShowAccountByName(chatId, accountName, langCode);
 			}
 			else if (accountCount == 0) {
-				await Bot.Instance.Client.SendTextMessageAsync(chatId,
+				await BotService.Instance.Client.SendTextMessageAsync(chatId,
 					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
 			}
 			else if (accountCount <= maxAccsByPage) {
@@ -83,7 +83,7 @@ namespace PasswordManager.Bot {
 		private static async Task ShowAccountByName(int userId, string accountName, string langCode) {
 			Account account;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
 						new {
@@ -92,7 +92,7 @@ namespace PasswordManager.Bot {
 						});
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					account = conn.QueryFirstOrDefault<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
 						new {userId});
@@ -126,7 +126,7 @@ namespace PasswordManager.Bot {
 		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 			List<Account> accounts;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
 						new {
@@ -135,7 +135,7 @@ namespace PasswordManager.Bot {
 						}).ToList();
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
 						new {userId})
@@ -145,7 +145,7 @@ namespace PasswordManager.Bot {
 
 			string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
 
-			await Bot.Instance.Client.SendTextMessageAsync(userId, message,
+			await BotService.Instance.Client.SendTextMessageAsync(userId, message,
 					replyMarkup: new InlineKeyboardMarkup(keyboard),
 					disableWebPagePreview: true);
 		}
@@ -156,7 +156,7 @@ namespace PasswordManager.Bot {
 
 			List<Account> accounts;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
 							"limit @maxAccsByPage offset @Offset",
@@ -169,7 +169,7 @@ namespace PasswordManager.Bot {
 						.ToList();
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
 							"limit @maxAccsByPage offset @Offset",
@@ -203,12 +203,12 @@ namespace PasswordManager.Bot {
 			}
 
 			if (messageToEditId == 0) {
-				await Bot.Instance.Client.SendTextMessageAsync(userId, message,
+				await BotService.Instance.Client.SendTextMessageAsync(userId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			}
 			else {
-				await Bot.Instance.Client.EditMessageTextAsync(userId, messageToEditId, message,
+				await BotService.Instance.Client.EditMessageTextAsync(userId, messageToEditId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			}
@@ -257,11 +257,11 @@ namespace PasswordManager.Bot {
 					message = extraMessage + "\n\n" + message;
 				}
 				if (messageToEditId == 0) {
-					await Bot.Instance.Client.SendTextMessageAsync(chatId, message,
+					await BotService.Instance.Client.SendTextMessageAsync(chatId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 				else {
-					await Bot.Instance.Client.EditMessageTextAsync(chatId, messageToEditId, message,
+					await BotService.Instance.Client.EditMessageTextAsync(chatId, messageToEditId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 			}
@@ -269,7 +269,7 @@ namespace PasswordManager.Bot {
 
 		public static async Task ShowAccountById(int userId, string accountId, string langCode, int messageToEditId = 0, string extraMessage = null) {
 			Account account;
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				account = conn.QueryFirstOrDefault<Account>(
 					"select Id, AccountName, Link, Login from Accounts where Id = @accountId and UserId = @userId",
 					new {
@@ -282,7 +282,7 @@ namespace PasswordManager.Bot {
 
 		public static void SetUserPasswordPattern(User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
 			if (user != null) {
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					conn.Execute("update Users set GenPattern = @passwordPattern where Id = @Id",
 						new { passwordPattern, user.Id });
 				}
@@ -290,7 +290,7 @@ namespace PasswordManager.Bot {
 		}
 
 		public static void SetUserLanguage(User user, string langCode) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				if(user != null) {
 					conn.Execute("update Users set Lang = @langCode where Id = @Id",
 						new { langCode, user.Id });
@@ -308,7 +308,7 @@ namespace PasswordManager.Bot {
 		}
 
 		public static void SetUserAction(int userId, UserAction action) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				conn.Execute("update Users set Action = @action where Id = @userId",
 					new { action, userId });
 			}
@@ -316,7 +316,7 @@ namespace PasswordManager.Bot {
 
 		/// <returns>User that has been added</returns>
 		public static User AddUser(int userId, string langCode) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				conn.Execute("Insert into Users (Id, Lang) values (@userId, @langCode)",
 					new { userId, langCode });
 			}
@@ -329,7 +329,7 @@ namespace PasswordManager.Bot {
 		}
 
 		public static void DeleteAccountLink(User user, string accountId) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 				if (user != null) {
 					conn.Execute("update Accounts set Link = NULL where Id = @accountId and UserId = @Id",
 						new { accountId, user.Id });
@@ -388,7 +388,7 @@ namespace PasswordManager.Bot {
 						passwordButton,
 						backButton});
 
-			await Bot.Instance.Client.EditMessageTextAsync(chatId,
+			await BotService.Instance.Client.EditMessageTextAsync(chatId,
 				messageId,
 				message + "\n\n" +
 				((messageText.Count(x => x == '\n') > 3) ?
@@ -410,15 +410,15 @@ namespace PasswordManager.Bot {
 				} else {
 					data = data.Trim();
 				}
-				using (IDbConnection conn = new SQLiteConnection(Bot.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					conn.Execute($"update Account set {accountUpdate.AccountDataType.ToString()} = @data where Id = @accountId and UserId = @userId",
 						new { data, accountId, userId });
 				}
 				UpdatingAccounts.Remove(userId);
 				SetUserAction(userId, UserAction.Search);
 				await ShowAccountById(userId, accountId, langCode, extraMessage: Localization.GetMessage("AccountUpdated", langCode));
-				await BotHandler.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[0]);
-				await BotHandler.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[1]);
+				await BotHandlerService.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[0]);
+				await BotHandlerService.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[1]);
 			}
 		}
 
@@ -431,7 +431,7 @@ namespace PasswordManager.Bot {
 		}
 
 		private static async Task ReportExceededLength(ChatId chatid, string langCode, MaxAccountDataLength maxAccountDataLength) {
-			await Bot.Instance.Client.SendTextMessageAsync(chatid,
+			await BotService.Instance.Client.SendTextMessageAsync(chatid,
 				String.Format(Localization.GetMessage("MaxLength", langCode), Localization.GetMessage(maxAccountDataLength.ToString(), langCode), (int)maxAccountDataLength));
 		}
 

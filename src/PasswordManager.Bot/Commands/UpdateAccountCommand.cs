@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
 			string accountId = callbackQuery.Data.Substring(2);
 			if (callbackQuery.Data[1] == '0') {
-				await PasswordManagerHandler.UpdateAccountAsync(
+				await PasswordManagerService.UpdateAccountAsync(
 					callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
 					accountId,
@@ -32,8 +32,8 @@ namespace PasswordManager.Bot.Commands {
 				List<string> accountData = callbackQuery.Message.Text.Split('\n').Skip(2).ToList();
 				accountData.RemoveAt(accountData.Count - 2);
 
-				PasswordManagerHandler.DeleteAccountLink(user, accountId);
-				await PasswordManagerHandler.UpdateAccountAsync(
+				PasswordManagerService.DeleteAccountLink(user, accountId);
+				await PasswordManagerService.UpdateAccountAsync(
 					callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
 					accountId,
@@ -43,14 +43,14 @@ namespace PasswordManager.Bot.Commands {
 					string.Join('\n', accountData));
 			}
 			else {
-				await Bot.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-				PasswordManagerHandler.SetUserAction(user, UserAction.Update);
+				await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+				PasswordManagerService.SetUserAction(user, UserAction.Update);
 				AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
 				InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
-					PasswordManagerHandler.GeneratePasswordButtonMarkup(user.Lang) : 
+					PasswordManagerService.GeneratePasswordButtonMarkup(user.Lang) : 
 					null;
 				Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
-				PasswordManagerHandler.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
+				PasswordManagerService.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
 					accountId,
 					callbackQuery.Message.MessageId,
 					sentMessage.MessageId,
@@ -59,18 +59,18 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, User user) {
-			if (PasswordManagerHandler.UpdatingAccounts.ContainsKey(user.Id)) {
-				AccountUpdate accountUpdate = PasswordManagerHandler.UpdatingAccounts[user.Id];
-				if (!await PasswordManagerHandler.IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
-					await PasswordManagerHandler.UpdateAccountDataAsync(message.Text, accountUpdate.AccountToUpdateId, user.Id, user.Lang);
+			if (PasswordManagerService.UpdatingAccounts.ContainsKey(user.Id)) {
+				AccountUpdate accountUpdate = PasswordManagerService.UpdatingAccounts[user.Id];
+				if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
+					await PasswordManagerService.UpdateAccountDataAsync(message.Text, accountUpdate.AccountToUpdateId, user.Id, user.Lang);
 				}
 			} else {
-				PasswordManagerHandler.SetUserAction(user, UserAction.Search);
+				PasswordManagerService.SetUserAction(user, UserAction.Search);
 			}
 		}
 
 		private async Task<Message> RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
-			return await Bot.Instance.Client.SendTextMessageAsync(
+			return await BotService.Instance.Client.SendTextMessageAsync(
 				chatId,
 				string.Format(Localization.GetMessage("UpdateAccData", langCode), Localization.GetMessage(dataKey, langCode)),
 				replyMarkup: inlineKeyboardMarkup);

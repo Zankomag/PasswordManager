@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 		public async Task ExecuteAsync(Message message, User user) {
 			//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 			try {
-				await Bot.Instance.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+				await BotService.Instance.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 			}
 			catch (Telegram.Bot.Exceptions.ApiRequestException) {
 				//
