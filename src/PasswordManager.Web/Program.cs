@@ -1,15 +1,28 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace PasswordManager.Bot {
 	public class Program {
-		public static void Main() {
-			BotService.Instance.ReportStart().Wait();
-			CreateWebHostBuilder().Build().Run();
+		public static void Main(string[] args) {
+			var config = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json")
+				.Build();
+
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(config)
+				.CreateLogger();
+
+			Log.Information("Application starting");
+			CreateHostBuilder(args).Build().Run();
 		}
 
-		public static IWebHostBuilder CreateWebHostBuilder() =>
-			WebHost.CreateDefaultBuilder()
-				.UseStartup<Startup>();
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
+				.UseSerilog()
+				.ConfigureWebHostDefaults(webBuilder => {
+					webBuilder.UseStartup<Startup>();
+				});
 	}
 }

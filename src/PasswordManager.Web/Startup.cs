@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using Newtonsoft.Json;
 using PasswordManager.Infrastructure.Data;
 
@@ -19,14 +19,11 @@ namespace PasswordManager.Bot {
 		public void ConfigureServices(IServiceCollection services) {
 
 			services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
-
-			//TODO
-			//REPLACE WITH Configuration.GetConnectionString
-			string connection = BotService.Instance.connString; //Configuration.GetConnectionString("PasswordManagerConnectionString");
+			
 			services.AddDbContext<PasswordManagerDbContext>(options => {
-				options.UseSqlite(connection);
-				//Adding "Microsoft.EntityFrameworkCore": "Information" 
-				//to Serilog MinimumLevel in config  allows to get more convenient output
+				options.UseSqlite(Configuration.GetConnectionString("PasswordManager"));
+				////Adding "Microsoft.EntityFrameworkCore": "Information" 
+				////to Serilog MinimumLevel in config  allows to get more convenient output
 				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
 			});
 
@@ -50,6 +47,10 @@ namespace PasswordManager.Bot {
 		}
 
 		public void Configure(IApplicationBuilder app) {
+
+			//To log only Warning or greater requests
+			//Set "Serilog.AspNetCore": "Warning" in Serilog MinimumLevel Config
+			app.UseSerilogRequestLogging();
 
 			app.UseRouting();
 
