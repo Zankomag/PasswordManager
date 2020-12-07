@@ -42,7 +42,7 @@ namespace PasswordManager.Bot {
 			ICommand updateAccountCommand = new UpdateAccountCommand();
 			ICommand setUpPasswordGeneratorCommand = new SetUpPasswordGeneratorCommand();
 
-			actionCommands.Add(UserAction.Assemble, addAccountCommand);
+			actionCommands.Add(UserAction.AssembleAccount, addAccountCommand);
 			actionCommands.Add(UserAction.Search, (IMessageCommand)searchCommand);
 			actionCommands.Add(UserAction.Update, (IMessageCommand)updateAccountCommand);
 			actionCommands.Add(UserAction.UpdatePasswordLength, (IMessageCommand)setUpPasswordGeneratorCommand);

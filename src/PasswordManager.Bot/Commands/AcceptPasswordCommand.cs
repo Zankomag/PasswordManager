@@ -10,7 +10,7 @@ using PasswordManager.Bot.Models;
 namespace PasswordManager.Bot.Commands {
 	public class AcceptPasswordCommand : ICallBackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			if (user.Action == UserAction.Assemble) {
+			if (user.Action == UserAction.AssembleAccount) {
 				if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 					//TODO:
 					//ENCRYPT PASSWORD

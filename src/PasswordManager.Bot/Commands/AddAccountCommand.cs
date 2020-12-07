@@ -22,7 +22,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 			else if (message.Text == "/add") {
 				PasswordManagerService.AssemblingAccounts[message.From.Id] = new Account() { UserId = message.From.Id };
-				PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+				PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 				await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id,
 					"📝 " + Localization.GetMessage("AddAccount", user.Lang));
 			}
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Commands {
 					if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.AccountName, message.From.Id, user.Lang)) {
 						account.AccountName = data.Trim();
 						PasswordManagerService.AssemblingAccounts[message.From.Id] = account;
-						PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+						PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 						await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 					}
 					//TODO
@@ -45,7 +45,7 @@ namespace PasswordManager.Bot.Commands {
 					if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length,MaxAccountDataLength.Link, message.From.Id, user.Lang)) {
 						account.Link = data.BuildLink();
 						PasswordManagerService.AssemblingAccounts[message.From.Id] = account;
-						PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+						PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 						if (account.Login == null) {
 							await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id,
 								"📇 " + Localization.GetMessage("AddLogin", user.Lang));
@@ -60,7 +60,7 @@ namespace PasswordManager.Bot.Commands {
 					if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length, MaxAccountDataLength.Login, message.From.Id, user.Lang)) {
 						account.Login = data.Trim();
 						PasswordManagerService.AssemblingAccounts[message.From.Id] = account;
-						PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+						PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 						await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id,
 							"🔐 " + String.Format(Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 						replyMarkup: PasswordManagerService.GeneratePasswordButtonMarkup(user.Lang));
@@ -110,12 +110,12 @@ namespace PasswordManager.Bot.Commands {
 				if (!await PasswordManagerService.IsLengthExceededAsync(accountData[1].Length, MaxAccountDataLength.Login, message.From.Id, user.Lang)) {
 					account.Login = accountData[1].Trim();
 					PasswordManagerService.AssemblingAccounts[message.From.Id] = account;
-					PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+					PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 					await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 				}
 			} else {
 				PasswordManagerService.AssemblingAccounts[message.From.Id] = account;
-				PasswordManagerService.SetUserAction(user, UserAction.Assemble);
+				PasswordManagerService.SetUserAction(user, UserAction.AssembleAccount);
 				await AddLinkPrompt(message.Chat.Id, account.AccountName, user.Lang);
 			}
 

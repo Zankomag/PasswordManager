@@ -6,7 +6,7 @@ namespace PasswordManager.Core.Entities {
 
 	public enum UserAction {
 		Search = 0,
-		Assemble = 1,
+		AssembleAccount = 1,
 		Update = 2,
 		UpdatePasswordLength = 3
 	}
