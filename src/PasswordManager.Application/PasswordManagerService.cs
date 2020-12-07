@@ -13,7 +13,6 @@ using MultiUserLocalization;
 using Passwords;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
-using UserAction = PasswordManager.Core.Entities.User.UserAction;
 
 namespace PasswordManager.Bot {
 	public static class PasswordManagerService {

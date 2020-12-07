@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System;
 
 namespace PasswordManager.Core.Entities {
+
+	public enum UserAction {
+		Search = 0,
+		Assemble = 1,
+		Update = 2,
+		UpdatePasswordLength = 3
+	}
+
 	public class User {
-
-		public enum UserAction {
-			Search = 0,
-			Assemble = 1,
-			Update = 2,
-			UpdatePasswordLength = 3
-		}
-
 		public int Id { get; set; }
 		/// <summary>
 		/// Language code
