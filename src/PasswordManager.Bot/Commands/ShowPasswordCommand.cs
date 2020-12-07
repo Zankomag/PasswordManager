@@ -15,7 +15,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Encryption;
 
 namespace PasswordManager.Bot.Commands {
-	public class ShowPasswordCommand : ICallBackQueryCommand {
+	public class ShowPasswordCommand : ICallbackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));

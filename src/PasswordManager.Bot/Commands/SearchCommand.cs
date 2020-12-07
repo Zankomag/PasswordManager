@@ -6,7 +6,7 @@ using MultiUserLocalization;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
-	public class SearchCommand : IMessageCommand, ICallBackQueryCommand{
+	public class SearchCommand : IMessageCommand, ICallbackQueryCommand{
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}

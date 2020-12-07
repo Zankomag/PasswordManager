@@ -12,7 +12,7 @@ using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
-	public class GeneratePasswordCommand : ICallBackQueryCommand {
+	public class GeneratePasswordCommand : ICallbackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string password;
 			try {

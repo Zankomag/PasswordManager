@@ -8,7 +8,7 @@ using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
-	public class AcceptPasswordCommand : ICallBackQueryCommand {
+	public class AcceptPasswordCommand : ICallbackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (user.Action == UserAction.AssembleAccount) {
 				if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {

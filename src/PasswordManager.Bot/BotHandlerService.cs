@@ -20,7 +20,7 @@ namespace PasswordManager.Bot {
 		private readonly IBotService botService;
 		private readonly IUserService userService;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
-		private static Dictionary<CallbackCommandCode, ICallBackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallBackQueryCommand>();
+		private static Dictionary<CallbackCommandCode, ICallbackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallbackQueryCommand>();
 
 		private static readonly Dictionary<UserAction, IMessageCommand> actionCommands = new Dictionary<UserAction, IMessageCommand>();
 
@@ -63,13 +63,13 @@ namespace PasswordManager.Bot {
 			callBackCommands.Add(CallbackCommandCode.AutoLink, new AutoLinkCommand());
 			callBackCommands.Add(CallbackCommandCode.GeneratePassword, new GeneratePasswordCommand());
 			callBackCommands.Add(CallbackCommandCode.AcceptPassword, new AcceptPasswordCommand());
-			callBackCommands.Add(CallbackCommandCode.Search, (ICallBackQueryCommand)searchCommand);
+			callBackCommands.Add(CallbackCommandCode.Search, (ICallbackQueryCommand)searchCommand);
 			callBackCommands.Add(CallbackCommandCode.ShowPassword, new ShowPasswordCommand());
 			callBackCommands.Add(CallbackCommandCode.ShowAccount, new ShowAccountCommand());
 			callBackCommands.Add(CallbackCommandCode.DeleteMessage, new DeleteMessageCommand());
-			callBackCommands.Add(CallbackCommandCode.UpdateAccount, (ICallBackQueryCommand)updateAccountCommand);
+			callBackCommands.Add(CallbackCommandCode.UpdateAccount, (ICallbackQueryCommand)updateAccountCommand);
 			callBackCommands.Add(CallbackCommandCode.DeleteAccount, new DeleteAccountCommand());
-			callBackCommands.Add(CallbackCommandCode.SetUpPasswordGenerator, (ICallBackQueryCommand)setUpPasswordGeneratorCommand);
+			callBackCommands.Add(CallbackCommandCode.SetUpPasswordGenerator, (ICallbackQueryCommand)setUpPasswordGeneratorCommand);
 		}
 
 		public async void HandleUpdate(Update update) {
@@ -184,7 +184,7 @@ namespace PasswordManager.Bot {
 				logUser = user;
 				
 
-				ICallBackQueryCommand command;
+				ICallbackQueryCommand command;
 				if (callBackCommands.TryGetValue((CallbackCommandCode)callbackQuery.Data[0], out command)) {
 					await command.ExecuteAsync(callbackQuery, user);
 				}

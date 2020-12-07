@@ -16,7 +16,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 
-	public class SetUpPasswordGeneratorCommand : IMessageCommand, ICallBackQueryCommand {
+	public class SetUpPasswordGeneratorCommand : IMessageCommand, ICallbackQueryCommand {
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.UpdatePasswordLength) {
 				await SendGeneratorSettings(user, message);

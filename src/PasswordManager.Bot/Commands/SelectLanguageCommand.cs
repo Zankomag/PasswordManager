@@ -9,7 +9,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class SelectLanguageCommand : IMessageCommand, ICallBackQueryCommand {
+	public class SelectLanguageCommand : IMessageCommand, ICallbackQueryCommand {
 		private readonly InlineKeyboardMarkup inlineKeyboard;
 
 		public SelectLanguageCommand() {

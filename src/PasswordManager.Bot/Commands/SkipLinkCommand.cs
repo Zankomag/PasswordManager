@@ -7,7 +7,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
-	public class SkipLinkCommand : ICallBackQueryCommand {
+	public class SkipLinkCommand : ICallbackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				//TODO

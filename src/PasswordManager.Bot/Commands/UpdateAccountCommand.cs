@@ -14,7 +14,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class UpdateAccountCommand : ICallBackQueryCommand, IMessageCommand {
+	public class UpdateAccountCommand : ICallbackQueryCommand, IMessageCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string accountId = callbackQuery.Data.Substring(2);
 			if (callbackQuery.Data[1] == '0') {

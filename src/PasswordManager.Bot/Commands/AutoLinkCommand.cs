@@ -8,7 +8,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AutoLinkCommand : ICallBackQueryCommand {
+	public class AutoLinkCommand : ICallbackQueryCommand {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				if (account.AccountName != null) {
