@@ -19,57 +19,13 @@ namespace PasswordManager.Bot {
 	public class BotHandler : IBotHandler {
 		private readonly IBotService botService;
 		private readonly IUserService userService;
-		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
-		private static Dictionary<CallbackCommandCode, ICallbackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallbackQueryCommand>();
-
-		private static readonly Dictionary<UserAction, IMessageCommand> actionCommands = new Dictionary<UserAction, IMessageCommand>();
-
+		
 
 		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
 
 		public BotHandler(IBotService botService, IUserService userService) {
 			this.botService = botService;
 			this.userService = userService;
-			InitCommands();
-		}
-
-		//TODO:
-		//Adapt this to scoped service
-		private static void InitCommands() {
-			IMessageCommand helpCommand = new HelpCommand();
-			ICommand searchCommand = new SearchCommand();
-			IMessageCommand addAccountCommand = new AddAccountCommand();
-			ICommand updateAccountCommand = new UpdateAccountCommand();
-			ICommand setUpPasswordGeneratorCommand = new SetUpPasswordGeneratorCommand();
-
-			actionCommands.Add(UserAction.AssembleAccount, addAccountCommand);
-			actionCommands.Add(UserAction.Search, (IMessageCommand)searchCommand);
-			actionCommands.Add(UserAction.Update, (IMessageCommand)updateAccountCommand);
-			actionCommands.Add(UserAction.UpdatePasswordLength, (IMessageCommand)setUpPasswordGeneratorCommand);
-
-			messageCommands.Add("/help", helpCommand);
-			messageCommands.Add("/start", helpCommand);
-			messageCommands.Add("/language", selectLanguageCommand);
-			messageCommands.Add("/all", new ShowAllCommand());
-			messageCommands.Add("/add", addAccountCommand);
-			messageCommands.Add("/cancel", new CancelCommand());
-			messageCommands.Add("/generator", (IMessageCommand)setUpPasswordGeneratorCommand);
-			messageCommands.Add("/adduser", new AddUserCommand());
-			messageCommands.Add("/removeuser", new RemoveUserCommand());
-			messageCommands.Add("/userlist", new UserListCommand());
-
-			callBackCommands.Add(CallbackCommandCode.SelectLanguage, selectLanguageCommand);
-			callBackCommands.Add(CallbackCommandCode.SkipLink, new SkipLinkCommand());
-			callBackCommands.Add(CallbackCommandCode.AutoLink, new AutoLinkCommand());
-			callBackCommands.Add(CallbackCommandCode.GeneratePassword, new GeneratePasswordCommand());
-			callBackCommands.Add(CallbackCommandCode.AcceptPassword, new AcceptPasswordCommand());
-			callBackCommands.Add(CallbackCommandCode.Search, (ICallbackQueryCommand)searchCommand);
-			callBackCommands.Add(CallbackCommandCode.ShowPassword, new ShowPasswordCommand());
-			callBackCommands.Add(CallbackCommandCode.ShowAccount, new ShowAccountCommand());
-			callBackCommands.Add(CallbackCommandCode.DeleteMessage, new DeleteMessageCommand());
-			callBackCommands.Add(CallbackCommandCode.UpdateAccount, (ICallbackQueryCommand)updateAccountCommand);
-			callBackCommands.Add(CallbackCommandCode.DeleteAccount, new DeleteAccountCommand());
-			callBackCommands.Add(CallbackCommandCode.SetUpPasswordGenerator, (ICallbackQueryCommand)setUpPasswordGeneratorCommand);
 		}
 
 		public async void HandleUpdate(Update update) {
