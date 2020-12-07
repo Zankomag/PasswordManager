@@ -3,18 +3,19 @@ using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Microsoft.Extensions.Options;
+using PasswordManager.Bot.Abstractions;
+using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace PasswordManager.Bot {
 
 	/// <summary>
 	/// Telegram Bot Service
 	/// </summary>
-	public class BotService {
+	public class BotService : IBotService {
 
 		public TelegramBotClient Client { get; private set; }
-		/// <summary>
-		/// List of admin ids
-		/// </summary>
+
 		public int[] Admins { get; private set; }
 
 		private readonly string token;
@@ -60,17 +61,17 @@ namespace PasswordManager.Bot {
 			}
 		}
 
+		/// <summary>
+		/// Bot sends message to all admins indicating that he is running
+		/// </summary>
 		private void ReportStart() {
 			string message = "🔴";
 			SendMessageToAllAdmins(message);
 		}
 
-		/// <summary>
-		/// Bot sends message to admin indicating that he is running
-		/// </summary>
 		private bool SendMessageToAdmin(int adminId, string message) {
 			try {
-				Client.SendTextMessageAsync(adminId, message).Wait();
+				Client.SendTextMessageAsync(adminId, message, ParseMode.Markdown).Wait();
 			} catch {
 				//TODO
 				//Log exception and admin Id and bot Id
@@ -94,6 +95,16 @@ namespace PasswordManager.Bot {
 
 		public bool IsTokenCorrect(string token) {
 			return token != null && token == this.token;
+		}
+
+		public async Task TryDeleteMessageAsync(ChatId chatId, int messageId) {
+			try {
+				await Client.DeleteMessageAsync(chatId, messageId);
+			} catch {
+				try {
+					await Client.EditMessageTextAsync(chatId, messageId, "🗑");
+				} catch { }
+			}
 		}
 
 	}

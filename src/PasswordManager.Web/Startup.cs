@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Newtonsoft.Json;
 using PasswordManager.Infrastructure.Data;
+using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot {
 
@@ -26,6 +27,8 @@ namespace PasswordManager.Bot {
 				////to Serilog MinimumLevel in config  allows to get more convenient output
 				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
 			});
+
+			services.AddSingleton<IBotService, BotService>();
 
 
 			services.AddControllers()
