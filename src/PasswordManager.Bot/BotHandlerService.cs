@@ -16,7 +16,7 @@ using PasswordManager.Application.Services.Abstractions;
 using User = PasswordManager.Core.Entities.User;
 
 namespace PasswordManager.Bot {
-	public class BotHandlerService {
+	public class BotHandlerService : IBotHandlerService {
 		private readonly IBotService botService;
 		private readonly IUserService userService;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
@@ -33,6 +33,8 @@ namespace PasswordManager.Bot {
 			InitCommands();
 		}
 
+		//TODO:
+		//Adapt this to scoped service
 		private static void InitCommands() {
 			IMessageCommand helpCommand = new HelpCommand();
 			ICommand searchCommand = new SearchCommand();
@@ -70,19 +72,19 @@ namespace PasswordManager.Bot {
 			callBackCommands.Add(CallbackCommandCode.SetUpPasswordGenerator, (ICallBackQueryCommand)setUpPasswordGeneratorCommand);
 		}
 
-		public void HandleUpdate(Update update) {
+		public async void HandleUpdate(Update update) {
 			switch (update.Type) {
 				case UpdateType.Message:
 				if (update.Message.Type == MessageType.Text)
-					HandleMessage(update.Message);
+					await HandleMessage(update.Message);
 				return;
 				case UpdateType.CallbackQuery:
-				HandleCallbackQuery(update.CallbackQuery);
+					await HandleCallbackQuery(update.CallbackQuery);
 				return;
 			}
 		}
 
-		private async void HandleMessage(Message message) {
+		private async Task HandleMessage(Message message) {
 			try {
 				User userEntity = await userService.GetLangAsync(message.From.Id);
 				if (userEntity == null) {
@@ -92,6 +94,8 @@ namespace PasswordManager.Bot {
 					//Not-admin users must be added to bot by Admin manually
 					//If you want to allow free registration in your bot for any user - disable this admin check
 					if (botService.Admins.Contains(message.From.Id)) {
+						//TODO:
+						//Separate adding new account logic to othee method
 						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
 							userEntity = await userService
 								.AddUserAsync(message.From.Id, message.From.LanguageCode);
@@ -147,7 +151,7 @@ namespace PasswordManager.Bot {
 		}
 
 
-		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
+		private async Task HandleCallbackQuery(CallbackQuery callbackQuery) {
 			BotUser logUser = null;
 			try {
 				BotUser user = null;
@@ -160,6 +164,8 @@ namespace PasswordManager.Bot {
 					//If you want to allow free registration in your bot for any user - disable this admin check
 					if (botService.Admins.Contains(callbackQuery.From.Id))
 					{
+						//TODO:
+						//Separate adding new account logic to othee method
 						if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage)
 						{
 							userEntity = await userService
