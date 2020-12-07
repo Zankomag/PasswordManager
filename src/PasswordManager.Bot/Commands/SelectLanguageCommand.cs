@@ -36,14 +36,14 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id, Localization.GetMessage("ChooseLang", user.Lang),
+			await BotHandlerService.Bot.SendTextMessageAsync(user.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string langCode = callbackQuery.Data.Substring(1);
 			if (!Localization.ContainsLanguage(langCode))
-				langCode = Localization.defaultLanguage;
+				langCode = Localization.DefaultLanguageCode;
 			if (user == null) {
 				PasswordManagerService.AddUser(callbackQuery.From.Id, langCode);
 			} else {

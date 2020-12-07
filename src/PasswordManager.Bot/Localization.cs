@@ -8,20 +8,20 @@ namespace MultiUserLocalization {
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }
 
-		public static readonly string defaultLanguage = "en";
+		public static readonly string DefaultLanguageCode = "en";
 		private const string defaultIcon = "❔";
 		/// <summary>
 		/// </summary>
 		/// <returns>String of <paramref name="langCode"/> by its key. Retunrs en-US string if not found.</returns>
 		public static string GetMessage(string key, string langCode) {
-			if (langCode != defaultLanguage && stringsByCode[langCode].ContainsKey(key))
+			if (langCode != DefaultLanguageCode && stringsByCode[langCode].ContainsKey(key))
 				return stringsByCode[langCode][key];
 			else 
-				return stringsByCode[defaultLanguage][key];
+				return stringsByCode[DefaultLanguageCode][key];
 		}
 		static Localization() {
-			if(!File.Exists(Path.Combine("Locales", defaultLanguage + ".json")))
-				throw new FileNotFoundException("Default Language file couldn't be found in Locales folder.", defaultLanguage + ".json");
+			if(!File.Exists(Path.Combine("Locales", DefaultLanguageCode + ".json")))
+				throw new FileNotFoundException("Default Language file couldn't be found in Locales folder.", DefaultLanguageCode + ".json");
 			string[] files = Directory.GetFiles("Locales");
 			for(int i = 0; i < files.Length; i++) {
 				Dictionary<string, string> strings;

@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 					{
 						string newUserIdStr = message.Text.Split(' ')[1];
 						int newUserId = Convert.ToInt32(newUserIdStr);
-						PasswordManagerService.AddUser(newUserId, Localization.defaultLanguage);
+						PasswordManagerService.AddUser(newUserId, Localization.DefaultLanguageCode);
 						await BotService.Instance.Client.SendTextMessageAsync(BotService.Instance.AdminId, "Added new user.\n/userlist");
 					}
 					catch
