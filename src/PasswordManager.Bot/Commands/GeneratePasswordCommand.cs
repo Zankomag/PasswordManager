@@ -22,7 +22,7 @@ namespace PasswordManager.Bot.Commands {
 				await BotService.Instance.Client.SendTextMessageAsync(
 					callbackQuery.From.Id,
 					ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
-				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
+				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);
 			}
 
 			if (password.Length > (int)MaxAccountDataLength.Password) {
