@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using MultiUserLocalization;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Types.Enums;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
@@ -35,12 +35,12 @@ namespace PasswordManager.Bot.Commands {
 			inlineKeyboard = new InlineKeyboardMarkup(buttons);
 		}
 
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string langCode = callbackQuery.Data.Substring(1);
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.defaultLanguage;

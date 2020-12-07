@@ -8,11 +8,11 @@ using MultiUserLocalization;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Types.Enums;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class DeleteAccountCommand : ICallBackQueryCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int accountId;
 			Int32.TryParse(callbackQuery.Data.Substring(2), out accountId);
 			if (callbackQuery.Data[1] == '0') {

@@ -4,12 +4,12 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Core.Entities;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class AutoLinkCommand : ICallBackQueryCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				if (account.AccountName != null) {
 					account.Link = account.AccountName.AutoLink().BuildLink();

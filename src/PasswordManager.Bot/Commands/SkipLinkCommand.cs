@@ -4,11 +4,11 @@ using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Commands.Abstractions;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class SkipLinkCommand : ICallBackQueryCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				//TODO
 				//ADD SKIPLINK CKECK

@@ -3,15 +3,15 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class SearchCommand : IMessageCommand, ICallBackQueryCommand{
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int page = Convert.ToInt32(callbackQuery.Data.Substring(1, callbackQuery.Data.IndexOf('.')-1));
 			string accountName = callbackQuery.Data.Length != (callbackQuery.Data.IndexOf('.') + 1) ?
 				callbackQuery.Data.Substring(callbackQuery.Data.IndexOf('.') + 1) : null;

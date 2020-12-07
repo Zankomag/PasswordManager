@@ -10,12 +10,12 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
-using UserAction = PasswordManager.Core.Entities.User.UserAction;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class AddAccountCommand : IMessageCommand {
 
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (message.Text.StartsWith("/add") && message.Text.Length > 5) {
 				PasswordManagerService.AssemblingAccounts.Remove(message.From.Id);
 				await AssembleAccountAsync(message, user);

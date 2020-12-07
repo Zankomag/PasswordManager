@@ -1,7 +1,7 @@
 ﻿using PasswordManager.Bot.Commands.Abstractions;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 
 namespace PasswordManager.Bot.Commands {
@@ -11,7 +11,7 @@ namespace PasswordManager.Bot.Commands {
 		//EXPERIMENTAL FEATURE (IN DEVELOPMENT)
 		//==========================================================================
 		//
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 			try {
 				await BotService.Instance.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);

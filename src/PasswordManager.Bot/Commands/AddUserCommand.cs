@@ -5,10 +5,11 @@ using MultiUserLocalization;
 using System;
 using PasswordManager.Bot.Commands.Abstractions;
 using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class AddUserCommand : IMessageCommand {
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{
 				if (message.Text.Contains(' '))

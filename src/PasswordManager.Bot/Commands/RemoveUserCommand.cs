@@ -4,12 +4,12 @@ using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using System;
 using System.Data;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class RemoveUserCommand : IMessageCommand {
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{
 				try

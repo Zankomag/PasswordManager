@@ -10,12 +10,13 @@ using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Encryption;
 
 namespace PasswordManager.Bot.Commands {
 	public class ShowPasswordCommand : ICallBackQueryCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));
 			Account account;

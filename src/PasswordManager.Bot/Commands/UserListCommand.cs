@@ -7,12 +7,12 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using PasswordManager.Core.Entities;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class UserListCommand: IMessageCommand {
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{
 				try

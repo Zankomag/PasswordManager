@@ -1,11 +1,11 @@
 ﻿using PasswordManager.Bot.Commands.Abstractions;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using User = PasswordManager.Core.Entities.User;
+using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands {
 	public class ShowAccountCommand : ICallBackQueryCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			string accountId = callbackQuery.Data.Substring(1);
 

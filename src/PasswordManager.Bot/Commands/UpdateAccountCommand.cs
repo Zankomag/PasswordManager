@@ -10,12 +10,12 @@ using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
-using UserAction = PasswordManager.Core.Entities.User.UserAction;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : ICallBackQueryCommand, IMessageCommand {
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string accountId = callbackQuery.Data.Substring(2);
 			if (callbackQuery.Data[1] == '0') {
 				await PasswordManagerService.UpdateAccountAsync(
@@ -58,7 +58,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (PasswordManagerService.UpdatingAccounts.ContainsKey(user.Id)) {
 				AccountUpdate accountUpdate = PasswordManagerService.UpdatingAccounts[user.Id];
 				if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {

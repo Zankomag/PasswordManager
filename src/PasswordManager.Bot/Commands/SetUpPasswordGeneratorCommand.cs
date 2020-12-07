@@ -11,13 +11,13 @@ using Passwords;
 using Telegram.Bot.Types.Enums;
 using System.Linq;
 using User = PasswordManager.Core.Entities.User;
-using UserAction = PasswordManager.Core.Entities.User.UserAction;
+using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 
 	public class SetUpPasswordGeneratorCommand : IMessageCommand, ICallBackQueryCommand {
-		public async Task ExecuteAsync(Message message, User user) {
+		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.UpdatePasswordLength) {
 				await SendGeneratorSettings(user, message);
 			} else {
@@ -176,7 +176,7 @@ namespace PasswordManager.Bot.Commands {
 			);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, User user) {
+		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
 			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length &&
