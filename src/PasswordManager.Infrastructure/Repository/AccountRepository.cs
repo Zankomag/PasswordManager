@@ -15,7 +15,7 @@ namespace PasswordManager.Infrastructure.Repository {
 			var query = GetByUser(userId);
 			if (accountName != null)
 				query = query.Where(x => x.AccountName.Contains(accountName));
-			return await query.CountAsync();
+			return await query.AsNoTracking().CountAsync();
 		}
 
 		public async Task<IEnumerable<Account>> GetByNameAsync(int userId, string accountName = null) {
@@ -30,6 +30,7 @@ namespace PasswordManager.Infrastructure.Repository {
 					Link = a.Link,
 					Login = a.Login,
 				})
+				.AsNoTracking()
 				.ToListAsync();
 		}
 		public async Task<Account> GetFullAsync(int userId, int accountId) {
@@ -46,6 +47,7 @@ namespace PasswordManager.Infrastructure.Repository {
 					PasswordUpdatedDate = a.PasswordUpdatedDate,
 					UserId = userId
 				})
+				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 
@@ -58,6 +60,7 @@ namespace PasswordManager.Infrastructure.Repository {
 					Password = a.Password,
 					UserId = userId
 				})
+				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 	}
