@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using System.Threading.Tasks;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace PasswordManager.Bot.Abstractions {
@@ -25,4 +26,4 @@ namespace PasswordManager.Bot.Abstractions {
 
 	}
 }
-}
+
