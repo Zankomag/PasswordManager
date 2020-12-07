@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -13,11 +12,13 @@ using PasswordManager.Bot.Abstractions;
 using PasswordManager.Core.Repositories;
 using System.Linq;
 using PasswordManager.Bot.Models;
+using PasswordManager.Application.Services.Abstractions;
+using User = PasswordManager.Core.Entities.User;
 
 namespace PasswordManager.Bot {
 	public class BotHandlerService {
 		private readonly IBotService botService;
-		private readonly IUnitOfWork workUnit;
+		private readonly IUserService userService;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
 		private static Dictionary<CallbackCommandCode, ICallBackQueryCommand> callBackCommands = new Dictionary<CallbackCommandCode, ICallBackQueryCommand>();
 
@@ -26,9 +27,9 @@ namespace PasswordManager.Bot {
 
 		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
 
-		public BotHandlerService(IBotService botService, IUnitOfWork workUnit) {
+		public BotHandlerService(IBotService botService, IUserService userService) {
 			this.botService = botService;
-			this.workUnit = workUnit;
+			this.userService = userService;
 			InitCommands();
 		}
 
@@ -83,26 +84,35 @@ namespace PasswordManager.Bot {
 
 		private async void HandleMessage(Message message) {
 			try {
-				BotUser user;
-				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.BotService.Instance.connString)) {
+				User userEntity = await userService.GetLangAsync(message.From.Id);
+				if (userEntity == null) {
 					//User must choose language before be added to db and using any command
-					user = conn.QuerySingleOrDefault<User>("SELECT * FROM Users WHERE Id = @Id", new { message.From.Id });
-					if (user == null) {
-						//ONLY If unauthorized user is admin - bot treats them as new user
-						//Not-admin users must be added to bot by Admin manually
-						//If you want to allow free registration in your bot for any user - disable this admin check
-						if (botService.Admins.Contains(message.From.Id)) {
-							if (Localization.ContainsLanguage(message.From.LanguageCode)) {
-								user = PasswordManagerService.AddUser(message.From.Id, message.From.LanguageCode);
-							}
-							else {
-								await selectLanguageCommand.ExecuteAsync(message, new BotUser { Lang = Localization.defaultLanguage });
-								return;
-							}
+					//
+					//ONLY If unauthorized user is admin - bot treats them as new user
+					//Not-admin users must be added to bot by Admin manually
+					//If you want to allow free registration in your bot for any user - disable this admin check
+					if (botService.Admins.Contains(message.From.Id)) {
+						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
+							userEntity = await userService
+								.AddUserAsync(message.From.Id, message.From.LanguageCode);
+						} else {
+							await selectLanguageCommand.ExecuteAsync(message, new BotUser {
+								Id = message.From.Id,
+								Lang = Localization.DefaultLanguageCode
+							});
+							return;
 						}
+					} 
+					else {
 						return;
 					}
 				}
+				BotUser user = new BotUser {
+					Id = userEntity.Id,
+					Lang = userEntity.Lang,
+					Action = userEntity.Action
+				};
+				
 
 				string commandText = null;
 
@@ -120,9 +130,12 @@ namespace PasswordManager.Bot {
 					try {
 						await actionCommands[user.Action].ExecuteAsync(message, user);
 					}
-					catch (KeyNotFoundException) {
-						PasswordManagerService.SetUserAction(user, UserAction.Search);
+					catch (KeyNotFoundException exception) {
+						userEntity.Action = UserAction.Search;
+						user.Action = UserAction.Search;
+						await userService.UpdateActionAsync(userEntity);
 						await actionCommands[UserAction.Search].ExecuteAsync(message, user);
+						//TODO: Log exception
 					}
 				}
 			}
@@ -137,48 +150,33 @@ namespace PasswordManager.Bot {
 		private async void HandleCallbackQuery(CallbackQuery callbackQuery) {
 			BotUser logUser = null;
 			try {
-				BotUser user;
-				using (IDbConnection conn = new SQLiteConnection(PasswordManager.Bot.BotService.Instance.connString)) {
-					//Check if user exists in User table and add this user if not
-					user = conn.QuerySingleOrDefault<User>("SELECT * FROM User WHERE Id = @Id",
-						new { callbackQuery.From.Id });
-					if (user == null) {
-						//Add new user to db when he selected language for the first time
-						//^^^NEW USERS NOW MUST BE ADDED MANUALLY THIS WILL WORK FOR ADMIN ONLY NOW^^^^
-						if (callbackQuery.From.Id == PasswordManager.Bot.BotService.Instance.AdminId.Identifier)
+				BotUser user = null;
+				User userEntity = await userService.GetLangAsync(callbackQuery.From.Id);
+				if (userEntity == null) {
+					//Add new user to db when he selected language for the first time
+					//
+					//ONLY If unauthorized user is admin - bot treats them as new user
+					//Not-admin users must be added to bot by Admin manually
+					//If you want to allow free registration in your bot for any user - disable this admin check
+					if (botService.Admins.Contains(callbackQuery.From.Id))
+					{
+						if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage)
 						{
-							if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage)
-							{
-								await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
-								return;
-							}
-							else
-							{
-								if (Localization.ContainsLanguage(callbackQuery.From.LanguageCode))
-								{
-									user = PasswordManagerService.AddUser(callbackQuery.From.Id, callbackQuery.From.LanguageCode);
-								}
-								else
-								{
-									await selectLanguageCommand.ExecuteAsync(
-										new Message()
-										{
-											From = new Telegram.Bot.Types.User
-											{
-												Id = callbackQuery.From.Id
-											}
-										},
-										new BotUser { Lang = Localization.defaultLanguage });
-									return;
-								}
-							}
-						} else
-						{
+							userEntity = await userService
+								.AddUserAsync(callbackQuery.From.Id, Localization.DefaultLanguageCode);
+							user = new BotUser {
+								Id = userEntity.Id,
+								Lang = userEntity.Lang,
+								Action = userEntity.Action
+							};
+							await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
 							return;
 						}
 					}
-					logUser = user;
+					return;
 				}
+				logUser = user;
+				
 
 				ICallBackQueryCommand command;
 				if (callBackCommands.TryGetValue((CallbackCommandCode)callbackQuery.Data[0], out command)) {
@@ -191,9 +189,11 @@ namespace PasswordManager.Bot {
 				}
 				
 			}
-			catch (Telegram.Bot.Exceptions.InvalidParameterException) { }
-			catch (Exception ex) {
-				string message = "EXCEPTION: " + ex.ToString();
+			catch (Telegram.Bot.Exceptions.InvalidParameterException exeption) {
+				//TODO: Log Exception
+			}
+			catch (Exception exeption) {
+				string message = "EXCEPTION: " + exeption.ToString();
 				if(logUser != null)
 					message += "\n\nUSER: [user](tg://user?id=" + logUser.Id.ToString() + ")";
 				botService.SendMessageToAllAdmins(message);
