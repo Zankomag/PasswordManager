@@ -16,7 +16,7 @@ using PasswordManager.Application.Services.Abstractions;
 using User = PasswordManager.Core.Entities.User;
 
 namespace PasswordManager.Bot {
-	public class BotHandlerService : IBotHandlerService {
+	public class BotHandler : IBotHandler {
 		private readonly IBotService botService;
 		private readonly IUserService userService;
 		private static Dictionary<string, IMessageCommand> messageCommands = new Dictionary<string, IMessageCommand>();
@@ -27,7 +27,7 @@ namespace PasswordManager.Bot {
 
 		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
 
-		public BotHandlerService(IBotService botService, IUserService userService) {
+		public BotHandler(IBotService botService, IUserService userService) {
 			this.botService = botService;
 			this.userService = userService;
 			InitCommands();

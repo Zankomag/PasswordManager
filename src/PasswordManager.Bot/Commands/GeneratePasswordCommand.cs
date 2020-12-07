@@ -43,7 +43,7 @@ namespace PasswordManager.Bot.Commands {
 					}
 				});
 
-			await BotHandlerService.Bot.EditMessageTextAsync(
+			await BotHandler.Bot.EditMessageTextAsync(
 				callbackQuery.From.Id,
 				callbackQuery.Message.MessageId,
 				"`" + password + "`",

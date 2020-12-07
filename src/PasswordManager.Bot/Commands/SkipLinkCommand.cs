@@ -22,7 +22,7 @@ namespace PasswordManager.Bot.Commands {
 					account,
 					user);
 			} else {
-				await BotHandlerService.Bot.AnswerCallbackQueryAsync(callbackQuery.Id,
+				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id,
 					text: Localization.GetMessage("CantWithoutNewAcc", user.Lang));
 			}
 		}

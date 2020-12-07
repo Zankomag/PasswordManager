@@ -36,7 +36,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			await BotHandlerService.Bot.SendTextMessageAsync(user.Id, Localization.GetMessage("ChooseLang", user.Lang),
+			await BotHandler.Bot.SendTextMessageAsync(user.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
@@ -50,7 +50,7 @@ namespace PasswordManager.Bot.Commands {
 				PasswordManagerService.SetUserLanguage(user, langCode);
 			}
 
-			await BotHandlerService.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
 				string.Format(Localization.GetMessage("Help", langCode),
 				"/add", "/all", "/generator", "/language", "/cancel", "/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);

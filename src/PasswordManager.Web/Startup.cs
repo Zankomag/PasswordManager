@@ -31,7 +31,7 @@ namespace PasswordManager.Bot {
 			});
 
 			services.AddSingleton<IBotService, BotService>();
-			services.AddScoped<IBotHandlerService, BotHandlerService>();
+			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 

@@ -7,7 +7,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	public class HelpCommand : IMessageCommand {
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			await BotHandlerService.Bot.SendTextMessageAsync(message.From.Id, 
+			await BotHandler.Bot.SendTextMessageAsync(message.From.Id, 
 				string.Format(Localization.GetMessage("Help", user.Lang), 
 				"/add", "/all", "/generator", "/language", "/cancel","/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);
 		}

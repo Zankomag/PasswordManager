@@ -8,10 +8,10 @@ namespace PasswordManager.Bot.Controllers
     [ApiController]
     public class BotUpdateController : ControllerBase {
 
-		private IBotHandlerService botHandler;
+		private IBotHandler botHandler;
 		private IBotService botService;
 
-		public BotUpdateController(IBotHandlerService botHandler, IBotService botService) {
+		public BotUpdateController(IBotHandler botHandler, IBotService botService) {
 			this.botHandler = botHandler;
 			this.botService = botService;
 		}

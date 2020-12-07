@@ -24,7 +24,7 @@ namespace PasswordManager.Bot.Commands {
 			} else {
 				await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 					Localization.GetMessage("SearchAgain", user.Lang), showAlert: true);
-				await BotHandlerService.TryDeleteMessageAsync(
+				await BotHandler.TryDeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 			}
 		}

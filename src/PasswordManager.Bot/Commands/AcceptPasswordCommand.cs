@@ -27,7 +27,7 @@ namespace PasswordManager.Bot.Commands {
 				return;
 			}
 			else if(PasswordManagerService.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)){
-				await BotHandlerService.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
+				await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQuery.Id);
 				await PasswordManagerService.UpdateAccountDataAsync(callbackQuery.Message.Text, PasswordManagerService.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId, callbackQuery.From.Id, user.Lang);
 				return;
 			}
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private async Task AnswerWithWarning(string callbackQueryId, string langCode) {
-			await BotHandlerService.Bot.AnswerCallbackQueryAsync(callbackQueryId,
+			await BotHandler.Bot.AnswerCallbackQueryAsync(callbackQueryId,
 						text: Localization.GetMessage("CantWithoutNewAcc", langCode), showAlert: true);
 		}
 	}
