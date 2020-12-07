@@ -7,6 +7,8 @@ using Serilog;
 using Newtonsoft.Json;
 using PasswordManager.Infrastructure.Data;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Core.Repositories;
+using PasswordManager.Infrastructure.Repository;
 
 namespace PasswordManager.Bot {
 
@@ -29,6 +31,8 @@ namespace PasswordManager.Bot {
 			});
 
 			services.AddSingleton<IBotService, BotService>();
+			services.AddScoped<BotHandlerService, BotHandlerService>();
+			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 			services.AddControllers()
