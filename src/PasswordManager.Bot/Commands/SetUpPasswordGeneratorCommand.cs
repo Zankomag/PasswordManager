@@ -76,7 +76,7 @@ namespace PasswordManager.Bot.Commands {
 					//WTF?????
 					if (oldPassword == password)
 					{
-						PasswordManagerService.SetUserPasswordPattern(user, Password.defaultPasswordGeneratorPattern);
+						PasswordManagerService.SetUserPasswordPattern(user, Password.DefaultPasswordGeneratorPattern);
 						password = user.GenPattern.GeneratePasswordByPattern();
 						if(oldPassword != password)
 						{
@@ -87,8 +87,8 @@ namespace PasswordManager.Bot.Commands {
 			}
 			catch (ArgumentException) {
 				PasswordManagerService.SetUserPasswordPattern(user);
-				password = Password.GeneratePasswordByPattern(Password.defaultPasswordGeneratorPattern);
-				user.GenPattern = Password.defaultPasswordGeneratorPattern;
+				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);
+				user.GenPattern = Password.DefaultPasswordGeneratorPattern;
 			}
 			return "🛠 " + string.Format(Localization.GetMessage("SetUpPassword", user.Lang),
 				"\n\n`" + password + "`");

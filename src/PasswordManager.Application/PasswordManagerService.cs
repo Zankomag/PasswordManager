@@ -227,7 +227,7 @@ namespace PasswordManager.Bot {
 			}
 		}
 
-		public static void SetUserPasswordPattern(User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
+		public static void SetUserPasswordPattern(User user, string passwordPattern = Password.DefaultPasswordGeneratorPattern) {
 			if (user != null) {
 				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
 					conn.Execute("update Users set GenPattern = @passwordPattern where Id = @Id",
@@ -270,7 +270,7 @@ namespace PasswordManager.Bot {
 			return new User() {
 				Id = userId,
 				Lang = langCode,
-				GenPattern = Password.defaultPasswordGeneratorPattern,
+				GenPattern = Password.DefaultPasswordGeneratorPattern,
 				Action = UserAction.Search
 			};
 		}
