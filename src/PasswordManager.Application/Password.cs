@@ -2,7 +2,7 @@
 
 namespace Passwords {
 	public static class Password {
-		public const string defaultPasswordGeneratorPattern = "11111032";
+		public const string DefaultPasswordGeneratorPattern = "11111032";
 
 		public static string Generate(uint length = 32,
 			bool containsLowerChars = true,
