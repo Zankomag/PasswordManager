@@ -1,10 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PasswordManager.Infrastructure.Repository {
-	public class UserRepository : Repository<User>, IUserRepository{
+	public class UserRepository : Repository<User>, IUserRepository {
 		public UserRepository(DbContext context) : base(context) { }
+
+		private IQueryable<User> GetUser(int id) => dbSet.Where(x => x.Id == id);
+
+		public async Task<User> GetLangAsync(int userId) {
+			return await GetUser(userId)
+				.Select(x => new User { Id = userId, Lang = x.Lang})
+				.FirstOrDefaultAsync();
+		}
 
 		public void UpdateAction(int userId, UserAction action) {
 			User user = new User() { Id = userId, Action = action };
