@@ -31,27 +31,9 @@ namespace PasswordManager.Bot {
 							CallbackCommandCode.GeneratePassword.ToStringCode()));
 		}
 
-		public static int GetAccountCount(int UserId, string accountName = null) {
-			int accountCount;
-			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
-					accountCount = conn.ExecuteScalar<int>(
-						"select count(*) from Accounts where UserId = @UserId and AccountName like @AccountName",
-						new {
-							UserId,
-							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
-						});
-				}
-			} else {
-				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
-					accountCount = conn.ExecuteScalar<int>(
-						"select count(*) from Accounts where UserId = @UserId",
-						new {UserId});
-				}
-			}
-			return accountCount;
-		}
-
+		//TODO
+		//optimize with TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+		//https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-5.0#add-paging-to-students-index
 		public static int GetPageCount(int accountCount) {
 			return accountCount % maxAccsByPage == 0 ? accountCount / maxAccsByPage : ((accountCount / maxAccsByPage) + 1);
 		}
@@ -78,27 +60,6 @@ namespace PasswordManager.Bot {
 			else {
 				await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
 			}
-		}
-
-		private static async Task ShowAccountByName(int userId, string accountName, string langCode) {
-			Account account;
-			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
-					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
-						new {
-							userId,
-							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
-						});
-				}
-			} else {
-				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
-					account = conn.QueryFirstOrDefault<Account>(
-						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
-						new {userId});
-				}
-			}
-			await ShowAccount(userId, account, langCode);
 		}
 
 		private static string GetPageMessage(List<Account> accounts,
@@ -265,19 +226,6 @@ namespace PasswordManager.Bot {
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 			}
-		}
-
-		public static async Task ShowAccountById(int userId, string accountId, string langCode, int messageToEditId = 0, string extraMessage = null) {
-			Account account;
-			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
-				account = conn.QueryFirstOrDefault<Account>(
-					"select Id, AccountName, Link, Login from Accounts where Id = @accountId and UserId = @userId",
-					new {
-						accountId,
-						userId
-					});
-			}
-			await ShowAccount(userId, account, langCode, messageToEditId, extraMessage);
 		}
 
 		public static void SetUserPasswordPattern(User user, string passwordPattern = Password.defaultPasswordGeneratorPattern) {
