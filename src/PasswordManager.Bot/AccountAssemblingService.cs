@@ -35,8 +35,8 @@ namespace PasswordManager.Bot {
 		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
 
 		public AccountAssemblingStage GetCurrentStage(int userId) {
-			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
-				return accountAssembleModel.AccountAssemblingStage;
+			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				return accountAssemblingModel.AccountAssemblingStage;
 			}
 			return AccountAssemblingStage.None;
 		}
@@ -44,26 +44,26 @@ namespace PasswordManager.Bot {
 		//TODO:
 		//Delete this method if it's not used
 		public AccountAssemblingStage GetNextStage(int userId) {
-			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
-				if ((int)accountAssembleModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				if ((int)accountAssemblingModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
 					throw new InvalidOperationException("AccountAssembling is on last (Release) stage");
-				return accountAssembleModel.AccountAssemblingStage + 1;
+				return accountAssemblingModel.AccountAssemblingStage + 1;
 			}
 			return AccountAssemblingStage.None;
 		}
 
 		public Account Release(int userId) {
-			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
-				if(accountAssembleModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				if(accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
 					assemblingAccounts.Remove(userId);
 					return new Account {
-						AccountName = accountAssembleModel.AccountName,
-						UserId = accountAssembleModel.UserId,
-						Link = accountAssembleModel.Link,
-						Note = accountAssembleModel.Note,
-						Login = accountAssembleModel.Login,
-						Password = accountAssembleModel.Password,
-						Encrypted = accountAssembleModel.Encrypted,
+						AccountName = accountAssemblingModel.AccountName,
+						UserId = accountAssemblingModel.UserId,
+						Link = accountAssemblingModel.Link,
+						Note = accountAssemblingModel.Note,
+						Login = accountAssemblingModel.Login,
+						Password = accountAssemblingModel.Password,
+						Encrypted = accountAssemblingModel.Encrypted,
 						OutdatedTime = new TimeSpan(0, 0, 0),
 						PasswordUpdatedDate = DateTime.Now,
 					};
@@ -77,42 +77,43 @@ namespace PasswordManager.Bot {
 		public AccountAssemblingStage Assemble(int userId, string property) {
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
-			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
-				switch (accountAssembleModel.AccountAssemblingStage) {
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				switch (accountAssemblingModel.AccountAssemblingStage) {
 					case AccountAssemblingStage.AddAccountName:
-						accountAssembleModel.AccountName = property;
+						accountAssemblingModel.AccountName = property;
 						break;
 					case AccountAssemblingStage.AddLink:
-						accountAssembleModel.Link = property;
+						accountAssemblingModel.Link = property;
 						break;
 					case AccountAssemblingStage.AddNote:
-						accountAssembleModel.Note = property;
+						accountAssemblingModel.Note = property;
 						break;
 					case AccountAssemblingStage.AddLogin:
-						accountAssembleModel.Login = property;
+						accountAssemblingModel.Login = property;
 						break;
 					case AccountAssemblingStage.AddPassword:
-						accountAssembleModel.Password = property;
+						accountAssemblingModel.Password = property;
 						break;
 				}
-				return accountAssembleModel.AccountAssemblingStage++;
+				return accountAssemblingModel.AccountAssemblingStage++;//TODO ++int
 			}
 			throw new InvalidOperationException(
 				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
 		}
 
 		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStage accountAssemblingStage) {
-			AccountAssemblingModel accountAssembleModel = null;
-			if (!assemblingAccounts.TryGetValue(userId, out accountAssembleModel)) {
-				
+			AccountAssemblingModel accountAssemblingModel = null;
+			if (!assemblingAccounts.TryGetValue(userId, out accountAssemblingModel)) {
+				throw new InvalidOperationException("AccountAssembling doesn't exist.");
 			}
 			AccountAssemblingStage nextAccountAssemblingStage = accountAssemblingStage switch {
-				AccountAssemblingStage.AddLink => AccountAssemblingStage.AddLink + 1,
-				AccountAssemblingStage.AddNote => AccountAssemblingStage.AddNote + 1,
-				AccountAssemblingStage.EncryptPassword => AccountAssemblingStage.EncryptPassword + 1,
+				AccountAssemblingStage.AddLink => ++accountAssemblingStage,
+				AccountAssemblingStage.AddNote => ++accountAssemblingStage,
+				AccountAssemblingStage.EncryptPassword => ++accountAssemblingStage,
 				_ => throw new InvalidOperationException("Only allowed AssemblingStages are allowed to be skipped")
 			};
-
+			accountAssemblingModel.AccountAssemblingStage = nextAccountAssemblingStage;
+			return nextAccountAssemblingStage;
 		}
 
 		//TODO:
