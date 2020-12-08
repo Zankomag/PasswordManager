@@ -16,7 +16,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				//TODO
 				//ADD SKIPLINK CKECK

@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 			this.userService = userService;
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
 				.AssemblingAccounts.Remove(message.From.Id);
 

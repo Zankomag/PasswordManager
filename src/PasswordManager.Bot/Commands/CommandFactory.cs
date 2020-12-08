@@ -43,6 +43,7 @@ namespace PasswordManager.Bot.Commands {
 
 			//All message commands MUST be in lower case
 			messageCommands = new Dictionary<string, Type>();
+
 			AddMessageCommand("/help", typeof(HelpCommand));
 			AddMessageCommand("/start", typeof(HelpCommand));
 			AddMessageCommand("/language", typeof(SelectLanguageCommand));
@@ -57,6 +58,7 @@ namespace PasswordManager.Bot.Commands {
 
 		private void InitActionCommands() {
 			actionCommands = new Dictionary<UserAction, Type>();
+
 			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
 			AddActionCommand(UserAction.Search, typeof(SearchCommand));
 			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
@@ -66,6 +68,7 @@ namespace PasswordManager.Bot.Commands {
 
 		private void InitCallbackQueryCommands() {
 			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
+
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SkipLink, typeof(SkipLinkCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.AutoLink, typeof(AutoLinkCommand));

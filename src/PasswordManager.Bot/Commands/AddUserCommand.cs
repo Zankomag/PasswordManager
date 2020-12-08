@@ -16,7 +16,7 @@ namespace PasswordManager.Bot.Commands {
 			this.userService = userService;
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 
 			if (botService.IsAdmin(user)) {
 				if (message.Text.Contains(' ')) {

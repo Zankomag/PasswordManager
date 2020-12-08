@@ -5,8 +5,6 @@ using MultiUserLocalization;
 using System;
 using System.Data;
 using System.Collections.Generic;
-using System.Linq;
-using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
@@ -21,7 +19,7 @@ namespace PasswordManager.Bot.Commands {
 			this.userService = userService;
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if(botService.IsAdmin(user)) {
 				try {
 					IList<User> users = await userService.GetAllBasicInfoAsync();

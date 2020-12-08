@@ -184,7 +184,7 @@ namespace PasswordManager.Bot.Commands {
 			);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
 			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length &&

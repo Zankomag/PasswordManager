@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int accountId;
 			Int32.TryParse(callbackQuery.Data.Substring(2), out accountId);
 			if (callbackQuery.Data[1] == '0') {

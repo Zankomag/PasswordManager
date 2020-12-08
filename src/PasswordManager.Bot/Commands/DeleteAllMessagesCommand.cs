@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 	//	//EXPERIMENTAL FEATURE
 	//	//==========================================================================
 	//	//
-	//	public async Task ExecuteAsync(Message message, BotUser user) {
+	//	async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 	//		//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 	//		try {
 	//			await botService.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);

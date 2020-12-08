@@ -10,7 +10,9 @@ namespace PasswordManager.Bot.Commands {
 
 		public HelpCommand(IBotService botService) : base(botService) { }
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
+			//TODO:
+			//Create public static method in HelpCommand that returns help message
 			await BotHandler.Bot.SendTextMessageAsync(message.From.Id, 
 				string.Format(Localization.GetMessage("Help", user.Lang), 
 				"/add", "/all", "/generator", "/language", "/cancel","/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);

@@ -16,7 +16,8 @@ namespace PasswordManager.Bot.Commands {
 		public RemoveUserCommand(IBotService botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 		}
-		public async Task ExecuteAsync(Message message, BotUser user) {
+
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if(botService.IsAdmin(user)) {
 				try {
 					string userIdStr = message.Text.Split(' ')[1];

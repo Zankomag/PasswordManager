@@ -24,7 +24,7 @@ namespace PasswordManager.Bot.Commands {
 			await .SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int page = Convert.ToInt32(callbackQuery.Data.Substring(1, callbackQuery.Data.IndexOf('.')-1));
 			string accountName = callbackQuery.Data.Length != (callbackQuery.Data.IndexOf('.') + 1) ?
 				callbackQuery.Data.Substring(callbackQuery.Data.IndexOf('.') + 1) : null;

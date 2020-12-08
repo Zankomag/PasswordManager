@@ -12,7 +12,8 @@ namespace PasswordManager.Bot.Commands {
 		public ShowAllAccountsCommand(IBotService botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
-		public async Task ExecuteAsync(Message message, BotUser user) {
+
+		async Task IMessageCommand .ExecuteAsync(Message message, BotUser user) {
 			await .SearchAccounts(message.From.Id, user.Lang);
 		}
 

@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 			this.userService = userService;
 		}
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string password;
 			try {
 				password = user.GenPattern.GeneratePasswordByPattern();

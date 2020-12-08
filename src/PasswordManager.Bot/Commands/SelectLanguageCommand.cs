@@ -39,18 +39,20 @@ namespace PasswordManager.Bot.Commands {
 			inlineKeyboard = new InlineKeyboardMarkup(buttons);
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			await BotHandler.Bot.SendTextMessageAsync(user.Id, Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: inlineKeyboard);
 		}
 
-		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string langCode = callbackQuery.Data[1..];
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.DefaultLanguageCode;
 
 			.SetUserLanguage(user, langCode);
 
+			//TODO:
+			//Create public static method in HelpCommand that returns help message
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
 				string.Format(Localization.GetMessage("Help", langCode),
