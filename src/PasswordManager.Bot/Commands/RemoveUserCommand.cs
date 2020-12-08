@@ -17,15 +17,12 @@ namespace PasswordManager.Bot.Commands {
 			this.userService = userService;
 		}
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			if(user.Id == botService.AdminId.Identifier)
-			{
-				try
-				{
+			if(botService.IsAdmin(user)) {
+				try {
 					string userIdStr = message.Text.Split(' ')[1];
 					int userId = Convert.ToInt32(userIdStr);
-					if(userId == botService.AdminId.Identifier)
-					{
-						await botService.Client.SendTextMessageAsync(botService.AdminId, "You are trying to remove yourself. I won't let you do this.");
+					if(botService.IsAdmin(user)) {
+						await botService.SendMessageToAllAdmins("You are trying to remove admin. I won't let you do this.");
 						return;
 					}
 
@@ -34,11 +31,11 @@ namespace PasswordManager.Bot.Commands {
 						conn.Execute("delete from Users where Id = @userId",
 							new { userId});
 					}
-					await botService.Client.SendTextMessageAsync(botService.AdminId, "User and their data have been removed.");
+					await botService.SendMessageToAllAdmins("User and their data have been removed.");
 				}
 				catch(Exception ex)
 				{
-					await botService.Client.SendTextMessageAsync(botService.AdminId, "Error occured:\n\n" + ex.ToString());
+					await botService.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
 				}
 			}
 		}

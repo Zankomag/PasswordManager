@@ -5,6 +5,8 @@ using Telegram.Bot.Types.Enums;
 using Microsoft.Extensions.Options;
 using PasswordManager.Bot.Abstractions;
 using Telegram.Bot.Types;
+using PasswordManager.Bot.Models;
+using System.Linq;
 
 namespace PasswordManager.Bot {
 
@@ -15,7 +17,9 @@ namespace PasswordManager.Bot {
 
 		public TelegramBotClient Client { get; private set; }
 
-		public int[] Admins { get; private set; }
+		//TODO:
+		//Add feature to edit admins at runtime
+		private int[] admins;
 
 		private readonly string token;
 
@@ -40,7 +44,7 @@ namespace PasswordManager.Bot {
 				//Log exception
 				throw exception;
 			}
-			Admins = botSettings.AdminIds;
+			admins = botSettings.AdminIds;
 			SetWebhook(botSettings.Domain).Wait();
 			ReportStart().Wait();
 		}
@@ -68,9 +72,9 @@ namespace PasswordManager.Bot {
 			await SendMessageToAllAdmins(message);
 		}
 
-		private async Task<bool> SendMessageToAdmin(int adminId, string message) {
+		private async Task<bool> SendMessageToAdmin(int adminId, string message, ParseMode parseMode) {
 			try {
-				await Client.SendTextMessageAsync(adminId, message, ParseMode.Markdown);
+				await Client.SendTextMessageAsync(adminId, message, parseMode);
 			} catch {
 				//TODO
 				//Log exception and admin Id and bot Id
@@ -79,12 +83,12 @@ namespace PasswordManager.Bot {
 			return true;
 		}
 
-		public async Task<bool> SendMessageToAllAdmins(string message) {
-			if (Admins.Length == 1)
-				return await SendMessageToAdmin(Admins[0], message);
+		public async Task<bool> SendMessageToAllAdmins(string message, ParseMode parseMode = ParseMode.Default) {
+			if (admins.Length == 1)
+				return await SendMessageToAdmin(admins[0], message, parseMode);
 
-			for (int i = 0; i < Admins.Length; i++) {
-				if (!await SendMessageToAdmin(Admins[i], message))
+			for (int i = 0; i < admins.Length; i++) {
+				if (!await SendMessageToAdmin(admins[i], message, parseMode))
 					return false;
 				//To prevent bot from being banned for spamming
 				await Task.Delay(500);
@@ -105,6 +109,10 @@ namespace PasswordManager.Bot {
 				} catch { }
 			}
 		}
+
+		public bool IsAdmin(int botUserId) => admins.Contains(botUserId);
+
+		public bool IsAdmin(BotUser botUser) => IsAdmin(botUser.Id);
 
 	}
 }

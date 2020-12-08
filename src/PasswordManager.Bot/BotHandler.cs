@@ -48,7 +48,7 @@ namespace PasswordManager.Bot {
 					//ONLY If unauthorized user is admin - bot treats them as new user
 					//Not-admin users must be added to bot by Admin manually
 					//If you want to allow free registration in your bot for any user - disable this admin check
-					if (botService.Admins.Contains(message.From.Id)) {
+					if (botService.IsAdmin(message.From.Id)) {
 						//TODO:
 						//Separate adding new account logic to othee method
 						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
@@ -122,7 +122,7 @@ namespace PasswordManager.Bot {
 					//ONLY If unauthorized user is admin - bot treats them as new user
 					//Not-admin users must be added to bot by Admin manually
 					//If you want to allow free registration in your bot for any user - disable this admin check
-					if (botService.Admins.Contains(callbackQuery.From.Id)) {
+					if (botService.IsAdmin(callbackQuery.From.Id)) {
 						//TODO:
 						//Separate adding new account logic to othee method
 						if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage) {

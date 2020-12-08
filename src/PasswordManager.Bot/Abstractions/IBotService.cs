@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using PasswordManager.Bot.Models;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.Bot.Abstractions {
 
@@ -10,12 +12,7 @@ namespace PasswordManager.Bot.Abstractions {
 	public interface IBotService {
 		public TelegramBotClient Client { get; }
 
-		/// <summary>
-		/// List of admin ids
-		/// </summary>
-		public int[] Admins { get; }
-
-		public Task<bool> SendMessageToAllAdmins(string message);
+		public Task<bool> SendMessageToAllAdmins(string message, ParseMode parseMode = ParseMode.Markdown);
 
 		public bool IsTokenCorrect(string token);
 
@@ -24,6 +21,8 @@ namespace PasswordManager.Bot.Abstractions {
 		/// </summary>
 		public Task TryDeleteMessageAsync(ChatId chatId, int messageId);
 
+		bool IsAdmin(int botUserId);
+		bool IsAdmin(BotUser botUser);
 	}
 }
 

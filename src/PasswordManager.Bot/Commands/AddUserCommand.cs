@@ -17,21 +17,17 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			
-			if(user.Id == botService.AdminId.Identifier)
-			{
-				if (message.Text.Contains(' '))
-				{
-					try
-					{
+
+			if (botService.IsAdmin(user)) {
+				if (message.Text.Contains(' ')) {
+					try {
 						string newUserIdStr = message.Text.Split(' ')[1];
 						int newUserId = Convert.ToInt32(newUserIdStr);
-						PasswordManagerService.AddUser(newUserId, Localization.DefaultLanguageCode);
-						await botService.Client.SendTextMessageAsync(botService.AdminId, "Added new user.\n/userlist");
+						.AddUser(newUserId, Localization.DefaultLanguageCode);
+						await botService.SendMessageToAllAdmins("Added new user.\n/userlist");
 					}
-					catch
-					{
-						await botService.Client.SendTextMessageAsync(botService.AdminId, "Invalid User Id");
+					catch {
+						await botService.SendMessageToAllAdmins("Invalid User Id");
 					}
 					
 				}
