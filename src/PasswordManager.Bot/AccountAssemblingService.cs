@@ -101,6 +101,15 @@ namespace PasswordManager.Bot {
 				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
 		}
 
+		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStage accountAssemblingStage) {
+			AccountAssemblingStage nextAccountAssemblingStage = accountAssemblingStage switch {
+				AccountAssemblingStage.AddLink => AccountAssemblingStage.AddLink + 1,
+				AccountAssemblingStage.AddNote => AccountAssemblingStage.AddNote + 1,
+				AccountAssemblingStage.EncryptPassword => AccountAssemblingStage.EncryptPassword + 1,
+				_ => throw new InvalidOperationException("Only allowed AssemblingStages are allowed to be skipped")
+			};
+		}
+
 		//TODO:
 		//Add enum for assembling property and 
 		//return it to AddAccount command to switch
