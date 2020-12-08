@@ -14,6 +14,8 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Enums;
+using System;
 
 namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand, IActionCommand {
@@ -23,46 +25,71 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
+		//TODO:
+		//Move all these codes to enum and in other places too
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			string accountId = callbackQuery.Data.Substring(2);
-			if (callbackQuery.Data[1] == '0') {
-				await .UpdateAccountAsync(
-					callbackQuery.Message.Chat.Id,
-					callbackQuery.Message.MessageId,
-					accountId,
-					Localization.GetMessage("ChooseWhatUpdate", user.Lang),
-					user.Lang,
-					callbackQuery.Message.Text.Count(x => x == '\n') % 2 == 0,
-					callbackQuery.Message.Text);
+			CallbackQueryCommandCode callbackCommandCode;
+			try {
+				callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
+			} catch (Exception exeption) {
+				//TODO: Log Exception
+				throw;
 			}
-			else if(callbackQuery.Data[1] == 'E') {
-				//Delete Link
-				List<string> accountData = callbackQuery.Message.Text.Split('\n').Skip(2).ToList();
-				accountData.RemoveAt(accountData.Count - 2);
 
-				.DeleteAccountLink(user, accountId);
-				await .UpdateAccountAsync(
-					callbackQuery.Message.Chat.Id,
-					callbackQuery.Message.MessageId,
-					accountId,
-					Localization.GetMessage("LinkDeleted", user.Lang),
-					user.Lang,
-					false,
-					string.Join('\n', accountData));
-			}
-			else {
-				await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-				.SetUserAction(user, UserAction.Update);
-				AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
-				InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
-					.GeneratePasswordButtonMarkup(user.Lang) : 
-					null;
-				Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
-				.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
-					accountId,
-					callbackQuery.Message.MessageId,
-					sentMessage.MessageId,
-					accountDataType);
+			switch (callbackCommandCode) {
+				//TODO: Refactor
+				case CallbackQueryCommandCode.UpdateAccount:
+				string accountId = callbackQuery.Data[2..];
+					if (callbackQuery.Data[1] == '0') {
+						await .UpdateAccountAsync(
+							callbackQuery.Message.Chat.Id,
+							callbackQuery.Message.MessageId,
+							accountId,
+							Localization.GetMessage("ChooseWhatUpdate", user.Lang),
+							user.Lang,
+							callbackQuery.Message.Text.Count(x => x == '\n') % 2 == 0,
+							callbackQuery.Message.Text);
+					}
+					else if(callbackQuery.Data[1] == 'E') {
+						//Delete Link
+						List<string> accountData = callbackQuery.Message.Text.Split('\n').Skip(2).ToList();
+						accountData.RemoveAt(accountData.Count - 2);
+
+						.DeleteAccountLink(user, accountId);
+						await .UpdateAccountAsync(
+							callbackQuery.Message.Chat.Id,
+							callbackQuery.Message.MessageId,
+							accountId,
+							Localization.GetMessage("LinkDeleted", user.Lang),
+							user.Lang,
+							false,
+							string.Join('\n', accountData));
+					}
+					else {
+						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+						.SetUserAction(user, UserAction.Update);
+						AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
+						InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
+							.GeneratePasswordButtonMarkup(user.Lang) : 
+							null;
+						Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
+						.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
+							accountId,
+							callbackQuery.Message.MessageId,
+							sentMessage.MessageId,
+							accountDataType);
+					}
+					break;
+				case CallbackQueryCommandCode.AcceptPassword:
+					if (.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)) {
+						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+						await .UpdateAccountDataAsync(
+							callbackQuery.Message.Text,
+							.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId,
+							callbackQuery.From.Id,
+							user.Lang);
+					}
+					break;
 			}
 		}
 
