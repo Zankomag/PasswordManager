@@ -14,7 +14,7 @@ using PasswordManager.Bot.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand {
+	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
 		//Moved from 
 		public const int MinPasswordLength = 1;
 		//Moved from 
@@ -162,7 +162,7 @@ namespace PasswordManager.Bot.Commands {
 				replyMarkup: inlineKeyBoard);
 		}
 
-		public static async Task UpdateCallBackMessageAsync(ChatId chatId, int messageId, Account account, User user) {
+		public static async Task UpdateCallbackMessageAsync(ChatId chatId, int messageId, Account account, User user) {
 
 			if (account.AccountName == null) {
 				await BotHandler.Bot.EditMessageTextAsync(chatId, messageId,
@@ -239,6 +239,54 @@ namespace PasswordManager.Bot.Commands {
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 			}
+		}
+
+		//TODO: Refactor
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+			CallbackQueryCommandCode callbackCommandCode;
+			try {
+				callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
+			} catch (Exception exeption) {
+				//TODO: Log Exception
+				throw;
+			}
+
+			if (.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
+				switch (callbackCommandCode) {
+					case CallbackQueryCommandCode.SkipLink:
+						//TODO
+						//ADD SKIPLINK in AddAccountModel Type
+						//account.SkipLink = true;
+						if (account.Link != null)
+							account.Link = null;
+						.AssemblingAccounts[user.Id] = account;
+						await AddAccountCommand.UpdateCallBackMessageAsync(
+							callbackQuery.Message.Chat.Id,
+							callbackQuery.Message.MessageId,
+							account,
+							user);
+						break;
+					case CallbackQueryCommandCode.AcceptPassword:
+						//TODO:
+						//ENCRYPT PASSWORD
+						account.Password = callbackQuery.Message.Text;
+						.AssemblingAccounts[user.Id] = account;
+						await AddAccountCommand.UpdateCallBackMessageAsync(
+							callbackQuery.Message.Chat.Id,
+							callbackQuery.Message.MessageId,
+							account,
+							user);
+						break;
+				}
+				
+			} else {
+				await AnswerNewAccountAbsence(callbackQuery.Id, user.Lang);
+			}
+		}
+
+		private async Task AnswerNewAccountAbsence(string callbackQueryId, string langCode) {
+			await botService.Client.AnswerCallbackQueryAsync(callbackQueryId,
+						text: Localization.GetMessage("CantWithoutNewAcc", langCode), showAlert: true);
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) => _eRROR_ throw new NotImplementedException();

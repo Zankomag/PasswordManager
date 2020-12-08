@@ -141,7 +141,6 @@ namespace PasswordManager.Bot {
 					user = MapBotUser(userEntity);
 				}
 
-				//TODO: Rename
 				CallbackQueryCommandCode callbackCommandCode;
 				try {
 					callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
