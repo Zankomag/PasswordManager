@@ -7,6 +7,7 @@ using Serilog;
 using Newtonsoft.Json;
 using PasswordManager.Infrastructure.Data;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Commands;
 using PasswordManager.Core.Repositories;
@@ -37,6 +38,9 @@ namespace PasswordManager.Bot {
 #region Telegram Bot
 			services.AddSingleton<IBotService, BotService>();
 			services.AddSingleton<ICommandFactory, CommandFactory>();
+			services.AddSingleton<IAssembleAccountService, AssembleAccountService>();
+			services.AddSingleton<IUpdateAccountService, UpdateAccountService>();
+
 			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 

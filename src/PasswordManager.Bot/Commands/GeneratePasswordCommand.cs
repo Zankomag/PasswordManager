@@ -64,5 +64,12 @@ namespace PasswordManager.Bot.Commands {
 				parseMode: ParseMode.Markdown);
 			
 		}
+
+		//Moved from PasswordManagerService
+		public static InlineKeyboardMarkup GeneratePasswordButtonMarkup(string langCode) {
+			return new InlineKeyboardMarkup(
+						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
+							CallbackCommandCode.GeneratePassword.ToStringCode()));
+		}
 	}
 }

@@ -84,5 +84,101 @@ namespace PasswordManager.Bot.Commands {
 				replyMarkup: inlineKeyboardMarkup);
 		}
 
+		//Moved from PasswordManagerService
+		private async Task UpdateAccountDataAsync(string data, string accountId, int userId, string langCode) {
+			if (UpdatingAccounts.ContainsKey(userId)) {
+				AccountUpdate accountUpdate = UpdatingAccounts[userId];
+				if (accountUpdate.AccountDataType == AccountDataType.Password) {
+					//TODO: ENCRYPT
+					data = data.Trim();
+				} else if (accountUpdate.AccountDataType == AccountDataType.Link) {
+					data = data.BuildLink();
+				} else {
+					data = data.Trim();
+				}
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+					conn.Execute($"update Account set {accountUpdate.AccountDataType.ToString()} = @data where Id = @accountId and UserId = @userId",
+						new { data, accountId, userId });
+				}
+				UpdatingAccounts.Remove(userId);
+				SetUserAction(userId, UserAction.Search);
+				await ShowAccountById(userId, accountId, langCode, extraMessage: Localization.GetMessage("AccountUpdated", langCode));
+				await BotHandlerService.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[0]);
+				await BotHandlerService.TryDeleteMessageAsync(userId, accountUpdate.MessagetoDeleteId[1]);
+			}
+		}
+
+		//Moved from PasswordManagerService
+		private async Task UpdateAccountAsync(
+			ChatId chatId, int messageId, string accountId, string message,
+			string langCode, bool containsDeleteLinkButton, string messageText) {
+
+			string updateCommandCode = CallbackCommandCode.UpdateAccount.ToStringCode();
+
+			InlineKeyboardButton[] accNameButton =
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📝 " + Localization.GetMessage("AccountName", langCode),
+							updateCommandCode + 'N' + accountId)};
+			InlineKeyboardButton[] linkButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔗 " + Localization.GetMessage("Link", langCode),
+							updateCommandCode + 'R' + accountId) };
+			InlineKeyboardButton[] loginButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📇 " + Localization.GetMessage("Login", langCode),
+							updateCommandCode + 'L' + accountId) };
+			InlineKeyboardButton[] passwordButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔐 " + Localization.GetMessage("Password", langCode),
+							updateCommandCode + 'P' + accountId) };
+			InlineKeyboardButton[] backButton =
+				new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"⏪ " + Localization.GetMessage("Back", langCode),
+							CallbackCommandCode.ShowAccount.ToStringCode() + accountId) };
+
+			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton ?
+				new InlineKeyboardButton[][] {
+						accNameButton,
+						linkButton,
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"🗑 " + Localization.GetMessage("DeleteLink", langCode),
+								updateCommandCode + 'E' + accountId) },
+						loginButton,
+						passwordButton,
+						backButton
+				} :
+				new InlineKeyboardButton[][] {
+						accNameButton,
+						linkButton,
+						loginButton,
+						passwordButton,
+						backButton});
+
+			await BotService.Instance.Client.EditMessageTextAsync(chatId,
+				messageId,
+				message + "\n\n" +
+				((messageText.Count(x => x == '\n') > 3) ?
+					messageText.Substring(messageText.IndexOf('\n') + 2) :
+					messageText),
+				replyMarkup: keyboardMarkup,
+				disableWebPagePreview: true);
+		}
+
+		//Moved from PasswordManagerService
+		private void DeleteAccountLink(User user, string accountId) {
+			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+				if (user != null) {
+					conn.Execute("update Accounts set Link = NULL where Id = @accountId and UserId = @Id",
+						new { accountId, user.Id });
+				}
+			}
+		}
+
 	}
 }

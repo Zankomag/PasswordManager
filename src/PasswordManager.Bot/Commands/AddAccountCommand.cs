@@ -15,6 +15,10 @@ using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand {
+		//Moved from PasswordManagerService
+		public const int MinPasswordLength = 1;
+		//Moved from PasswordManagerService
+		public const int MaxPasswordLength = 2048;
 		private readonly IAccountService accountService;
 
 		public AddAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
@@ -181,6 +185,59 @@ namespace PasswordManager.Bot.Commands {
 			else {
 				PasswordManagerService.AssemblingAccounts.Remove(account.UserId);
 				await SaveToDBAsync(account, user, messageId);
+			}
+		}
+
+		//Moved from PasswordManagerService
+		private async Task<bool> IsLengthExceededAsync(int paramLength, MaxAccountDataLength maxAccountDataLength, int userId, string langCode) {
+			if (paramLength > (int)maxAccountDataLength) {
+				await ReportExceededLength(userId, langCode, maxAccountDataLength);
+				return true;
+			}
+			return false;
+		}
+
+		//Moved from PasswordManagerService
+		private async Task ReportExceededLength(ChatId chatid, string langCode, MaxAccountDataLength maxAccountDataLength) {
+			await BotService.Instance.Client.SendTextMessageAsync(chatid,
+				String.Format(Localization.GetMessage("MaxLength", langCode), Localization.GetMessage(maxAccountDataLength.ToString(), langCode), (int)maxAccountDataLength));
+		}
+
+		//Moved from PasswordManagerService
+		private async Task ShowAccount(ChatId chatId, Account account, string langCode, int messageToEditId = 0, string extraMessage = null) {
+			if (account != null) {
+				string message = account.Link != null ? account.AccountName + "\n" + account.Link + "\n" +
+					Localization.GetMessage("Login", langCode) + ": " + account.Login :
+					account.AccountName + "\n" + Localization.GetMessage("Login", langCode) + ": " + account.Login;
+				var keyboardMarkup = new InlineKeyboardMarkup(
+					new InlineKeyboardButton[][] {
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"🔑 " + Localization.GetMessage("Password", langCode),
+								CallbackCommandCode.ShowPassword.ToStringCode() + account.Id)},
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
+								CallbackCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
+						new InlineKeyboardButton[] {
+							InlineKeyboardButton.WithCallbackData(
+								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
+								CallbackCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
+						new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", langCode),
+							CallbackCommandCode.DeleteMessage.ToStringCode())
+						}
+					});
+				if (extraMessage != null) {
+					message = extraMessage + "\n\n" + message;
+				}
+				if (messageToEditId == 0) {
+					await BotService.Instance.Client.SendTextMessageAsync(chatId, message,
+						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
+				} else {
+					await BotService.Instance.Client.EditMessageTextAsync(chatId, messageToEditId, message,
+						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
+				}
 			}
 		}
 

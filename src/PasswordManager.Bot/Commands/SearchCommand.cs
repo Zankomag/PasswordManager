@@ -6,9 +6,14 @@ using MultiUserLocalization;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
 	public class SearchCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
+		//Moved from PasswordManagerService
+		public const string separator = "\n──────────────────";
+		//Moved from PasswordManagerService
+		private const int maxAccsByPage = 3;
 		private readonly IAccountService accountService;
 
 		public SearchCommand(IBotService botService, IAccountService accountService) : base(botService) {
@@ -35,6 +40,169 @@ namespace PasswordManager.Bot.Commands {
 				await BotHandler.TryDeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 			}
+		}
+
+		//Moved from PasswordManagerService
+		private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
+			if (accountName != null) {
+				//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
+				//So, search string can be no more than 64 - (4(>(2 bytes) + . (2 bytes)) + page.ToString().Length*2) chars
+				int maxLength = (64 - (4/*(> + .)*/ + page.ToString().Length * 2));
+				accountName = accountName.Length <= maxLength ?
+					accountName : accountName.Substring(0, maxLength);
+			}
+			return InlineKeyboardButton.WithCallbackData(
+				next ? "▶️ " + Localization.GetMessage("Next", langCode) :
+					"◀️ " + Localization.GetMessage("Prev", langCode),
+				CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
+				"." + accountName);
+		}
+
+		//Moved from PasswordManagerService
+		public static async Task ShowPage(int userId,
+			string accountName, int page, int pageCount,
+			string langCode, int messageToEditId = 0) {
+
+			List<Account> accounts;
+			if (accountName != null) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+					accounts = conn.Query<Account>(
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
+							"limit @maxAccsByPage offset @Offset",
+						new {
+							userId,
+							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",
+							maxAccsByPage,
+							Offset = page * maxAccsByPage
+						})
+						.ToList();
+				}
+			} else {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+					accounts = conn.Query<Account>(
+						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
+							"limit @maxAccsByPage offset @Offset",
+						new {
+							userId,
+							maxAccsByPage,
+							Offset = page * maxAccsByPage
+						})
+						.ToList();
+				}
+			}
+
+			string message = Localization.GetMessage("Page", langCode) + " " + (page + 1) + "/" + pageCount + "\n";
+			message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, langCode, message);
+
+			//This is first page
+			if (page == 0) {
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(true, page, accountName, langCode)};
+			}
+			//This is last page
+			else if (page == pageCount - 1) {
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(false, page, accountName, langCode)};
+			}
+			//This is middle page
+			else {
+				keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+					GetPageButton(false, page, accountName, langCode),
+					GetPageButton(true, page, accountName, langCode)};
+			}
+
+			if (messageToEditId == 0) {
+				await BotService.Instance.Client.SendTextMessageAsync(userId, message,
+						replyMarkup: new InlineKeyboardMarkup(keyboard),
+						disableWebPagePreview: true);
+			} else {
+				await BotService.Instance.Client.EditMessageTextAsync(userId, messageToEditId, message,
+						replyMarkup: new InlineKeyboardMarkup(keyboard),
+						disableWebPagePreview: true);
+			}
+		}
+
+		//Moved from PasswordManagerService
+		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
+			List<Account> accounts;
+			if (accountName != null) {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+					accounts = conn.Query<Account>(
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
+						new {
+							userId,
+							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
+						}).ToList();
+				}
+			} else {
+				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+					accounts = conn.Query<Account>(
+						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
+						new { userId })
+						.ToList();
+				}
+			}
+
+			string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
+
+			await BotService.Instance.Client.SendTextMessageAsync(userId, message,
+					replyMarkup: new InlineKeyboardMarkup(keyboard),
+					disableWebPagePreview: true);
+		}
+
+		//Moved from PasswordManagerService
+		private static string GetPageMessage(List<Account> accounts,
+			out InlineKeyboardButton[][] keyboard,
+			bool singlePage, string langCode, string message = null) {
+
+			if (message == null)
+				message = "";
+
+			keyboard = new InlineKeyboardButton[singlePage ? accounts.Count : accounts.Count + 1][];
+
+			for (int i = 0; i < accounts.Count; i++) {
+				if (i != 0)
+					message += separator;
+				message += "\n" + accounts[i].AccountName;
+				if (accounts[i].Link != null)
+					message += "\n" + accounts[i].Link;
+				message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
+				keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
+					(i + 1) + "⃣ " + accounts[i].AccountName,
+					CallbackCommandCode.ShowAccount.ToStringCode() + accounts[i].Id.ToString()) };
+			}
+			return message;
+		}
+
+		//Moved from PasswordManagerService
+		/// <param name="chatId"></param>
+		/// <param name="accountName">Send null to find all accounts</param>
+		/// <param name="langCode"></param>
+		/// <returns></returns>
+		public static async Task SearchAccounts(int chatId, string langCode, string accountName = null) {
+
+			int accountCount = GetAccountCount(chatId, accountName);
+
+			if (accountCount == 1) {
+				await ShowAccountByName(chatId, accountName, langCode);
+			} else if (accountCount == 0) {
+				await BotService.Instance.Client.SendTextMessageAsync(chatId,
+					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
+			} else if (accountCount <= maxAccsByPage) {
+				await ShowSinglePage(chatId, accountName, langCode);
+			} else {
+				await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
+			}
+		}
+
+
+		//TODO
+		//optimize with TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+		//https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-5.0#add-paging-to-students-index
+		//
+		//Moved from PasswordManagerService
+		public static int GetPageCount(int accountCount) {
+			return accountCount % maxAccsByPage == 0 ? accountCount / maxAccsByPage : ((accountCount / maxAccsByPage) + 1);
 		}
 
 	}
