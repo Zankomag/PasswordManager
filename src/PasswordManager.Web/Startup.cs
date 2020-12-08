@@ -7,8 +7,12 @@ using Serilog;
 using Newtonsoft.Json;
 using PasswordManager.Infrastructure.Data;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Commands;
 using PasswordManager.Core.Repositories;
 using PasswordManager.Infrastructure.Repository;
+using System.Reflection;
+using System.Linq;
 
 namespace PasswordManager.Bot {
 
@@ -30,9 +34,20 @@ namespace PasswordManager.Bot {
 				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
 			});
 
+#region Telegram Bot
 			services.AddSingleton<IBotService, BotService>();
+			services.AddSingleton<ICommandFactory, CommandFactory>();
 			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+			var botCommands = Assembly.GetAssembly(typeof(IBotCommand))
+				.GetExportedTypes()
+				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass);
+			//Because IEnumerable doesn't have ForEach()
+			foreach(var commandType in botCommands) {
+				services.AddScoped(commandType);
+			}
+#endregion
 
 
 			services.AddControllers()
