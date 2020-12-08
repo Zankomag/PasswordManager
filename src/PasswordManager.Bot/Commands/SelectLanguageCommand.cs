@@ -17,9 +17,6 @@ namespace PasswordManager.Bot.Commands {
 
 		public SelectLanguageCommand(IBotService botService, IUserService userService) : base(botService) {
 			this.userService = userService;
-		}
-
-		public SelectLanguageCommand() {
 			//Set up Choosing Language Keyboard
 			IList<string> icons = Localization.GetIcons();
 			IList<string> langCodes = Localization.GetLangCodes();
@@ -48,14 +45,11 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			string langCode = callbackQuery.Data.Substring(1);
+			string langCode = callbackQuery.Data[1..];
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.DefaultLanguageCode;
-			if (user == null) {
-				PasswordManagerService.AddUser(callbackQuery.From.Id, langCode);
-			} else {
-				PasswordManagerService.SetUserLanguage(user, langCode);
-			}
+
+			PasswordManagerService.SetUserLanguage(user, langCode);
 
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +
