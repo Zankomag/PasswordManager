@@ -1,6 +1,6 @@
-﻿using PasswordManager.Application.Enums;
+﻿using PasswordManager.Bot.Enums;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Models {
 	public class AccountUpdate {
 
 		//TODO:
