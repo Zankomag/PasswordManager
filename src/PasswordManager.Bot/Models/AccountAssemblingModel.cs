@@ -61,7 +61,7 @@ namespace PasswordManager.Bot.Models {
 
 		public bool Encrypted { get; set; }
 
-		public bool SkipLink { get; set; }
+
 
 		public AccountAssemblingStage AccountAssemblingStage { get; set; }
 
