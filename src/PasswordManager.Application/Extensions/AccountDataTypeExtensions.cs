@@ -1,6 +1,6 @@
 ﻿using PasswordManager.Bot.Enums;
 
-namespace PasswordManager.Bot.Extensions {
+namespace PasswordManager.Application.Extensions {
 	public static class AccountDataTypeExtensions {
 		public static MaxAccountDataLength ToMaxAccountDataLength(this AccountDataType value) {
 			return value switch {

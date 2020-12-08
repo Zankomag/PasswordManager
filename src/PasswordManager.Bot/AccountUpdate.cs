@@ -1,4 +1,4 @@
-﻿using PasswordManager.Bot.Enums;
+﻿using PasswordManager.Application.Enums;
 
 namespace PasswordManager.Bot {
 	public class AccountUpdate {

@@ -1,4 +1,5 @@
 ﻿namespace PasswordManager.Bot.Enums {
+
 	public enum CallbackCommandCode { 
 		 SelectLanguage = 'L',
 		 SkipLink = 'S',  
