@@ -47,6 +47,7 @@ namespace PasswordManager.Bot.Extensions {
 			return ((char)setUpPasswordCommandCode).ToString();
 		}
 
+		/// <returns>null if there is no command in message</returns>
 		public static string GetTextCommand(this string messageText) {
 			//Command that starts with '/' may contain args and must be separated from them
 			if (messageText.StartsWith('/')) {
