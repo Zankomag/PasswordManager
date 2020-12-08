@@ -74,11 +74,7 @@ namespace PasswordManager.Bot {
 				}
 
 				if(user == null) {
-					user = new BotUser {
-						Id = userEntity.Id,
-						Lang = userEntity.Lang,
-						Action = userEntity.Action
-					};
+					user = MapBotUser(userEntity);
 				}
 
 				string commandText = message.Text.GetTextCommand();
@@ -132,11 +128,7 @@ namespace PasswordManager.Bot {
 						if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage) {
 							userEntity = await userService
 								.AddUserAsync(callbackQuery.From.Id, Localization.DefaultLanguageCode);
-							user = new BotUser {
-								Id = userEntity.Id,
-								Lang = userEntity.Lang,
-								Action = userEntity.Action
-							};
+							user = MapBotUser(userEntity);
 							await commandFactory.GetCallBackQueryCommand(CallbackCommandCode.SelectLanguage)
 								.ExecuteAsync(callbackQuery, user);
 							return;
@@ -146,11 +138,7 @@ namespace PasswordManager.Bot {
 				}
 
 				if (user == null) {
-					user = new BotUser {
-						Id = userEntity.Id,
-						Lang = userEntity.Lang,
-						Action = userEntity.Action
-					};
+					user = MapBotUser(userEntity);
 				}
 
 				//TODO: Rename
@@ -182,6 +170,14 @@ namespace PasswordManager.Bot {
 				await botService.SendMessageToAllAdmins(message);
 				//TODO: Log exception
 			}
+		}
+
+		private BotUser MapBotUser(User user) {
+			return new BotUser {
+				Id = user.Id,
+				Lang = user.Lang,
+				Action = user.Action
+			};
 		}
 
 	}
