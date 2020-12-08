@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using MultiUserLocalization;
 using PasswordManager.Bot.Extensions;
@@ -20,9 +18,10 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
+		//TODO: refacor
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int accountId;
-			Int32.TryParse(callbackQuery.Data.Substring(2), out accountId);
+			Int32.TryParse(callbackQuery.Data[2..], out accountId);
 			if (callbackQuery.Data[1] == '0') {
 				var keyboardMarkup = new InlineKeyboardMarkup(
 					new InlineKeyboardButton[][] {
@@ -43,12 +42,7 @@ namespace PasswordManager.Bot.Commands {
 						disableWebPagePreview: true);
 			} else {
 				if (accountId != 0) {
-					using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
-						conn.Execute("delete from Accounts where Id = @Id and UserId = @UserId",
-							new {
-								Id = accountId,
-								UserId = user.Id});
-					}
+					await accountService.DeleteAccountAsync(user.Id, accountId);
 					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
