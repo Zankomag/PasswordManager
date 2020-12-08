@@ -17,5 +17,7 @@ namespace PasswordManager.Core.Repositories {
 		Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null);
 		/// <returns>Password and its encryption state info</returns>
 		Task<Account> GetPasswordAsync(int userId, int accountId);
+		/// <returns>True on success</returns>
+		Task<bool> DeleteAccountAsync(int userId, int accountId);
 	}
 }

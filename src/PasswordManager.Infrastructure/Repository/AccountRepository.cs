@@ -64,5 +64,12 @@ namespace PasswordManager.Infrastructure.Repository {
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
+
+		public async Task<bool> DeleteAccountAsync(int userId, int accountId) {
+			var account = await dbSet
+				.Where(x => x.Id == accountId && x.UserId == userId)
+				.FirstOrDefaultAsync();
+			return base.Delete(account);
+		}
 	}
 }

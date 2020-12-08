@@ -25,5 +25,15 @@ namespace PasswordManager.Application.Services {
 
 		public async Task<Account> GetPasswordAsync(int userId, int accountId)
 			=> await workUnit.AccountRepository.GetPasswordAsync(userId, accountId);
+
+		public async Task<bool> DeleteAccountAsync(int userId, int accountId) {
+			if(await workUnit.AccountRepository.DeleteAccountAsync(userId, accountId)) {
+				try {
+					await workUnit.SaveAsync();
+					return true;
+				} catch { }
+			}
+			return false;
+		}
 	}
 }
