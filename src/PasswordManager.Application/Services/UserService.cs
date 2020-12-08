@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PasswordManager.Application.Services.Abstractions;
@@ -27,6 +28,10 @@ namespace PasswordManager.Application.Services {
 		}
 		public async Task<User> GetLangAsync(int userId) 
 			=> await workUnit.UserRepository.GetLangAsync(userId);
+
+		public async Task<IList<User>> GetAllAsync()
+			=> await workUnit.UserRepository.GetAllAsync();
+		
 
 		public async Task UpdateActionAsync(User user) {
 			if (user == null)

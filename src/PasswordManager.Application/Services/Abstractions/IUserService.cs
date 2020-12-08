@@ -1,4 +1,5 @@
 ﻿using PasswordManager.Core.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PasswordManager.Application.Services.Abstractions {
@@ -6,6 +7,8 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<User> AddUserAsync(int userId, string langCode);
 		/// <returns>User with Id and Lang</returns>
 		Task<User> GetLangAsync(int userId);
+		/// <returns>List of user Ids and theis Accounts Count</returns>
+		Task<IList<User>> GetAllAsync();
 		Task UpdateActionAsync(int userId, UserAction action);
 		Task UpdateActionAsync(User user);
 	}

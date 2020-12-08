@@ -4,6 +4,7 @@ using PasswordManager.Core.Repositories;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace PasswordManager.Infrastructure.Repository {
 	public class UserRepository : Repository<User>, IUserRepository {
@@ -17,6 +18,22 @@ namespace PasswordManager.Infrastructure.Repository {
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
+
+		public async Task<IList<User>> GetAllAsync()
+			//=> await base.Get()
+			//	.Select(x => new User { Id = x.Id, Accounts = new List<Account>(x.Accounts.Count) })
+			//	.Include(u => u.Accounts.Count)
+			//	.ToListAsync();
+			//
+			//TODO: 
+			//If this call doesn't work or is not optimazed 
+			//then try call above
+			//If it is too not optimized
+			//then use special UserInfo model with AccountField and cast x.Accounts.Count to it
+			=> await base.Get()
+				.Select(x => new User { Id = x.Id })
+				.Include(u => u.Accounts.Count)
+				.ToListAsync();
 
 		public void UpdateAction(User user) {
 			if (user == null)

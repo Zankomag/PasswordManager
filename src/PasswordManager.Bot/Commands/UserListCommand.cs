@@ -11,6 +11,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
+using User = PasswordManager.Core.Entities.User;
 
 namespace PasswordManager.Bot.Commands {
 	public class UserListCommand: Abstractions.BotCommand, IMessageCommand {
@@ -21,27 +22,22 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			if(user.Id == botService.AdminId.Identifier)
-			{
-				try
-				{
-					List<User> users = null;
-					using (IDbConnection conn = new SQLiteConnection(botService.connString))
-					{
-						users = conn.Query<User>("select Id from Users").ToList();
-					}
+			if(botService.IsAdmin(user)) {
+				try {
+					IList<User> users = await userService.GetAllAsync();
 					string response = string.Empty;
-					for(int i = 0; i < users.Count; i++)
-					{
-						response += (i + 1) + ". [" + users[i].Id + "](tg://user?id=" + users[i].Id + ") \n\n";
+					//TODO: use string builder
+					for(int i = 0; i < users.Count; i++) {
+						response += $"{(i + 1)}. [{ users[i].Id}](tg://user?id={users[i].Id}): {users[i].Accounts.Count}\n\n";
 					}
 					//TODO:
 					//fix @UPwdBot, get bot nickname from bot and save in in bot class
-					await botService.Client.SendTextMessageAsync(botService.AdminId, "All @UPwdBot users:\n\n" + response, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+					await botService.SendMessageToAllAdmins("All @UPwdBot users:\nUser: Number of accounts\n" + response,
+						Telegram.Bot.Types.Enums.ParseMode.Markdown);
 				}
-				catch(Exception ex)
-				{
-					await botService.Client.SendTextMessageAsync(botService.AdminId, "Error occured:\n\n" + ex.ToString());
+				catch(Exception ex) {
+					await botService.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
+					//Log Exception
 				}
 			}
 		}
