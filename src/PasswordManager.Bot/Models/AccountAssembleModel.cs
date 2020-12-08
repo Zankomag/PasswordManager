@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using PasswordManager.Bot.Enums;
 
 namespace PasswordManager.Bot.Models {
+	//TODO: Move validation to Service
 	public class AccountAssembleModel {
 		public long Id { get; set; }
 
@@ -60,6 +62,8 @@ namespace PasswordManager.Bot.Models {
 		public bool Encrypted { get; set; }
 
 		public bool SkipLink { get; set; }
+
+		public AccountAssemblingStage AccountAssemblingStage { get; set; }
 
 		//TODO:
 		//DEbug this
