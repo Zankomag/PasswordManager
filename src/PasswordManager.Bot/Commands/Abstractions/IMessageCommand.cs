@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Commands.Abstractions {
-	public interface IMessageCommand : ICommand {
+	public interface IMessageCommand : IBotCommand {
 		Task ExecuteAsync(Message message, BotUser user);
 	}
 }
