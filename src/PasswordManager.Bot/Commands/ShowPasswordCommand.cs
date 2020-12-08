@@ -24,23 +24,17 @@ namespace PasswordManager.Bot.Commands {
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));
-			Account account;
-			using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
-				account = conn.QueryFirstOrDefault<Account>(
-					"select Password, Encrypted from Accounts where Id = @Id and UserId = @UserId",
-					new {
-						UserId = callbackQuery.From.Id,
-						Id = accountId});
+			int accountId;
+			try {
+				accountId = Convert.ToInt32(callbackQuery.Data[1..]);
+			} catch(Exception exception) {
+				//TODO: Log exception
+				throw;
 			}
+			Account account = await accountService.GetPasswordAsync(user.Id, accountId);
 			if(account!= null) {
-				//TODO
-				//If user does not have hint - don't show "show hint" button, but remember that user failed his key
-				//after he enters right key - send invintation to create hint
-				//
 
-				//TODO
-				//ADD **GOOD CODED** DECRYPTION BY KEY (this is temporary messed working code)
+				
 				if(!account.Encrypted)
 					await botService.Client.SendTextMessageAsync(callbackQuery.From.Id,
 						"`" + account.Password + "`",
@@ -50,8 +44,13 @@ namespace PasswordManager.Bot.Commands {
 						parseMode: ParseMode.Markdown);
 				else {
 					try {
+						//TODO
+						//ADD **GOOD CODED** DECRYPTION BY KEY (this is temporary messed working code)
 						string decryptedPassword = account.Password.Decrypt("supa dupa secret ke");
 					} catch {
+						//TODO
+						//If user does not have hint - don't show "show hint" button, but remember that user failed his key
+						//after he enters right key - send invintation to create hint
 						await botService.Client.SendTextMessageAsync(callbackQuery.From.Id,
 						"`" + account.Password + "`",
 						replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
