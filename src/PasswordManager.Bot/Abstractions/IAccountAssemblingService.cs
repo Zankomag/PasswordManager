@@ -19,8 +19,17 @@ namespace PasswordManager.Bot.Abstractions {
 		Account Release(int userId);
 		AccountAssemblingStage GetCurrentStage(int userId);
 		AccountAssemblingStage GetNextStage(int userId);
+		/// <summary>
+		/// Creates new AssemblingAccoun even if there already is one
+		/// </summary>
+		/// <returns>Next AssemblingState</returns>
+		AccountAssemblingStage Create(int userId);
+		/// <summary>
+		/// Creates new AssemblingAccoun even if there already is one
+		/// </summary>
+		/// <param name="args">Arguments of inline assembling</param>
+		/// <returns>Next AssemblingState</returns>
+		AccountAssemblingStage Create(int userId, string[] args);
 
-		//TODO:
-		//Add method to assembly by hardcoRe (/add <accountName> \n [link] \n <login> \n <password> etc.
 	}
 }

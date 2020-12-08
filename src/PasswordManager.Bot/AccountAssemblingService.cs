@@ -16,6 +16,19 @@ namespace PasswordManager.Bot {
 		}
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
+
+		public AccountAssemblingStage Create(int userId) {
+			AccountAssemblingStage nextAccountAssemblingStage = AccountAssemblingStage.AddAccountName;
+			assemblingAccounts[userId] = new AccountAssemblingModel() {
+				AccountAssemblingStage = nextAccountAssemblingStage,
+				UserId = userId,
+			};
+			return nextAccountAssemblingStage;
+		}
+		//TODO:
+		//Add EncryptionKey in the last arg line in inline assembling
+		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
+
 		public AccountAssemblingStage GetCurrentStage(int userId) {
 			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				return accountAssembleModel.AccountAssemblingStage;
@@ -37,7 +50,6 @@ namespace PasswordManager.Bot {
 				if(accountAssembleModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
 					assemblingAccounts.Remove(userId);
 					return new Account {
-						Id = accountAssembleModel.Id,
 						AccountName = accountAssembleModel.AccountName,
 						UserId = accountAssembleModel.UserId,
 						Link = accountAssembleModel.Link,
