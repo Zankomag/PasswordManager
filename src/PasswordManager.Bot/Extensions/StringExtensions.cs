@@ -46,5 +46,15 @@ namespace PasswordManager.Bot.Extensions {
 		public static string ToStringCode(this SetUpPasswordCommandCode setUpPasswordCommandCode) {
 			return ((char)setUpPasswordCommandCode).ToString();
 		}
+
+		public static string GetTextCommand(this string messageText) {
+			//Command that starts with '/' may contain args and must be separated from them
+			if (messageText.StartsWith('/')) {
+				string commandString = messageText.ToLower();
+				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
+				return cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
+			}
+			return null;
+		}
 	}
 }
