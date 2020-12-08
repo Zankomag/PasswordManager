@@ -30,6 +30,12 @@ namespace PasswordManager.Bot.Abstractions {
 		/// <param name="args">Arguments of inline assembling</param>
 		/// <returns>Next AssemblingState</returns>
 		AccountAssemblingStage Create(int userId, string[] args);
+		/// <summary>
+		/// Adds property of Current AssemblingStage to AccountAssemblingModel
+		/// </summary>
+		/// <param name="property">value of property to add to assembling</param>
+		/// <returns>Next AssemblingStage</returns>
+		AccountAssemblingStage Assemble(int userId, string property);
 
 	}
 }
