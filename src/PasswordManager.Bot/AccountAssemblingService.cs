@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Models;
@@ -37,13 +34,23 @@ namespace PasswordManager.Bot {
 
 		public Account Release(int userId) {
 			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
-				if(accountAssembleModel.)
+				if(accountAssembleModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
+					assemblingAccounts.Remove(userId);
+					return new Account {
+						Id = accountAssembleModel.Id,
+						AccountName = accountAssembleModel.AccountName,
+						UserId = accountAssembleModel.UserId,
+						Link = accountAssembleModel.Link,
+						Note = accountAssembleModel.Note,
+						Login = accountAssembleModel.Login,
+						Password = accountAssembleModel.Password,
+						Encrypted = accountAssembleModel.Encrypted,
+						OutdatedTime = new TimeSpan(0, 0, 0),
+						PasswordUpdatedDate = DateTime.Now,
+					};
+				}
 			}
-		}
-
-		private bool isAssembled(AccountAssemblingModel) {
-			//TODO:
-			//Check all needed fields to be assembled
+			return null;
 		}
 
 		//TODO:
