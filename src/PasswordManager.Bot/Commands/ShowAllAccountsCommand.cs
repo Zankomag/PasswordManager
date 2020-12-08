@@ -6,10 +6,10 @@ using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class ShowAllCommand : Abstractions.BotCommand, IMessageCommand {
+	public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IAccountService accountService;
 
-		public ShowAllCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public ShowAllAccountsCommand(IBotService botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
 		public async Task ExecuteAsync(Message message, BotUser user) {

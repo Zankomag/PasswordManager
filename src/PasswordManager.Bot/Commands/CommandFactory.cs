@@ -46,7 +46,7 @@ namespace PasswordManager.Bot.Commands {
 				{ "/help", typeof(HelpCommand) },
 				{ "/start", typeof(HelpCommand) },
 				{ "/language", typeof(SelectLanguageCommand) },
-				{ "/all", typeof(ShowAllCommand) },
+				{ "/all", typeof(ShowAllAccountsCommand) },
 				{ "/add", typeof(AddAccountCommand) },
 				{ "/cancel", typeof(CancelCommand) },
 				{ "/generator", typeof(SetUpPasswordGeneratorCommand) },
