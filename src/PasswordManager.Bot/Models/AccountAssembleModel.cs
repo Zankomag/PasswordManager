@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace PasswordManager.Bot.Models {
-	public class AssembleAccountModel {
+	public class AccountAssembleModel {
 		public long Id { get; set; }
 
 		public int UserId { get; set; }

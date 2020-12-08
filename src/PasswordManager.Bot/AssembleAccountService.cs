@@ -11,10 +11,10 @@ namespace PasswordManager.Bot {
 	public class AssembleAccountService : IAssembleAccountService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AssembleAccountModel> assemblingAccounts;
+		private readonly Dictionary<int, AccountAssembleModel> assemblingAccounts;
 
 		public AssembleAccountService() {
-			assemblingAccounts = new Dictionary<int, AssembleAccountModel>();
+			assemblingAccounts = new Dictionary<int, AccountAssembleModel>();
 		}
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
@@ -22,7 +22,7 @@ namespace PasswordManager.Bot {
 			non implemented
 		}
 
-		private bool isAssembled(AssembleAccountModel) {
+		private bool isAssembled(AccountAssembleModel) {
 			//TODO:
 			//Check all needed fields to be assembled
 		}

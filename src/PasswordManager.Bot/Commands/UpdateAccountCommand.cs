@@ -73,7 +73,7 @@ namespace PasswordManager.Bot.Commands {
 							.GeneratePasswordButtonMarkup(user.Lang) : 
 							null;
 						Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
-						.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
+						.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdateModel(
 							accountId,
 							callbackQuery.Message.MessageId,
 							sentMessage.MessageId,
@@ -95,7 +95,7 @@ namespace PasswordManager.Bot.Commands {
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (.UpdatingAccounts.ContainsKey(user.Id)) {
-				AccountUpdate accountUpdate = .UpdatingAccounts[user.Id];
+				AccountUpdateModel accountUpdate = .UpdatingAccounts[user.Id];
 				if (!await .IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
 					await .UpdateAccountDataAsync(message.Text, accountUpdate.AccountToUpdateId, user.Id, user.Lang);
 				}
@@ -116,7 +116,7 @@ namespace PasswordManager.Bot.Commands {
 		//Moved from 
 		private async Task UpdateAccountDataAsync(string data, string accountId, int userId, string langCode) {
 			if (UpdatingAccounts.ContainsKey(userId)) {
-				AccountUpdate accountUpdate = UpdatingAccounts[userId];
+				AccountUpdateModel accountUpdate = UpdatingAccounts[userId];
 				if (accountUpdate.AccountDataType == AccountDataType.Password) {
 					//TODO: ENCRYPT
 					data = data.Trim();

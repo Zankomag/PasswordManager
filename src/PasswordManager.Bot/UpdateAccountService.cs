@@ -11,10 +11,10 @@ namespace PasswordManager.Bot {
 	public class UpdateAccountService : IUpdateAccountService {
 		//Updating Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AccountUpdate> updatingAccounts;
+		private readonly Dictionary<int, AccountUpdateModel> updatingAccounts;
 
 		public UpdateAccountService() {
-			updatingAccounts = new Dictionary<int, AccountUpdate>();
+			updatingAccounts = new Dictionary<int, AccountUpdateModel>();
 		}
 	}
 }
