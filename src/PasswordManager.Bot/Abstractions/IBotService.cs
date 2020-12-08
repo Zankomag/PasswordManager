@@ -15,7 +15,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// </summary>
 		public int[] Admins { get; }
 
-		public bool SendMessageToAllAdmins(string message);
+		public Task<bool> SendMessageToAllAdmins(string message);
 
 		public bool IsTokenCorrect(string token);
 

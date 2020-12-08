@@ -101,7 +101,7 @@ namespace PasswordManager.Bot {
 					}
 				}
 			} catch (Exception ex) {
-				botService.SendMessageToAllAdmins(ex.ToString());
+				await botService.SendMessageToAllAdmins(ex.ToString());
 				//TODO: Log Exception
 				throw;
 			}
@@ -162,7 +162,7 @@ namespace PasswordManager.Bot {
 				string message = "EXCEPTION: " + exeption.ToString();
 				if (user != null)
 					message += "\n\nUSER: [user](tg://user?id=" + user.Id.ToString() + ")";
-				botService.SendMessageToAllAdmins(message);
+				await botService.SendMessageToAllAdmins(message);
 				//TODO: Log exception
 			}
 		}

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Microsoft.Extensions.Options;
 using PasswordManager.Bot.Abstractions;
-using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace PasswordManager.Bot {
@@ -42,19 +41,19 @@ namespace PasswordManager.Bot {
 				throw exception;
 			}
 			Admins = botSettings.AdminIds;
-			SetWebhook(botSettings.Domain);
-			ReportStart();
+			SetWebhook(botSettings.Domain).Wait();
+			ReportStart().Wait();
 		}
 
-		private void SetWebhook(string domain) {
+		private async Task SetWebhook(string domain) {
 			try {
-				Client.SetWebhookAsync(
+				await Client.SetWebhookAsync(
 						$"https://{domain}/api/bots/{token}",
 						allowedUpdates: new UpdateType[] {
 					UpdateType.Message,
-					UpdateType.CallbackQuery}).Wait();
+					UpdateType.CallbackQuery});
 			} catch(Exception exception) {
-				SendMessageToAllAdmins("EXception was thrown while setting webhook.\nBot has bot started.\nSee logs for more info.");
+				await SendMessageToAllAdmins("EXception was thrown while setting webhook.\nBot has bot started.\nSee logs for more info.");
 				//TODO
 				//Log exception
 				throw;
@@ -64,14 +63,14 @@ namespace PasswordManager.Bot {
 		/// <summary>
 		/// Bot sends message to all admins indicating that he is running
 		/// </summary>
-		private void ReportStart() {
+		private async Task ReportStart() {
 			string message = "🔴";
-			SendMessageToAllAdmins(message);
+			await SendMessageToAllAdmins(message);
 		}
 
-		private bool SendMessageToAdmin(int adminId, string message) {
+		private async Task<bool> SendMessageToAdmin(int adminId, string message) {
 			try {
-				Client.SendTextMessageAsync(adminId, message, ParseMode.Markdown).Wait();
+				await Client.SendTextMessageAsync(adminId, message, ParseMode.Markdown);
 			} catch {
 				//TODO
 				//Log exception and admin Id and bot Id
@@ -80,15 +79,15 @@ namespace PasswordManager.Bot {
 			return true;
 		}
 
-		public bool SendMessageToAllAdmins(string message) {
+		public async Task<bool> SendMessageToAllAdmins(string message) {
 			if (Admins.Length == 1)
-				return SendMessageToAdmin(Admins[0], message);
+				return await SendMessageToAdmin(Admins[0], message);
 
 			for (int i = 0; i < Admins.Length; i++) {
-				if (!SendMessageToAdmin(Admins[i], message))
+				if (!await SendMessageToAdmin(Admins[i], message))
 					return false;
 				//To prevent bot from being banned for spamming
-				Thread.Sleep(500);
+				await Task.Delay(500);
 			}
 			return true;
 		}
