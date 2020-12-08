@@ -1,4 +1,4 @@
-﻿using PasswordManager.Bot.Types.Enums;
+﻿using PasswordManager.Bot.Enums;
 using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Commands.Abstractions {
