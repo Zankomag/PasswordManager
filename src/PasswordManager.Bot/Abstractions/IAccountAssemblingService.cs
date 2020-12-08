@@ -6,7 +6,7 @@ namespace PasswordManager.Bot.Abstractions {
 	/// This service is responsible for assembling account 
 	/// by Account parts in sequential order
 	/// </summary>
-	public interface IAccountAssembleService {
+	public interface IAccountAssemblingService {
 		/// <summary>
 		/// Deletes assembling account of user
 		/// </summary>

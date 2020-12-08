@@ -8,12 +8,12 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot {
-	public class AccountAssembleService : IAccountAssembleService {
+	public class AccountAssemblingService : IAccountAssemblingService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it
 		private readonly Dictionary<int, AccountAssembleModel> assemblingAccounts;
 
-		public AccountAssembleService() {
+		public AccountAssemblingService() {
 			assemblingAccounts = new Dictionary<int, AccountAssembleModel>();
 		}
 

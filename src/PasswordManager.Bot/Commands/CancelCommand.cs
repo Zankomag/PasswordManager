@@ -10,20 +10,20 @@ using PasswordManager.Core.Entities;
 namespace PasswordManager.Bot.Commands {
 	public class CancelCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
-		private readonly IAccountAssembleService accountAssembleService;
+		private readonly IAccountAssemblingService accountAssemblingService;
 
 		public CancelCommand(IBotService botService,
 			IUserService userService,
-			IAccountAssembleService accountAssembleService)
+			IAccountAssemblingService accountAssemblingService)
 			: base(botService) {
 
 			this.userService = userService;
-			this.accountAssembleService = accountAssembleService;
+			this.accountAssemblingService = accountAssemblingService;
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
-				accountAssembleService.Cancel(user.Id);
+				accountAssemblingService.Cancel(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
