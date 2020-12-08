@@ -19,11 +19,11 @@ namespace PasswordManager.Bot.Commands {
 				PasswordManagerService.AssemblingAccounts.Remove(message.From.Id);
 
 				PasswordManagerService.SetUserAction(user.Id, UserAction.Search);
-				await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
+				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 			else {
-				await BotService.Instance.Client.SendTextMessageAsync(message.From.Id,
+				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("NoCancel", user.Lang));
 			}
 		}

@@ -132,7 +132,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private static async Task SaveToDBAsync(Account account, User user, int messageToEditId = 0) {
-			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
 				account.Id = (long)conn.ExecuteScalar("Insert into Accounts (UserId, AccountName, Link, Login, Password) " +
 					"values (@UserId, @AccountName, @Link, @Login, @Password);" +
 					"select last_insert_rowid()",
@@ -199,7 +199,7 @@ namespace PasswordManager.Bot.Commands {
 
 		//Moved from PasswordManagerService
 		private async Task ReportExceededLength(ChatId chatid, string langCode, MaxAccountDataLength maxAccountDataLength) {
-			await BotService.Instance.Client.SendTextMessageAsync(chatid,
+			await botService.Client.SendTextMessageAsync(chatid,
 				String.Format(Localization.GetMessage("MaxLength", langCode), Localization.GetMessage(maxAccountDataLength.ToString(), langCode), (int)maxAccountDataLength));
 		}
 
@@ -232,10 +232,10 @@ namespace PasswordManager.Bot.Commands {
 					message = extraMessage + "\n\n" + message;
 				}
 				if (messageToEditId == 0) {
-					await BotService.Instance.Client.SendTextMessageAsync(chatId, message,
+					await botService.Client.SendTextMessageAsync(chatId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				} else {
-					await BotService.Instance.Client.EditMessageTextAsync(chatId, messageToEditId, message,
+					await botService.Client.EditMessageTextAsync(chatId, messageToEditId, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 			}

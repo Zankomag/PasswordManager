@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Commands {
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string accountId = callbackQuery.Data.Substring(2);
 			if (callbackQuery.Data[1] == '0') {
-				await PasswordManagerService.UpdateAccountAsync(
+				await .UpdateAccountAsync(
 					callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
 					accountId,
@@ -40,8 +40,8 @@ namespace PasswordManager.Bot.Commands {
 				List<string> accountData = callbackQuery.Message.Text.Split('\n').Skip(2).ToList();
 				accountData.RemoveAt(accountData.Count - 2);
 
-				PasswordManagerService.DeleteAccountLink(user, accountId);
-				await PasswordManagerService.UpdateAccountAsync(
+				.DeleteAccountLink(user, accountId);
+				await .UpdateAccountAsync(
 					callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
 					accountId,
@@ -51,14 +51,14 @@ namespace PasswordManager.Bot.Commands {
 					string.Join('\n', accountData));
 			}
 			else {
-				await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-				PasswordManagerService.SetUserAction(user, UserAction.Update);
+				await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+				.SetUserAction(user, UserAction.Update);
 				AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
 				InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
-					PasswordManagerService.GeneratePasswordButtonMarkup(user.Lang) : 
+					.GeneratePasswordButtonMarkup(user.Lang) : 
 					null;
 				Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
-				PasswordManagerService.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
+				.UpdatingAccounts[callbackQuery.From.Id] = new AccountUpdate(
 					accountId,
 					callbackQuery.Message.MessageId,
 					sentMessage.MessageId,
@@ -67,24 +67,24 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			if (PasswordManagerService.UpdatingAccounts.ContainsKey(user.Id)) {
-				AccountUpdate accountUpdate = PasswordManagerService.UpdatingAccounts[user.Id];
-				if (!await PasswordManagerService.IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
-					await PasswordManagerService.UpdateAccountDataAsync(message.Text, accountUpdate.AccountToUpdateId, user.Id, user.Lang);
+			if (.UpdatingAccounts.ContainsKey(user.Id)) {
+				AccountUpdate accountUpdate = .UpdatingAccounts[user.Id];
+				if (!await .IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
+					await .UpdateAccountDataAsync(message.Text, accountUpdate.AccountToUpdateId, user.Id, user.Lang);
 				}
 			} else {
-				PasswordManagerService.SetUserAction(user, UserAction.Search);
+				.SetUserAction(user, UserAction.Search);
 			}
 		}
 
 		private async Task<Message> RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
-			return await BotService.Instance.Client.SendTextMessageAsync(
+			return await botService.Client.SendTextMessageAsync(
 				chatId,
 				string.Format(Localization.GetMessage("UpdateAccData", langCode), Localization.GetMessage(dataKey, langCode)),
 				replyMarkup: inlineKeyboardMarkup);
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private async Task UpdateAccountDataAsync(string data, string accountId, int userId, string langCode) {
 			if (UpdatingAccounts.ContainsKey(userId)) {
 				AccountUpdate accountUpdate = UpdatingAccounts[userId];
@@ -96,7 +96,7 @@ namespace PasswordManager.Bot.Commands {
 				} else {
 					data = data.Trim();
 				}
-				using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
 					conn.Execute($"update Account set {accountUpdate.AccountDataType.ToString()} = @data where Id = @accountId and UserId = @userId",
 						new { data, accountId, userId });
 				}
@@ -108,7 +108,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private async Task UpdateAccountAsync(
 			ChatId chatId, int messageId, string accountId, string message,
 			string langCode, bool containsDeleteLinkButton, string messageText) {
@@ -160,7 +160,7 @@ namespace PasswordManager.Bot.Commands {
 						passwordButton,
 						backButton});
 
-			await BotService.Instance.Client.EditMessageTextAsync(chatId,
+			await botService.Client.EditMessageTextAsync(chatId,
 				messageId,
 				message + "\n\n" +
 				((messageText.Count(x => x == '\n') > 3) ?
@@ -170,9 +170,9 @@ namespace PasswordManager.Bot.Commands {
 				disableWebPagePreview: true);
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private void DeleteAccountLink(User user, string accountId) {
-			using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
 				if (user != null) {
 					conn.Execute("update Accounts set Link = NULL where Id = @accountId and UserId = @Id",
 						new { accountId, user.Id });

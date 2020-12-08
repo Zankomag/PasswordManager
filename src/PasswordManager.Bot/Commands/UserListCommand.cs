@@ -21,12 +21,12 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			if(user.Id == BotService.Instance.AdminId.Identifier)
+			if(user.Id == botService.AdminId.Identifier)
 			{
 				try
 				{
 					List<User> users = null;
-					using (IDbConnection conn = new SQLiteConnection(BotService.Instance.connString))
+					using (IDbConnection conn = new SQLiteConnection(botService.connString))
 					{
 						users = conn.Query<User>("select Id from Users").ToList();
 					}
@@ -37,11 +37,11 @@ namespace PasswordManager.Bot.Commands {
 					}
 					//TODO:
 					//fix @UPwdBot, get bot nickname from bot and save in in bot class
-					await BotService.Instance.Client.SendTextMessageAsync(BotService.Instance.AdminId, "All @UPwdBot users:\n\n" + response, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+					await botService.Client.SendTextMessageAsync(botService.AdminId, "All @UPwdBot users:\n\n" + response, Telegram.Bot.Types.Enums.ParseMode.Markdown);
 				}
 				catch(Exception ex)
 				{
-					await BotService.Instance.Client.SendTextMessageAsync(BotService.Instance.AdminId, "Error occured:\n\n" + ex.ToString());
+					await botService.Client.SendTextMessageAsync(botService.AdminId, "Error occured:\n\n" + ex.ToString());
 				}
 			}
 		}
