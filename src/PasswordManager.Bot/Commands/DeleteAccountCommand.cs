@@ -29,11 +29,11 @@ namespace PasswordManager.Bot.Commands {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								Localization.GetMessage("ImSure", user.Lang),
-							 CallbackCommandCode.DeleteAccount.ToStringCode() + '1' + accountId)},
+							 CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '1' + accountId)},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"❌ " + Localization.GetMessage("No!", user.Lang),
-								CallbackCommandCode.ShowAccount.ToStringCode() + accountId) },
+								CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
 					});
 
 				await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,

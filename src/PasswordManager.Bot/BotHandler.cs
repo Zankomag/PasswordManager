@@ -125,11 +125,11 @@ namespace PasswordManager.Bot {
 					if (botService.IsAdmin(callbackQuery.From.Id)) {
 						//TODO:
 						//Separate adding new account logic to othee method
-						if (callbackQuery.Data[0] == (char)CallbackCommandCode.SelectLanguage) {
+						if (callbackQuery.Data[0] == (char)CallbackQueryCommandCode.SelectLanguage) {
 							userEntity = await userService
 								.AddUserAsync(callbackQuery.From.Id, Localization.DefaultLanguageCode);
 							user = MapBotUser(userEntity);
-							await commandFactory.GetCallBackQueryCommand(CallbackCommandCode.SelectLanguage)
+							await commandFactory.GetCallBackQueryCommand(CallbackQueryCommandCode.SelectLanguage)
 								.ExecuteAsync(callbackQuery, user);
 							return;
 						}
@@ -142,9 +142,9 @@ namespace PasswordManager.Bot {
 				}
 
 				//TODO: Rename
-				CallbackCommandCode callbackCommandCode;
+				CallbackQueryCommandCode callbackCommandCode;
 				try {
-					callbackCommandCode = (CallbackCommandCode)callbackQuery.Data[0];
+					callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
 				} catch(Exception exeption) {
 					//TODO: Log Exception
 					throw;

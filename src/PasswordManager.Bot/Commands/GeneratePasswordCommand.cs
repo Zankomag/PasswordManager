@@ -50,9 +50,9 @@ namespace PasswordManager.Bot.Commands {
 				new InlineKeyboardButton[][] {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
-							CallbackCommandCode.GeneratePassword.ToStringCode()),
+							CallbackQueryCommandCode.GeneratePassword.ToStringCode()),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-							CallbackCommandCode.AcceptPassword.ToStringCode())
+							CallbackQueryCommandCode.AcceptPassword.ToStringCode())
 					}
 				});
 
@@ -69,7 +69,7 @@ namespace PasswordManager.Bot.Commands {
 		public static InlineKeyboardMarkup GeneratePasswordButtonMarkup(string langCode) {
 			return new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
-							CallbackCommandCode.GeneratePassword.ToStringCode()));
+							CallbackQueryCommandCode.GeneratePassword.ToStringCode()));
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace PasswordManager.Bot.Commands {
 	public class CommandFactory : ICommandFactory {
 		private Dictionary<string, Type> messageCommands;
-		private Dictionary<CallbackCommandCode, Type> callBackQueryCommands;
+		private Dictionary<CallbackQueryCommandCode, Type> callbackQueryCommands;
 		private Dictionary<UserAction, Type> actionCommands;
 
 		private readonly IServiceProvider serviceProvider;
@@ -42,48 +42,61 @@ namespace PasswordManager.Bot.Commands {
 			//Add feature to Re-Init commands at runtime
 
 			//All message commands MUST be in lower case
-			messageCommands = new Dictionary<string, Type> {
-				{ "/help", typeof(HelpCommand) },
-				{ "/start", typeof(HelpCommand) },
-				{ "/language", typeof(SelectLanguageCommand) },
-				{ "/all", typeof(ShowAllAccountsCommand) },
-				{ "/add", typeof(AddAccountCommand) },
-				{ "/cancel", typeof(CancelCommand) },
-				{ "/generator", typeof(SetUpPasswordGeneratorCommand) },
-				{ "/adduser", typeof(AddUserCommand) },
-				{ "/removeuser", typeof(RemoveUserCommand) },
-				{ "/userlist", typeof(UserListCommand) }
-			};
+			messageCommands = new Dictionary<string, Type>();
+			AddMessageCommand("/help", typeof(HelpCommand));
+			AddMessageCommand("/start", typeof(HelpCommand));
+			AddMessageCommand("/language", typeof(SelectLanguageCommand));
+			AddMessageCommand("/all", typeof(ShowAllAccountsCommand));
+			AddMessageCommand("/add", typeof(AddAccountCommand));
+			AddMessageCommand("/cancel", typeof(CancelCommand));
+			AddMessageCommand("/generator", typeof(SetUpPasswordGeneratorCommand));
+			AddMessageCommand("/adduser", typeof(AddUserCommand));
+			AddMessageCommand("/removeuser", typeof(RemoveUserCommand));
+			AddMessageCommand("/userlist", typeof(UserListCommand));
 		}
 
 		private void InitActionCommands() {
-			actionCommands = new Dictionary<UserAction, Type> {
-				{ UserAction.AssembleAccount, typeof(AddAccountCommand) },
-				{ UserAction.Search, typeof(SearchCommand) },
-				{ UserAction.Update, typeof(UpdateAccountCommand) },
-				{ UserAction.UpdatePasswordLength, typeof(SetUpPasswordGeneratorCommand) }
-			};
+			actionCommands = new Dictionary<UserAction, Type>();
+			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
+			AddActionCommand(UserAction.Search, typeof(SearchCommand));
+			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
+			AddActionCommand(UserAction.UpdatePasswordLength, typeof(SetUpPasswordGeneratorCommand));
+			AddActionCommand(UserAction.EnterKey, typeof(ShowPasswordCommand));
 		}
 
 		private void InitCallbackQueryCommands() {
-			callBackQueryCommands = new Dictionary<CallbackCommandCode, Type> {
-				{ CallbackCommandCode.SelectLanguage, typeof(SelectLanguageCommand) },
-				{ CallbackCommandCode.SkipLink, typeof(SkipLinkCommand) },
-				{ CallbackCommandCode.AutoLink, typeof(AutoLinkCommand) },
-				{ CallbackCommandCode.GeneratePassword, typeof(GeneratePasswordCommand) },
-				{ CallbackCommandCode.AcceptPassword, typeof(AcceptPasswordCommand) },
-				{ CallbackCommandCode.Search, typeof(SearchCommand) },
-				{ CallbackCommandCode.ShowPassword, typeof(ShowPasswordCommand) },
-				{ CallbackCommandCode.ShowAccount, typeof(ShowAccountCommand) },
-				{ CallbackCommandCode.DeleteMessage, typeof(DeleteMessageCommand) },
-				{ CallbackCommandCode.UpdateAccount, typeof(UpdateAccountCommand) },
-				{ CallbackCommandCode.DeleteAccount, typeof(DeleteAccountCommand) },
-				{ CallbackCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand) }
-			};
+			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
+			AddCallbackQueryCommand(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.SkipLink, typeof(SkipLinkCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.AutoLink, typeof(AutoLinkCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.GeneratePassword, typeof(GeneratePasswordCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.AcceptPassword, typeof(AcceptPasswordCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.Search, typeof(SearchCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowPassword, typeof(ShowPasswordCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowAccount, typeof(ShowAccountCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteMessage, typeof(DeleteMessageCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateAccount, typeof(UpdateAccountCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
 		}
 
-		public ICallbackQueryCommand GetCallBackQueryCommand(CallbackCommandCode callbackCommandCode) {
-			if(callBackQueryCommands.TryGetValue(callbackCommandCode, out Type type)) 
+		private void AddMessageCommand(string messageCommand, Type commandType) {
+			if (commandType.IsAssignableTo(typeof(IMessageCommand)))
+				messageCommands.Add(messageCommand, commandType);
+		}
+
+		private void AddCallbackQueryCommand(CallbackQueryCommandCode callbackCommandCode, Type commandType) {
+			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand)))
+				callbackQueryCommands.Add(callbackCommandCode, commandType);
+		}
+
+		private void AddActionCommand(UserAction action, Type commandType) {
+			if (commandType.IsAssignableTo(typeof(IActionCommand)))
+				actionCommands.Add(action, commandType);
+		}
+
+		public ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode) {
+			if (callbackQueryCommands.TryGetValue(callbackCommandCode, out Type type))
 				return (ICallbackQueryCommand)serviceProvider.GetService(type);
 			return null;
 		}
@@ -92,9 +105,9 @@ namespace PasswordManager.Bot.Commands {
 				return (IMessageCommand)serviceProvider.GetService(type);
 			return null;
 		}
-		public IMessageCommand GetActionCommand(UserAction action) {
+		public IActionCommand GetActionCommand(UserAction action) {
 			if (actionCommands.TryGetValue(action, out Type type))
-				return (IMessageCommand)serviceProvider.GetService(type);
+				return (IActionCommand)serviceProvider.GetService(type);
 			return null;
 		}
 	}

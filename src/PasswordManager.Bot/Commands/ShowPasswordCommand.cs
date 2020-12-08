@@ -15,7 +15,7 @@ using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+	public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand, IActionCommand {
 		private readonly IAccountService accountService;
 
 		public ShowPasswordCommand(IBotService botService, IAccountService accountService) : base(botService) {
@@ -40,7 +40,7 @@ namespace PasswordManager.Bot.Commands {
 						"`" + account.Password + "`",
 						replyMarkup: new InlineKeyboardMarkup(
 							InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-								CallbackCommandCode.DeleteMessage.ToStringCode())),
+								CallbackQueryCommandCode.DeleteMessage.ToStringCode())),
 						parseMode: ParseMode.Markdown);
 				else {
 					try {
@@ -56,10 +56,10 @@ namespace PasswordManager.Bot.Commands {
 						replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
 							new InlineKeyboardButton[]{
 								InlineKeyboardButton.WithCallbackData("🔁 " + Localization.GetMessage("TryAgain", user.Lang),
-									CallbackCommandCode.EnterEncryptionyonKey.ToStringCode()) },
+									CallbackQueryCommandCode.EnterEncryptionyonKey.ToStringCode()) },
 							new InlineKeyboardButton[] {
 								InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
-										CallbackCommandCode.ShowEncryptionKeyHint.ToStringCode()) }
+										CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode()) }
 						}),
 						parseMode: ParseMode.Markdown);
 					}
@@ -67,7 +67,6 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-
-
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) => _NONIMPLEMENTED_ throw new NotImplementedException();
 	}
 }

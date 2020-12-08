@@ -6,8 +6,8 @@ namespace PasswordManager.Bot.Commands.Abstractions {
 		/// <returns>null in no command found.</returns>
 		IMessageCommand GetMessageCommand(string messageCommand);
 		/// <returns>null in no command found.</returns>
-		IMessageCommand GetActionCommand(UserAction action);
+		IActionCommand GetActionCommand(UserAction action);
 		/// <returns>null in no command found.</returns>
-		ICallbackQueryCommand GetCallBackQueryCommand(CallbackCommandCode callbackCommandCode);
+		ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode);
 	}
 }

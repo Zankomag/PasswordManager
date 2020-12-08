@@ -14,7 +14,7 @@ using PasswordManager.Bot.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand {
+	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand {
 		//Moved from 
 		public const int MinPasswordLength = 1;
 		//Moved from 
@@ -25,7 +25,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (message.Text.StartsWith("/add") && message.Text.Length > 5) {
 				.AssemblingAccounts.Remove(message.From.Id);
 				await AssembleAccountAsync(message, user);
@@ -149,11 +149,11 @@ namespace PasswordManager.Bot.Commands {
 			var inlineKeyBoard = new InlineKeyboardMarkup(
 				new InlineKeyboardButton[][] {
 							new InlineKeyboardButton[] {
-								InlineKeyboardButton.WithCallbackData("🔗 " + accountName.AutoLink(), CallbackCommandCode.AutoLink.ToStringCode())
+								InlineKeyboardButton.WithCallbackData("🔗 " + accountName.AutoLink(), CallbackQueryCommandCode.AutoLink.ToStringCode())
 							},
 							new InlineKeyboardButton[] {
 								InlineKeyboardButton.WithCallbackData(
-									"⏩ " + Localization.GetMessage("Skip",langCode), CallbackCommandCode.SkipLink.ToStringCode())
+									"⏩ " + Localization.GetMessage("Skip",langCode), CallbackQueryCommandCode.SkipLink.ToStringCode())
 							}
 				}
 			);
@@ -214,18 +214,18 @@ namespace PasswordManager.Bot.Commands {
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🔑 " + Localization.GetMessage("Password", langCode),
-								CallbackCommandCode.ShowPassword.ToStringCode() + account.Id)},
+								CallbackQueryCommandCode.ShowPassword.ToStringCode() + account.Id)},
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"✏️ " + Localization.GetMessage("UpdateAcc", langCode),
-								CallbackCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
+								CallbackQueryCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
 						new InlineKeyboardButton[] {
 							InlineKeyboardButton.WithCallbackData(
 								"🗑 " + Localization.GetMessage("DeleteAcc", langCode),
-								CallbackCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
+								CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
 						new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", langCode),
-							CallbackCommandCode.DeleteMessage.ToStringCode())
+							CallbackQueryCommandCode.DeleteMessage.ToStringCode())
 						}
 					});
 				if (extraMessage != null) {
@@ -241,5 +241,6 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) => _eRROR_ throw new NotImplementedException();
 	}
 }

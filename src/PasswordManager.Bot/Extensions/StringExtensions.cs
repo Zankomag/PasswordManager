@@ -39,7 +39,7 @@ namespace PasswordManager.Bot.Extensions {
 			return result;
 		}
 
-		public static string ToStringCode(this CallbackCommandCode callbackCommandCode) {
+		public static string ToStringCode(this CallbackQueryCommandCode callbackCommandCode) {
 			return ((char)callbackCommandCode).ToString();
 		}
 

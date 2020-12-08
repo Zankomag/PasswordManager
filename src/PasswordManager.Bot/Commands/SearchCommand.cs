@@ -9,7 +9,7 @@ using PasswordManager.Application.Services.Abstractions;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
-	public class SearchCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
+	public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
 		//Moved from 
 		public const string separator = "\n──────────────────";
 		//Moved from 
@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
 			await .SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
 

@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Commands {
 
 			InlineKeyboardButton[][] buttons = new InlineKeyboardButton[rowNumber][];
 			int currentLang = 0;
-			string commandCode = CallbackCommandCode.SelectLanguage.ToStringCode();
+			string commandCode = CallbackQueryCommandCode.SelectLanguage.ToStringCode();
 			for (int i = 0; i < rowNumber; i++) {
 				buttons[i] = new InlineKeyboardButton[(langNumber - ((i + 1) * colNumber) >= 0) ? colNumber : (langNumber - (i * colNumber))];
 

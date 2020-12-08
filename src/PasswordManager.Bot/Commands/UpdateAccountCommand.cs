@@ -16,7 +16,7 @@ using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand {
+	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand, IActionCommand {
 		private readonly IAccountService accountService;
 
 		public UpdateAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
@@ -66,7 +66,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		public async Task ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (.UpdatingAccounts.ContainsKey(user.Id)) {
 				AccountUpdate accountUpdate = .UpdatingAccounts[user.Id];
 				if (!await .IsLengthExceededAsync(message.Text.Length, accountUpdate.AccountDataType.ToMaxAccountDataLength(), user.Id, user.Lang)) {
@@ -76,6 +76,8 @@ namespace PasswordManager.Bot.Commands {
 				.SetUserAction(user, UserAction.Search);
 			}
 		}
+
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) _ERRORR_
 
 		private async Task<Message> RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
 			return await botService.Client.SendTextMessageAsync(
@@ -113,7 +115,7 @@ namespace PasswordManager.Bot.Commands {
 			ChatId chatId, int messageId, string accountId, string message,
 			string langCode, bool containsDeleteLinkButton, string messageText) {
 
-			string updateCommandCode = CallbackCommandCode.UpdateAccount.ToStringCode();
+			string updateCommandCode = CallbackQueryCommandCode.UpdateAccount.ToStringCode();
 
 			InlineKeyboardButton[] accNameButton =
 					new InlineKeyboardButton[] {
@@ -139,7 +141,7 @@ namespace PasswordManager.Bot.Commands {
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"⏪ " + Localization.GetMessage("Back", langCode),
-							CallbackCommandCode.ShowAccount.ToStringCode() + accountId) };
+							CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) };
 
 			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton ?
 				new InlineKeyboardButton[][] {
