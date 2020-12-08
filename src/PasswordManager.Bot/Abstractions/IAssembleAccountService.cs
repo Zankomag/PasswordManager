@@ -1,4 +1,4 @@
-﻿
+﻿using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Abstractions {
 
@@ -7,6 +7,17 @@ namespace PasswordManager.Bot.Abstractions {
 	/// by Account parts in sequential order
 	/// </summary>
 	public interface IAssembleAccountService {
+		/// <summary>
+		/// Deletes assembling account of user
+		/// </summary>
+		void Cancel(int userId);
+		/// <summary>
+		/// Releases assembled Account.
+		/// </summary>
+		/// <returns>null if there is no corresponding assembling account or it's not completely assembled</returns>
+		Account Release(int userId);
 
+		//TODO:
+		//Add method to assembly by hardcoRe (/add <accountName> \n [link] \n <login> \n <password> etc.
 	}
 }
