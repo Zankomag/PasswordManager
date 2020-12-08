@@ -1,5 +1,5 @@
 ﻿using PasswordManager.Bot.Commands.Abstractions;
-using PasswordManager.Bot.Types.Enums;
+using PasswordManager.Bot.Enums;
 using PasswordManager.Core.Entities;
 using System;
 using System.Collections.Generic;

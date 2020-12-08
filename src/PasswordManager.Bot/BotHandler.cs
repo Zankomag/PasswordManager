@@ -4,7 +4,7 @@ using PasswordManager.Bot.Abstractions;
 using PasswordManager.Bot.Commands;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Models;
-using PasswordManager.Bot.Types.Enums;
+using PasswordManager.Bot.Enums;
 using PasswordManager.Core.Entities;
 using System;
 using System.Linq;

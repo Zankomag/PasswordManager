@@ -1,5 +1,5 @@
 ﻿
-namespace PasswordManager.Bot.Types.Enums {
+namespace PasswordManager.Bot.Enums {
 	public enum AccountDataType {
 		Password = 'P',
 		AccountName = 'N',

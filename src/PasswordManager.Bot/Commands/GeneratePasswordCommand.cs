@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using MultiUserLocalization;
 using Passwords;
-using PasswordManager.Bot.Types.Enums;
+using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using User = PasswordManager.Core.Entities.User;

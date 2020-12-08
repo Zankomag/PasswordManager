@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using PasswordManager.Bot.Types;
+using PasswordManager.Bot;
 using MultiUserLocalization;
 using Telegram.Bot.Types.ReplyMarkups;
-using PasswordManager.Bot.Types.Enums;
+using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Extensions;
 using System;
 using System.Text;

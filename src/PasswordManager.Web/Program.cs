@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Web {
 	public class Program {
 		public static void Main(string[] args) {
 			var config = new ConfigurationBuilder()

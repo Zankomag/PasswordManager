@@ -15,7 +15,7 @@ using PasswordManager.Infrastructure.Repository;
 using System.Reflection;
 using System.Linq;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Web {
 
 	public class Startup {
 		public Startup(IConfiguration configuration) {
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot {
 				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
 			});
 
-#region Telegram Bot
+			#region Telegram Bot
 			services.AddSingleton<IBotService, BotService>();
 			services.AddSingleton<ICommandFactory, CommandFactory>();
 			services.AddSingleton<IAssembleAccountService, AssembleAccountService>();
@@ -51,7 +51,7 @@ namespace PasswordManager.Bot {
 			foreach(var commandType in botCommands) {
 				services.AddScoped(commandType);
 			}
-#endregion
+			#endregion
 
 
 			services.AddControllers()

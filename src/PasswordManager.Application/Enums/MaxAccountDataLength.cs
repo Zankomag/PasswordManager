@@ -1,4 +1,4 @@
-﻿namespace PasswordManager.Bot.Types.Enums {
+﻿namespace PasswordManager.Bot.Enums {
 	public enum MaxAccountDataLength {
 		AccountName = 60,
 		Link = AccountName + 10,

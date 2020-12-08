@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PasswordManager.Bot.Abstractions;
-using PasswordManager.Bot.Types;
+using PasswordManager.Bot;
 
 namespace PasswordManager.Bot {
 	public class UpdateAccountService : IUpdateAccountService {

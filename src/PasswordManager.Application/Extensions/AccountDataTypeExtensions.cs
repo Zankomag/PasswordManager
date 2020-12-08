@@ -1,4 +1,4 @@
-﻿using PasswordManager.Bot.Types.Enums;
+﻿using PasswordManager.Bot.Enums;
 
 namespace PasswordManager.Bot.Extensions {
 	public static class AccountDataTypeExtensions {
