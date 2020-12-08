@@ -36,11 +36,13 @@ namespace PasswordManager.Bot {
 			return AccountAssemblingStage.None;
 		}
 
+		//TODO:
+		//Delete this method if it's not used
 		public AccountAssemblingStage GetNextStage(int userId) {
 			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				if ((int)accountAssembleModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
 					throw new InvalidOperationException();
-				return accountAssembleModel.AccountAssemblingStage++;
+				return accountAssembleModel.AccountAssemblingStage + 1;
 			}
 			return AccountAssemblingStage.None;
 		}
@@ -63,6 +65,10 @@ namespace PasswordManager.Bot {
 				}
 			}
 			return null;
+		}
+
+		public AccountAssemblingStage Assemble(int userId, string property) {
+
 		}
 
 		//TODO:
