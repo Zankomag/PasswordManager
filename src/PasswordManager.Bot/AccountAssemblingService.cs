@@ -12,22 +12,22 @@ namespace PasswordManager.Bot {
 	public class AccountAssemblingService : IAccountAssemblingService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AccountAssembleModel> assemblingAccounts;
+		private readonly Dictionary<int, AccountAssemblingModel> assemblingAccounts;
 
 		public AccountAssemblingService() {
-			assemblingAccounts = new Dictionary<int, AccountAssembleModel>();
+			assemblingAccounts = new Dictionary<int, AccountAssemblingModel>();
 		}
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
 		public AccountAssemblingStage GetCurrentStage(int userId) {
-			if(assemblingAccounts.TryGetValue(userId, out AccountAssembleModel accountAssembleModel)) {
+			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				return accountAssembleModel.AccountAssemblingStage;
 			}
 			return AccountAssemblingStage.None;
 		}
 
 		public AccountAssemblingStage GetNextStage(int userId) {
-			if (assemblingAccounts.TryGetValue(userId, out AccountAssembleModel accountAssembleModel)) {
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				if ((int)accountAssembleModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
 					throw new InvalidOperationException();
 				return accountAssembleModel.AccountAssemblingStage++;
@@ -36,12 +36,12 @@ namespace PasswordManager.Bot {
 		}
 
 		public Account Release(int userId) {
-			if (assemblingAccounts.TryGetValue(userId, out AccountAssembleModel accountAssembleModel)) {
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				if(accountAssembleModel.)
 			}
 		}
 
-		private bool isAssembled(AccountAssembleModel) {
+		private bool isAssembled(AccountAssemblingModel) {
 			//TODO:
 			//Check all needed fields to be assembled
 		}

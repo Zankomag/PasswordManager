@@ -6,7 +6,7 @@ using PasswordManager.Bot.Enums;
 
 namespace PasswordManager.Bot.Models {
 	//TODO: Move validation to Service
-	public class AccountAssembleModel {
+	public class AccountAssemblingModel {
 		public long Id { get; set; }
 
 		public int UserId { get; set; }
