@@ -20,9 +20,6 @@ namespace PasswordManager.Bot {
 		private readonly IUserService userService;
 		private readonly ICommandFactory commandFactory;
 
-
-		private static readonly SelectLanguageCommand selectLanguageCommand = new SelectLanguageCommand();
-
 		public BotHandler(IBotService botService, IUserService userService, ICommandFactory commandFactory) {
 			this.botService = botService;
 			this.userService = userService;
@@ -43,6 +40,7 @@ namespace PasswordManager.Bot {
 
 		private async Task HandleMessage(Message message) {
 			try {
+				BotUser user = null;
 				User userEntity = await userService.GetLangAsync(message.From.Id);
 				if (userEntity == null) {
 					//User must choose language before be added to db and using any command
@@ -57,22 +55,31 @@ namespace PasswordManager.Bot {
 							userEntity = await userService
 								.AddUserAsync(message.From.Id, message.From.LanguageCode);
 						} else {
-							await selectLanguageCommand.ExecuteAsync(message, new BotUser {
-								Id = message.From.Id,
-								Lang = Localization.DefaultLanguageCode
-							});
+							//TODO: 
+							//Use key from new BotCommand system, not hardcoded
+							//
+							//User is don't added to DB here as in CallbackQuerry Handler
+							//because he should not be treated as registered user
+							//untill he selects language
+							await commandFactory.GetMessageCommand("/language")
+								.ExecuteAsync(message, new BotUser {
+									Id = message.From.Id,
+									Lang = Localization.DefaultLanguageCode
+								});
 							return;
 						}
 					} else {
 						return;
 					}
 				}
-				BotUser user = new BotUser {
-					Id = userEntity.Id,
-					Lang = userEntity.Lang,
-					Action = userEntity.Action
-				};
 
+				if(user == null) {
+					user = new BotUser {
+						Id = userEntity.Id,
+						Lang = userEntity.Lang,
+						Action = userEntity.Action
+					};
+				}
 
 				string commandText = message.Text.GetTextCommand();
 
@@ -97,7 +104,8 @@ namespace PasswordManager.Bot {
 							user.Action = UserAction.Search;
 							await userService.UpdateActionAsync(userEntity);
 						}
-						await commandFactory.GetActionCommand(UserAction.Search).ExecuteAsync(message, user);
+						await commandFactory.GetActionCommand(UserAction.Search)
+							.ExecuteAsync(message, user);
 					}
 				}
 			} catch (Exception ex) {
@@ -129,11 +137,20 @@ namespace PasswordManager.Bot {
 								Lang = userEntity.Lang,
 								Action = userEntity.Action
 							};
-							await selectLanguageCommand.ExecuteAsync(callbackQuery, user);
+							await commandFactory.GetCallBackQueryCommand(CallbackCommandCode.SelectLanguage)
+								.ExecuteAsync(callbackQuery, user);
 							return;
 						}
 					}
 					return;
+				}
+
+				if (user == null) {
+					user = new BotUser {
+						Id = userEntity.Id,
+						Lang = userEntity.Lang,
+						Action = userEntity.Action
+					};
 				}
 
 				//TODO: Rename
