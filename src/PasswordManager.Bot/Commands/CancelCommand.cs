@@ -5,20 +5,26 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Commands {
 	public class CancelCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
+		private readonly IAssembleAccountService assembleAccountService;
 
-		public CancelCommand(IBotService botService, IUserService userService) : base(botService) {
+		public CancelCommand(IBotService botService,
+			IUserService userService,
+			IAssembleAccountService assembleAccountService)
+			: base(botService) {
+
 			this.userService = userService;
+			this.assembleAccountService = assembleAccountService;
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
-				.AssemblingAccounts.Remove(message.From.Id);
-
-				.SetUserAction(user.Id, UserAction.Search);
+				assembleAccountService.Cancel(user.Id);
+				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
