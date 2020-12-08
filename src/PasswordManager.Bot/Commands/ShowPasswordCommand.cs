@@ -4,18 +4,24 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
-using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
-using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Encryption;
+using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class ShowPasswordCommand : ICallbackQueryCommand {
+	public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+
+		public ShowPasswordCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await BotService.Instance.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			int accountId = Convert.ToInt32(callbackQuery.Data.Substring(1));

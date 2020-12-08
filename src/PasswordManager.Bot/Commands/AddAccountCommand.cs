@@ -9,11 +9,17 @@ using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Core.Entities;
-using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AddAccountCommand : IMessageCommand {
+	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand {
+		private readonly IAccountService accountService;
+
+		public AddAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (message.Text.StartsWith("/add") && message.Text.Length > 5) {

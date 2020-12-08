@@ -9,9 +9,17 @@ using System.Linq;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class UserListCommand: IMessageCommand {
+	public class UserListCommand: Abstractions.BotCommand, IMessageCommand {
+		private readonly IUserService userService;
+
+		public UserListCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
+
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{

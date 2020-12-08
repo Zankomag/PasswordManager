@@ -3,9 +3,17 @@ using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class CancelCommand : IMessageCommand {
+	public class CancelCommand : Abstractions.BotCommand, IMessageCommand {
+		private readonly IUserService userService;
+
+		public CancelCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
+
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
 				PasswordManagerService.AssemblingAccounts.Remove(message.From.Id);

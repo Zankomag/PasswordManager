@@ -10,9 +10,22 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class GeneratePasswordCommand : ICallbackQueryCommand {
+	public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+		private readonly IUserService userService;
+
+		public GeneratePasswordCommand(IBotService botService,
+			IAccountService accountService, 
+			IUserService userService)
+			: base(botService) {
+
+			this.accountService = accountService;
+			this.userService = userService;
+		}
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string password;
 			try {

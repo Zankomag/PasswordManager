@@ -6,9 +6,18 @@ using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AcceptPasswordCommand : ICallbackQueryCommand {
+	public class AcceptPasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+
+		public AcceptPasswordCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
+
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (user.Action == UserAction.AssembleAccount) {
 				if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {

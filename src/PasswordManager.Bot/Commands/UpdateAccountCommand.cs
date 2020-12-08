@@ -12,9 +12,17 @@ using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class UpdateAccountCommand : ICallbackQueryCommand, IMessageCommand {
+	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand {
+		private readonly IAccountService accountService;
+
+		public UpdateAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string accountId = callbackQuery.Data.Substring(2);
 			if (callbackQuery.Data[1] == '0') {

@@ -42,7 +42,7 @@ namespace PasswordManager.Bot {
 
 			var botCommands = Assembly.GetAssembly(typeof(IBotCommand))
 				.GetExportedTypes()
-				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass);
+				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
 			//Because IEnumerable doesn't have ForEach()
 			foreach(var commandType in botCommands) {
 				services.AddScoped(commandType);

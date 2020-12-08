@@ -6,9 +6,16 @@ using System;
 using System.Data;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class RemoveUserCommand : IMessageCommand {
+	public class RemoveUserCommand : Abstractions.BotCommand, IMessageCommand {
+		private readonly IUserService userService;
+
+		public RemoveUserCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{

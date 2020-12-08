@@ -4,12 +4,20 @@ using PasswordManager.Bot.Types;
 using MultiUserLocalization;
 using System;
 using PasswordManager.Bot.Commands.Abstractions;
-using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AddUserCommand : IMessageCommand {
+	public class AddUserCommand : Abstractions.BotCommand, IMessageCommand {
+		private readonly IUserService userService;
+
+		public AddUserCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
+
 		public async Task ExecuteAsync(Message message, BotUser user) {
+			
 			if(user.Id == BotService.Instance.AdminId.Identifier)
 			{
 				if (message.Text.Contains(' '))

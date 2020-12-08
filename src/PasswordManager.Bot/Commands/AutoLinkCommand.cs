@@ -6,9 +6,17 @@ using MultiUserLocalization;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class AutoLinkCommand : ICallbackQueryCommand {
+	public class AutoLinkCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+
+		public AutoLinkCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				if (account.AccountName != null) {

@@ -13,10 +13,18 @@ using System.Linq;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 
-	public class SetUpPasswordGeneratorCommand : IMessageCommand, ICallbackQueryCommand {
+	public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
+		private readonly IUserService userService;
+
+		public SetUpPasswordGeneratorCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
+
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.UpdatePasswordLength) {
 				await SendGeneratorSettings(user, message);

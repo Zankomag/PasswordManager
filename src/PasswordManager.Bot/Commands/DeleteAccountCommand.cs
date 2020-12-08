@@ -9,9 +9,17 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class DeleteAccountCommand : ICallbackQueryCommand {
+	public class DeleteAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+
+		public DeleteAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int accountId;
 			Int32.TryParse(callbackQuery.Data.Substring(2), out accountId);

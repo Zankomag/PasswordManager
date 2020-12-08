@@ -24,6 +24,23 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private void InitMessageCommands() {
+			//TODO:
+			//Set commands to telegram bot from file using setMyCommands
+			//Check them through getMeCommands first if they match local commands
+			//and change on telegram if not
+			//Store commands in json file in format
+			//{
+			//	"Help": {
+			//		"Command": "help",
+			//		"Description" : "Get help"
+			//	}
+			//}
+			//And cast to Telegram.Bot.Types.BotCommand objects on startup
+			//And then use them here by Telegram.Bot.Types.BotCommand.Command key and in HelpCommand command
+			//
+			//TODO:
+			//Add feature to Re-Init commands at runtime
+
 			//All message commands MUST be in lower case
 			messageCommands = new Dictionary<string, Type> {
 				{ "/help", typeof(HelpCommand) },

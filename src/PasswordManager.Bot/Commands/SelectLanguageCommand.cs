@@ -7,10 +7,17 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Types.Enums;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class SelectLanguageCommand : IMessageCommand, ICallbackQueryCommand {
+	public class SelectLanguageCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
 		private readonly InlineKeyboardMarkup inlineKeyboard;
+		private readonly IUserService userService;
+
+		public SelectLanguageCommand(IBotService botService, IUserService userService) : base(botService) {
+			this.userService = userService;
+		}
 
 		public SelectLanguageCommand() {
 			//Set up Choosing Language Keyboard

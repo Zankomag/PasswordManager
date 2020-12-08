@@ -4,9 +4,17 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
-	public class SearchCommand : IMessageCommand, ICallbackQueryCommand{
+	public class SearchCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
+		private readonly IAccountService accountService;
+
+		public SearchCommand(IBotService botService, IAccountService accountService) : base(botService) {
+			this.accountService = accountService;
+		}
+
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
