@@ -27,6 +27,11 @@ namespace PasswordManager.Bot {
 		}
 		//TODO:
 		//Add EncryptionKey in the last arg line in inline assembling
+		// /add AccountName \n Login => Ask for password? then for encryptionKey
+		// /add AccountName \n Login \n Password => Ask for encryptionKey
+		// /add AccountName \n Login \n Password \n EncryptionKey
+		// /add AccountName \n Link \n Login \n Password \n EncryptionKey
+		// /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
 		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
 
 		public AccountAssemblingStage GetCurrentStage(int userId) {
@@ -41,7 +46,7 @@ namespace PasswordManager.Bot {
 		public AccountAssemblingStage GetNextStage(int userId) {
 			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
 				if ((int)accountAssembleModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
-					throw new InvalidOperationException();
+					throw new InvalidOperationException("AccountAssembling is on last (Release) stage");
 				return accountAssembleModel.AccountAssemblingStage + 1;
 			}
 			return AccountAssemblingStage.None;
@@ -66,9 +71,34 @@ namespace PasswordManager.Bot {
 			}
 			return null;
 		}
-
+		//TODO: Add SkipLink method => Change stage++
+		//TODO: Add SkipNote method => Change stage++
+		//TODO: Add SetPasswordEncrypted method
 		public AccountAssemblingStage Assemble(int userId, string property) {
-
+			if (property == null)
+				throw new ArgumentNullException(nameof(property));
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssembleModel)) {
+				switch (accountAssembleModel.AccountAssemblingStage) {
+					case AccountAssemblingStage.AddAccountName:
+						accountAssembleModel.AccountName = property;
+						break;
+					case AccountAssemblingStage.AddLink:
+						accountAssembleModel.Link = property;
+						break;
+					case AccountAssemblingStage.AddNote:
+						accountAssembleModel.Note = property;
+						break;
+					case AccountAssemblingStage.AddLogin:
+						accountAssembleModel.Login = property;
+						break;
+					case AccountAssemblingStage.AddPassword:
+						accountAssembleModel.Password = property;
+						break;
+				}
+				return accountAssembleModel.AccountAssemblingStage++;
+			}
+			throw new InvalidOperationException(
+				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
 		}
 
 		//TODO:
