@@ -52,5 +52,6 @@
 	"Length": "Length: ",
 	"EnterLength": "Enter new password length between {0} and {1} characters.",
 	"WrongLength": "Please enter number from {0} to {1}.",
-	"ShowHint": "Show hint"
+	"ShowHint": "Show hint",
+	"UnknownCommand": "Unknown command"
 }
