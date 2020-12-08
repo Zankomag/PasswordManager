@@ -10,9 +10,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
 	public class SearchCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
-		//Moved from PasswordManagerService
+		//Moved from 
 		public const string separator = "\n──────────────────";
-		//Moved from PasswordManagerService
+		//Moved from 
 		private const int maxAccsByPage = 3;
 		private readonly IAccountService accountService;
 
@@ -21,17 +21,17 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang, message.Text);
+			await .SearchAccounts(message.From.Id, user.Lang, message.Text);
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			int page = Convert.ToInt32(callbackQuery.Data.Substring(1, callbackQuery.Data.IndexOf('.')-1));
 			string accountName = callbackQuery.Data.Length != (callbackQuery.Data.IndexOf('.') + 1) ?
 				callbackQuery.Data.Substring(callbackQuery.Data.IndexOf('.') + 1) : null;
-			int accountCount = PasswordManagerService.GetAccountCount(callbackQuery.From.Id, accountName);
+			int accountCount = .GetAccountCount(callbackQuery.From.Id, accountName);
 			if(accountCount != 0) {
-				await PasswordManagerService.ShowPage(callbackQuery.From.Id, accountName, page,
-					PasswordManagerService.GetPageCount(accountCount),
+				await .ShowPage(callbackQuery.From.Id, accountName, page,
+					.GetPageCount(accountCount),
 					user.Lang, callbackQuery.Message.MessageId);
 				await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			} else {
@@ -42,7 +42,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
 			if (accountName != null) {
 				//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
@@ -58,7 +58,7 @@ namespace PasswordManager.Bot.Commands {
 				"." + accountName);
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		public static async Task ShowPage(int userId,
 			string accountName, int page, int pageCount,
 			string langCode, int messageToEditId = 0) {
@@ -122,7 +122,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 			List<Account> accounts;
 			if (accountName != null) {
@@ -150,7 +150,7 @@ namespace PasswordManager.Bot.Commands {
 					disableWebPagePreview: true);
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		private static string GetPageMessage(List<Account> accounts,
 			out InlineKeyboardButton[][] keyboard,
 			bool singlePage, string langCode, string message = null) {
@@ -174,7 +174,7 @@ namespace PasswordManager.Bot.Commands {
 			return message;
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		/// <param name="chatId"></param>
 		/// <param name="accountName">Send null to find all accounts</param>
 		/// <param name="langCode"></param>
@@ -200,7 +200,7 @@ namespace PasswordManager.Bot.Commands {
 		//optimize with TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 		//https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-5.0#add-paging-to-students-index
 		//
-		//Moved from PasswordManagerService
+		//Moved from 
 		public static int GetPageCount(int accountCount) {
 			return accountCount % maxAccsByPage == 0 ? accountCount / maxAccsByPage : ((accountCount / maxAccsByPage) + 1);
 		}

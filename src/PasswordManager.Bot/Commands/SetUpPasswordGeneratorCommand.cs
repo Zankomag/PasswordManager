@@ -32,21 +32,21 @@ namespace PasswordManager.Bot.Commands {
 				int length;
 				try {
 					length = Convert.ToInt32(message.Text);
-					if(length < PasswordManagerService.MinPasswordLength || length > PasswordManagerService.MaxPasswordLength) {
+					if(length < .MinPasswordLength || length > .MaxPasswordLength) {
 						await botService.Client.SendTextMessageAsync(message.From.Id,
 							"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
-							PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
+							.MinPasswordLength, .MaxPasswordLength));
 						return;
 					}
 					user.GenPattern = user.GenPattern.Substring(0, 6) + length.ToString();
-					PasswordManagerService.SetUserPasswordPattern(user, user.GenPattern);
-					PasswordManagerService.SetUserAction(user, UserAction.Search);
+					.SetUserPasswordPattern(user, user.GenPattern);
+					.SetUserAction(user, UserAction.Search);
 					await SendGeneratorSettings(user, message);
 				}
 				catch(Exception) {
 					await botService.Client.SendTextMessageAsync(message.From.Id,
 						"⛓️ " + String.Format(Localization.GetMessage("WrongLength", user.Lang),
-						PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
+						.MinPasswordLength, .MaxPasswordLength));
 				}
 			}
 			
@@ -84,7 +84,7 @@ namespace PasswordManager.Bot.Commands {
 					//WTF?????
 					if (oldPassword == password)
 					{
-						PasswordManagerService.SetUserPasswordPattern(user, Password.DefaultPasswordGeneratorPattern);
+						.SetUserPasswordPattern(user, Password.DefaultPasswordGeneratorPattern);
 						password = user.GenPattern.GeneratePasswordByPattern();
 						if(oldPassword != password)
 						{
@@ -94,7 +94,7 @@ namespace PasswordManager.Bot.Commands {
 				}
 			}
 			catch (ArgumentException) {
-				PasswordManagerService.SetUserPasswordPattern(user);
+				.SetUserPasswordPattern(user);
 				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);
 				user.GenPattern = Password.DefaultPasswordGeneratorPattern;
 			}
@@ -230,13 +230,13 @@ namespace PasswordManager.Bot.Commands {
 				case SetUpPasswordCommandCode.Length:
 					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 						"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
-						PasswordManagerService.MinPasswordLength, PasswordManagerService.MaxPasswordLength));
-					PasswordManagerService.SetUserAction(user, UserAction.UpdatePasswordLength);
+						.MinPasswordLength, .MaxPasswordLength));
+					.SetUserAction(user, UserAction.UpdatePasswordLength);
 				return;
 			}
 
 			user.GenPattern = sb.ToString() + user.GenPattern.Substring(6);
-			PasswordManagerService.SetUserPasswordPattern(user, user.GenPattern);
+			.SetUserPasswordPattern(user, user.GenPattern);
 			string messageText = GetMessageText(ref user, callbackQuery.Message.Text);
 			
 			var keyboard = GetGeneratorSettingsKeyboard(user);

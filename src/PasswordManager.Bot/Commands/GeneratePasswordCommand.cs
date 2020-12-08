@@ -31,7 +31,7 @@ namespace PasswordManager.Bot.Commands {
 			try {
 				password = user.GenPattern.GeneratePasswordByPattern();
 			} catch (ArgumentException ex) {
-				PasswordManagerService.SetUserPasswordPattern(user);
+				.SetUserPasswordPattern(user);
 				await botService.Client.SendTextMessageAsync(
 					callbackQuery.From.Id,
 					ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
@@ -41,7 +41,7 @@ namespace PasswordManager.Bot.Commands {
 			if (password.Length > (int)MaxAccountDataLength.Password) {
 				string genPattern = user.GenPattern.Remove(6) + ((int)MaxAccountDataLength.Password).ToString();
 				password = Password.GeneratePasswordByPattern(genPattern);
-				PasswordManagerService.SetUserPasswordPattern(user, genPattern);
+				.SetUserPasswordPattern(user, genPattern);
 			}
 
 			password = password.Trim();
@@ -65,7 +65,7 @@ namespace PasswordManager.Bot.Commands {
 			
 		}
 
-		//Moved from PasswordManagerService
+		//Moved from 
 		public static InlineKeyboardMarkup GeneratePasswordButtonMarkup(string langCode) {
 			return new InlineKeyboardMarkup(
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),

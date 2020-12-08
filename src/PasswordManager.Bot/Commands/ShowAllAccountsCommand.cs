@@ -13,7 +13,7 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 		public async Task ExecuteAsync(Message message, BotUser user) {
-			await PasswordManagerService.SearchAccounts(message.From.Id, user.Lang);
+			await .SearchAccounts(message.From.Id, user.Lang);
 		}
 
 	}

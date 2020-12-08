@@ -49,7 +49,7 @@ namespace PasswordManager.Bot.Commands {
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.DefaultLanguageCode;
 
-			PasswordManagerService.SetUserLanguage(user, langCode);
+			.SetUserLanguage(user, langCode);
 
 			await BotHandler.Bot.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", langCode) + "\n\n" +

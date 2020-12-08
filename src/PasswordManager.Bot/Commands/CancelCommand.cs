@@ -16,9 +16,9 @@ namespace PasswordManager.Bot.Commands {
 
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
-				PasswordManagerService.AssemblingAccounts.Remove(message.From.Id);
+				.AssemblingAccounts.Remove(message.From.Id);
 
-				PasswordManagerService.SetUserAction(user.Id, UserAction.Search);
+				.SetUserAction(user.Id, UserAction.Search);
 				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}

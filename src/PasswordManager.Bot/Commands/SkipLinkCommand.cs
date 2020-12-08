@@ -17,13 +17,13 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		public async Task ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			if (PasswordManagerService.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
+			if (.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				//TODO
 				//ADD SKIPLINK CKECK
 				//account.SkipLink = true;
 				if (account.Link != null)
 					account.Link = null;
-				PasswordManagerService.AssemblingAccounts[user.Id] = account;
+				.AssemblingAccounts[user.Id] = account;
 				await AddAccountCommand.UpdateCallBackMessageAsync(
 					callbackQuery.Message.Chat.Id,
 					callbackQuery.Message.MessageId,
