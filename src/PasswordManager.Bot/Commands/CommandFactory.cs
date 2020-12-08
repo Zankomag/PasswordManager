@@ -24,6 +24,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private void InitMessageCommands() {
+			//All message commands MUST be in lower case
 			messageCommands = new Dictionary<string, Type> {
 				{ "/help", typeof(HelpCommand) },
 				{ "/start", typeof(HelpCommand) },
