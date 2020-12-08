@@ -18,19 +18,20 @@ namespace PasswordManager.Infrastructure.Repository {
 			return await query.AsNoTracking().CountAsync();
 		}
 
-		public async Task<IEnumerable<Account>> GetByNameAsync(int userId, string accountName = null) {
+		public async Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null) {
 			var query = GetByUser(userId);
 			if (accountName != null)
-				query = query.Where(x => x.AccountName.Contains(accountName))
-					;
+				query = query.Where(x => x.AccountName.Contains(accountName));
 			return await query
+				.AsNoTracking()
 				.Select(a => new Account() {
 					Id = a.Id,
 					AccountName = a.AccountName,
 					Link = a.Link,
 					Login = a.Login,
 				})
-				.AsNoTracking()
+				.Skip(page * pageSize)
+				.Take(pageSize)
 				.ToListAsync();
 		}
 		public async Task<Account> GetFullAsync(int userId, int accountId) {

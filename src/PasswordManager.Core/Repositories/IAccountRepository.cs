@@ -14,7 +14,7 @@ namespace PasswordManager.Core.Repositories {
 		/// <returns>Full Account info without password</returns>
 		Task<Account> GetFullAsync(int userId, int accountId);
 		/// <returns>List of basic Account info found by <paramref name="accountName"/></returns>
-		Task<IEnumerable<Account>> GetByNameAsync(int userId, string accountName = null);
+		Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null);
 		/// <returns>Password and its encryption state info</returns>
 		Task<Account> GetPasswordAsync(int userId, int accountId);
 	}
