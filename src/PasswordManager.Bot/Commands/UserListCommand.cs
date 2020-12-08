@@ -24,7 +24,7 @@ namespace PasswordManager.Bot.Commands {
 		public async Task ExecuteAsync(Message message, BotUser user) {
 			if(botService.IsAdmin(user)) {
 				try {
-					IList<User> users = await userService.GetAllAsync();
+					IList<User> users = await userService.GetAllBasicInfoAsync();
 					string response = string.Empty;
 					//TODO: use string builder
 					for(int i = 0; i < users.Count; i++) {

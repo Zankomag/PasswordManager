@@ -26,11 +26,11 @@ namespace PasswordManager.Application.Services {
 			await workUnit.SaveAsync();
 			return user;
 		}
-		public async Task<User> GetLangAsync(int userId) 
-			=> await workUnit.UserRepository.GetLangAsync(userId);
+		public async Task<User> GetUserWithLangAsync(int userId) 
+			=> await workUnit.UserRepository.GetUserWithLangAsync(userId);
 
-		public async Task<IList<User>> GetAllAsync()
-			=> await workUnit.UserRepository.GetAllAsync();
+		public async Task<IList<User>> GetAllBasicInfoAsync()
+			=> await workUnit.UserRepository.GetAllBasicInfoAsync();
 		
 
 		public async Task UpdateActionAsync(User user) {

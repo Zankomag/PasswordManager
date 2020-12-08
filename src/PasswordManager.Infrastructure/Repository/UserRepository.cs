@@ -12,14 +12,14 @@ namespace PasswordManager.Infrastructure.Repository {
 
 		private IQueryable<User> GetUser(int id) => dbSet.Where(x => x.Id == id);
 
-		public async Task<User> GetLangAsync(int userId) {
+		public async Task<User> GetUserWithLangAsync(int userId) {
 			return await GetUser(userId)
 				.Select(x => new User { Id = userId, Lang = x.Lang})
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 
-		public async Task<IList<User>> GetAllAsync()
+		public async Task<IList<User>> GetAllBasicInfoAsync()
 			//=> await base.Get()
 			//	.Select(x => new User { Id = x.Id, Accounts = new List<Account>(x.Accounts.Count) })
 			//	.Include(u => u.Accounts.Count)

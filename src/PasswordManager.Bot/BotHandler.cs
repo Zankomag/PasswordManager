@@ -41,7 +41,7 @@ namespace PasswordManager.Bot {
 		private async Task HandleMessage(Message message) {
 			try {
 				BotUser user = null;
-				User userEntity = await userService.GetLangAsync(message.From.Id);
+				User userEntity = await userService.GetUserWithLangAsync(message.From.Id);
 				if (userEntity == null) {
 					//User must choose language before be added to db and using any command
 					//
@@ -115,7 +115,7 @@ namespace PasswordManager.Bot {
 		private async Task HandleCallbackQuery(CallbackQuery callbackQuery) {
 			BotUser user = null;
 			try {
-				User userEntity = await userService.GetLangAsync(callbackQuery.From.Id);
+				User userEntity = await userService.GetUserWithLangAsync(callbackQuery.From.Id);
 				if (userEntity == null) {
 					//Add new user to db when he selected language for the first time
 					//
