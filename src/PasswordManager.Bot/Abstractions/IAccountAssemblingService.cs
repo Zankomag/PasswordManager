@@ -37,14 +37,10 @@ namespace PasswordManager.Bot.Abstractions {
 		/// <returns>Next AssemblingStage</returns>
 		AccountAssemblingStage Assemble(int userId, string property);
 		/// <summary>
-		/// Skips allowed AccountAssemblingStage
+		/// Skips AccountAssemblingStage
 		/// </summary>
-		/// <param name="accountAssemblingStage">Stage to skip. Allowed values are:
-		/// <see cref="AccountAssemblingStage.AddLink"/>
-		/// <see cref="AccountAssemblingStage.AddNote"/>
-		/// <see cref="AccountAssemblingStage.EncryptPassword"/></param>
 		/// <returns>Next AssemblingStage</returns>
-		AccountAssemblingStage SkipStage(int userId, AccountAssemblingStage accountAssemblingStage);
+		AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip);
 
 	}
 }

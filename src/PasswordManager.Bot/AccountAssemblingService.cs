@@ -103,19 +103,13 @@ namespace PasswordManager.Bot {
 				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
 		}
 
-		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStage accountAssemblingStage) {
-			AccountAssemblingModel accountAssemblingModel = null;
-			if (!assemblingAccounts.TryGetValue(userId, out accountAssemblingModel)) {
+		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip) {
+			if (!assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				throw new InvalidOperationException("AccountAssembling doesn't exist.");
 			}
-			AccountAssemblingStage nextAccountAssemblingStage = accountAssemblingStage switch {
-				AccountAssemblingStage.AddLink => ++accountAssemblingStage,
-				AccountAssemblingStage.AddNote => ++accountAssemblingStage,
-				AccountAssemblingStage.EncryptPassword => ++accountAssemblingStage,
-				_ => throw new InvalidOperationException("Only allowed AssemblingStages are allowed to be skipped")
-			};
-			accountAssemblingModel.AccountAssemblingStage = nextAccountAssemblingStage;
-			return nextAccountAssemblingStage;
+			//TODO:
+			//Make sure ++ works correkt here
+			return accountAssemblingModel.AccountAssemblingStage = (AccountAssemblingStage)(++accountAssemblingStageSkip);
 		}
 
 		//TODO:
