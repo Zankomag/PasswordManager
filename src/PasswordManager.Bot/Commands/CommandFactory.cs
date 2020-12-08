@@ -70,7 +70,7 @@ namespace PasswordManager.Bot.Commands {
 			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
 
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.SkipLink, typeof(SkipLinkCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.SkipLink, typeof(AddAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.AutoLink, typeof(AutoLinkCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.GeneratePassword, typeof(GeneratePasswordCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.AcceptPassword, typeof(AcceptPasswordCommand));
