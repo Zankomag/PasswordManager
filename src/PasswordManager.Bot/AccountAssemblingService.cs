@@ -71,9 +71,8 @@ namespace PasswordManager.Bot {
 			}
 			return null;
 		}
-		//TODO: Add SkipLink method => Change stage++
-		//TODO: Add SkipNote method => Change stage++
-		//TODO: Add SetPasswordEncrypted method
+
+		//TODO: Add SetEncryptedPassword method
 		public AccountAssemblingStage Assemble(int userId, string property) {
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -94,8 +93,11 @@ namespace PasswordManager.Bot {
 					case AccountAssemblingStage.AddPassword:
 						accountAssemblingModel.Password = property;
 						break;
+					case AccountAssemblingStage.EncryptPassword:
+						accountAssemblingModel.Password = property;
+						break;
 				}
-				return accountAssemblingModel.AccountAssemblingStage++;//TODO ++int
+				return ++accountAssemblingModel.AccountAssemblingStage;
 			}
 			throw new InvalidOperationException(
 				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
