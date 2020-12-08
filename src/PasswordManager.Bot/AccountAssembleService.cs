@@ -8,12 +8,12 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot {
-	public class AssembleAccountService : IAssembleAccountService {
+	public class AccountAssembleService : IAccountAssembleService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it
 		private readonly Dictionary<int, AccountAssembleModel> assemblingAccounts;
 
-		public AssembleAccountService() {
+		public AccountAssembleService() {
 			assemblingAccounts = new Dictionary<int, AccountAssembleModel>();
 		}
 
@@ -30,5 +30,7 @@ namespace PasswordManager.Bot {
 		//TODO:
 		//Add enum for assembling property and 
 		//return it to AddAccount command to switch
+		//AddAccountCommand should have NextStep switch case along with above
+		//So Assemble Account Service should bother about assembling steps
 	}
 }
