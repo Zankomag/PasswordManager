@@ -1,4 +1,5 @@
 ﻿using PasswordManager.Bot.Enums;
+using System;
 
 namespace PasswordManager.Bot.Extensions {
 	public static class StringExtensions {
@@ -56,6 +57,33 @@ namespace PasswordManager.Bot.Extensions {
 				return cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
 			}
 			return null;
+		}
+
+		//TODO:
+		//unit test
+		/// <param name="commandText">command with args</param>
+		/// <returns>All commands args separated by new line, except command itself</returns>
+		public static string[] GetCommandArgsByNewLine(this string commandText) {
+			if (commandText == null)
+				throw new ArgumentNullException(nameof(commandText));
+			if (commandText[0] != '/')
+				throw new ArgumentException("command must start with '/'", nameof(commandText));
+			int indexOfSpace = commandText.IndexOf(' ');
+			int indexOfNewLine = commandText.IndexOf('\n');
+			int firstArgStartIndex; //Equals to length of /command + space|\n after it
+			//Assign to firstArgStartIndex lowest index + 1 if it's not -1
+			if (indexOfSpace == -1) {
+				if (indexOfNewLine == -1)
+					return null;
+				firstArgStartIndex = indexOfNewLine + 1;
+			} else {
+				firstArgStartIndex = indexOfNewLine == -1 
+					? indexOfSpace + 1
+					: indexOfNewLine < indexOfSpace
+					? indexOfNewLine : indexOfSpace;
+			}
+			return commandText.Remove(0, firstArgStartIndex)
+				.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }
