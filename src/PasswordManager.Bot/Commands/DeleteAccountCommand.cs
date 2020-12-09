@@ -41,8 +41,7 @@ namespace PasswordManager.Bot.Commands {
 						replyMarkup: keyboardMarkup,
 						disableWebPagePreview: true);
 			} else {
-				if (accountId != 0) {
-					await accountService.DeleteAccountAsync(user.Id, accountId);
+				if(accountId != 0 && await accountService.DeleteAccountAsync(user.Id, accountId)) {
 					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
