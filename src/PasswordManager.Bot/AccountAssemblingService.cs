@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using PasswordManager.Application.Encryption;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 
@@ -25,14 +27,65 @@ namespace PasswordManager.Bot {
 			};
 			return nextAccountAssemblingStage;
 		}
-		//TODO:
-		//Add EncryptionKey in the last arg line in inline assembling
-		// /add AccountName \n Login => Ask for password? then for encryptionKey
-		// /add AccountName \n Login \n Password => Ask for encryptionKey
-		// /add AccountName \n Login \n Password \n EncryptionKey
-		// /add AccountName \n Link \n Login \n Password \n EncryptionKey
-		// /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
-		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
+		//TODO: Rename EncryptPassword to AddEncryptionKey
+
+		// [2] /add AccountName \n Login => Ask for password? then for encryptionKey
+		// [3] /add AccountName \n Login \n Password => Ask for encryptionKey
+		// [4] /add AccountName \n Login \n Password \n EncryptionKey
+		// [5] /add AccountName \n Link \n Login \n Password \n EncryptionKey
+		// [6] /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
+		public AccountAssemblingStage Create(int userId, string[] args) {
+			var accountAssemblingModel = new AccountAssemblingModel() {
+				AccountAssemblingStage = AccountAssemblingStage.AddAccountName,
+				UserId = userId,
+			};
+
+			if (args == null || args.Length == 0) {
+				assemblingAccounts[userId] = accountAssemblingModel;
+				return accountAssemblingModel.AccountAssemblingStage;
+			}
+
+			accountAssemblingModel.AccountName = args[0];
+			switch (args.Length) {
+				case 1:
+					break;
+				case 2:
+					accountAssemblingModel.Login = args[1];
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.AddPassword;
+					break;
+				case 3:
+					accountAssemblingModel.Login = args[1];
+					accountAssemblingModel.Password = args[2];
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.EncryptPassword;
+					break;
+				case 4:
+					accountAssemblingModel.Login = args[1];
+					accountAssemblingModel.Password = args[2].Encrypt(args[3]);
+					accountAssemblingModel.Encrypted = true;
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
+					break;
+				case 5:
+					accountAssemblingModel.Link = args[1].BuildLink();
+					accountAssemblingModel.Login = args[2];
+					accountAssemblingModel.Password = args[3].Encrypt(args[4]);
+					accountAssemblingModel.Encrypted = true;
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
+					break;
+				case 6:
+					accountAssemblingModel.Link = args[1].BuildLink();
+					accountAssemblingModel.Note = args[2];
+					accountAssemblingModel.Login = args[3];
+					accountAssemblingModel.Password = args[4].Encrypt(args[5]);
+					accountAssemblingModel.Encrypted = true;
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
+					break;
+				default:
+					throw new ArgumentException("Too many arguments", nameof(args));
+			}
+
+			assemblingAccounts[userId] = accountAssemblingModel;
+			return accountAssemblingModel.AccountAssemblingStage;
+		}
 
 		public AccountAssemblingStage GetCurrentStage(int userId) {
 			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
@@ -91,7 +144,7 @@ namespace PasswordManager.Bot {
 						accountAssemblingModel.Password = property;
 						break;
 					case AccountAssemblingStage.EncryptPassword:
-						accountAssemblingModel.Password = property;
+						accountAssemblingModel.Password = property.Encrypt(property);
 						break;
 					case AccountAssemblingStage.Release:
 						throw new InvalidOperationException("Account is already assembled.");

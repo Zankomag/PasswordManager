@@ -24,7 +24,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// <summary>
 		/// Creates new AssemblingAccoun even if there already is one
 		/// </summary>
-		/// <param name="args">Arguments of inline assembling</param>
+		/// <param name="args">inline Arguments of account to assemble</param>
 		/// <returns>Next AssemblingState</returns>
 		AccountAssemblingStage Create(int userId, string[] args);
 		/// <summary>
