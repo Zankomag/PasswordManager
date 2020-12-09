@@ -44,9 +44,10 @@ namespace PasswordManager.Application.Services {
 			await workUnit.AccountRepository.AddAsync(account);
 			try {
 				await workUnit.SaveAsync();
+				return true;
 			} catch(Exception exception) {
 				//TODO: Log exception
-				throw;
+				return false;
 			}
 		}
 	}
