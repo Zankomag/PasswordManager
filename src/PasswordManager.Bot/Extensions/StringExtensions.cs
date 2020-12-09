@@ -50,6 +50,8 @@ namespace PasswordManager.Bot.Extensions {
 
 		/// <returns>null if there is no command in message</returns>
 		public static string GetTextCommand(this string messageText) {
+			//TODO:
+			//remove '/' from returned message when using new commands without /
 			if (messageText == null)
 				throw new ArgumentNullException(nameof(messageText));
 			//Command that starts with '/' may contain args and must be separated from them

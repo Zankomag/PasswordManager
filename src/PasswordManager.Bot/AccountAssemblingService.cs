@@ -62,6 +62,7 @@ namespace PasswordManager.Bot {
 					accountAssemblingModel.Encrypted = true;
 					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
 					break;
+				default:
 				case 6:
 					accountAssemblingModel.Link = args[1].BuildLink();
 					accountAssemblingModel.Note = args[2];
@@ -70,8 +71,6 @@ namespace PasswordManager.Bot {
 					accountAssemblingModel.Encrypted = true;
 					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
 					break;
-				default:
-					throw new ArgumentException("Too many arguments", nameof(args));
 			}
 
 			assemblingAccounts[userId] = accountAssemblingModel;
@@ -155,17 +154,5 @@ namespace PasswordManager.Bot {
 			return accountAssemblingModel.AccountAssemblingStage = ((AccountAssemblingStage)accountAssemblingStageSkip) + 1;
 		}
 
-		//TODO:
-		//Add enum for assembling property and 
-		//return it to AddAccount command to switch
-		//AddAccountCommand should have NextStep switch case along with above
-		//So Assemble Account Service should bother about assembling steps
-		//
-		//TODO:
-		//After user enters password (or accepts it via button)
-		//It has option to enter EncryptionKey 
-		//There is invintation to enter key message that holds 2 buttons:
-		//first button allows to skip password encryption
-		//second button shows Encryption key hint
 	}
 }
