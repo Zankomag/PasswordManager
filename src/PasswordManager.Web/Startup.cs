@@ -37,9 +37,10 @@ namespace PasswordManager.Web {
 
 			#region Telegram Bot
 			services.AddSingleton<IBotService, BotService>();
+			services.AddSingleton<IBotUIService, BotUIService>();
 			services.AddSingleton<ICommandFactory, CommandFactory>();
-			services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
 			services.AddSingleton<IAccountUpdateService, AccountUpdateService>();
+			services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
 
 			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
