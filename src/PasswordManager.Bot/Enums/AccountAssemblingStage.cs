@@ -7,7 +7,7 @@ namespace PasswordManager.Bot.Enums {
 		AddNote,
 		AddLogin,
 		AddPassword,
-		EncryptPassword,
+		AddEncryptionKey,
 		Release
 	}
 }

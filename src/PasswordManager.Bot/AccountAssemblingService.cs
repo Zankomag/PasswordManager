@@ -19,8 +19,6 @@ namespace PasswordManager.Bot {
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
 
-		//TODO: Rename EncryptPassword to AddEncryptionKey
-
 		// [2] /add AccountName \n Login => Ask for password? then for encryptionKey
 		// [3] /add AccountName \n Login \n Password => Ask for encryptionKey
 		// [4] /add AccountName \n Login \n Password \n EncryptionKey
@@ -48,7 +46,7 @@ namespace PasswordManager.Bot {
 				case 3:
 					accountAssemblingModel.Login = args[1];
 					accountAssemblingModel.Password = args[2];
-					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.EncryptPassword;
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.AddEncryptionKey;
 					break;
 				case 4:
 					accountAssemblingModel.Login = args[1];
@@ -135,7 +133,7 @@ namespace PasswordManager.Bot {
 					case AccountAssemblingStage.AddPassword:
 						accountAssemblingModel.Password = property;
 						break;
-					case AccountAssemblingStage.EncryptPassword:
+					case AccountAssemblingStage.AddEncryptionKey:
 						accountAssemblingModel.Password = property.Encrypt(property);
 						break;
 					case AccountAssemblingStage.Release:
