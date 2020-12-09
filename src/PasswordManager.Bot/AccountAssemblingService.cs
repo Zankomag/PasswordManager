@@ -74,7 +74,6 @@ namespace PasswordManager.Bot {
 			return null;
 		}
 
-		//TODO: Add SetEncryptedPassword method
 		public AccountAssemblingStage Assemble(int userId, string property) {
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -98,6 +97,10 @@ namespace PasswordManager.Bot {
 					case AccountAssemblingStage.EncryptPassword:
 						accountAssemblingModel.Password = property;
 						break;
+					case AccountAssemblingStage.Release:
+						throw new InvalidOperationException("Account is already assembled.");
+					default:
+						throw new InvalidOperationException("Unexpected Account Assembling Stage");
 				}
 				return ++accountAssemblingModel.AccountAssemblingStage;
 			}
