@@ -35,5 +35,19 @@ namespace PasswordManager.Application.Services {
 			}
 			return false;
 		}
+
+		public async Task<bool> AddAccountAsync(int userId, Account account) {
+			if (userId != account.UserId) {
+				//TODO: Log exception
+				throw new ArgumentException("account.UserId doesn't match userId");
+			}
+			await workUnit.AccountRepository.AddAsync(account);
+			try {
+				await workUnit.SaveAsync();
+			} catch(Exception exception) {
+				//TODO: Log exception
+				throw;
+			}
+		}
 	}
 }

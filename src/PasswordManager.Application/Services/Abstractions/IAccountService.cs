@@ -15,5 +15,6 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<Account> GetPasswordAsync(int userId, int accountId);
 		/// <returns>True on success</returns>
 		Task<bool> DeleteAccountAsync(int userId, int accountId);
+		Task<bool> AddAccountAsync(int userId, Account account);
 	}
 }
