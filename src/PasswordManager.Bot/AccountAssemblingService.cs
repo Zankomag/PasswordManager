@@ -34,8 +34,6 @@ namespace PasswordManager.Bot {
 		// /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
 		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
 
-		//TODO:
-		//Delete this method if it's not used
 		public AccountAssemblingStage GetCurrentStage(int userId) {
 			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				return accountAssemblingModel.AccountAssemblingStage;
@@ -43,12 +41,10 @@ namespace PasswordManager.Bot {
 			return AccountAssemblingStage.None;
 		}
 
-		//TODO:
-		//Delete this method if it's not used
 		public AccountAssemblingStage GetNextStage(int userId) {
 			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
-				if ((int)accountAssemblingModel.AccountAssemblingStage > (int)AccountAssemblingStage.Release)
-					throw new InvalidOperationException("AccountAssembling is on last (Release) stage");
+				if (accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release)
+					throw new InvalidOperationException("Account is already assembled");
 				return accountAssemblingModel.AccountAssemblingStage + 1;
 			}
 			return AccountAssemblingStage.None;
