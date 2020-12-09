@@ -34,6 +34,8 @@ namespace PasswordManager.Bot {
 		// /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
 		public AccountAssemblingStage Create(int userId, string[] args) => throw new NotImplementedException();
 
+		//TODO:
+		//Delete this method if it's not used
 		public AccountAssemblingStage GetCurrentStage(int userId) {
 			if(assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				return accountAssemblingModel.AccountAssemblingStage;
@@ -107,9 +109,7 @@ namespace PasswordManager.Bot {
 			if (!assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				throw new InvalidOperationException("AccountAssembling doesn't exist.");
 			}
-			//TODO:
-			//Make sure ++ works correkt here
-			return accountAssemblingModel.AccountAssemblingStage = (AccountAssemblingStage)(++accountAssemblingStageSkip);
+			return accountAssemblingModel.AccountAssemblingStage = ((AccountAssemblingStage)accountAssemblingStageSkip) + 1;
 		}
 
 		//TODO:

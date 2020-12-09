@@ -12,10 +12,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// Deletes assembling account of user
 		/// </summary>
 		void Cancel(int userId);
-		/// <summary>
-		/// Releases assembled Account.
-		/// </summary>
-		/// <returns>null if there is no corresponding assembling account or it's not completely assembled</returns>
+		/// <returns>Assembled Account or null if there is no corresponding assembling account or it's not completely assembled</returns>
 		Account Release(int userId);
 		AccountAssemblingStage GetCurrentStage(int userId);
 		AccountAssemblingStage GetNextStage(int userId);
