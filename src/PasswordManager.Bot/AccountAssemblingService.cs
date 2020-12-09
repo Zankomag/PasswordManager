@@ -18,8 +18,8 @@ namespace PasswordManager.Bot {
 		}
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
-
-		// [2] /add AccountName \n Login => Ask for password? then for encryptionKey
+		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for encryptionKey
+		// [2] /add AccountName \n Login => Ask for password => Ask for encryptionKey
 		// [3] /add AccountName \n Login \n Password => Ask for encryptionKey
 		// [4] /add AccountName \n Login \n Password \n EncryptionKey
 		// [5] /add AccountName \n Link \n Login \n Password \n EncryptionKey
@@ -38,6 +38,7 @@ namespace PasswordManager.Bot {
 			accountAssemblingModel.AccountName = args[0];
 			switch (args.Length) {
 				case 1:
+					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.AddLink;
 					break;
 				case 2:
 					accountAssemblingModel.Login = args[1];
