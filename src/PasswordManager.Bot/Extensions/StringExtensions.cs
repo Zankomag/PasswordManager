@@ -50,6 +50,8 @@ namespace PasswordManager.Bot.Extensions {
 
 		/// <returns>null if there is no command in message</returns>
 		public static string GetTextCommand(this string messageText) {
+			if (messageText == null)
+				throw new ArgumentNullException(nameof(messageText));
 			//Command that starts with '/' may contain args and must be separated from them
 			if (messageText.StartsWith('/')) {
 				string commandString = messageText.ToLower();
