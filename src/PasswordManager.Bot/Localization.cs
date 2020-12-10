@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace MultiUserLocalization {
 	public class Localization {
+		//TODO:
+		//Add class with all text variables and
+		//if variable has arguments that it has to be private and accept needed variables
 
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }

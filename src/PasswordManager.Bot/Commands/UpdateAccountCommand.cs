@@ -14,7 +14,6 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
-using PasswordManager.Application.Enums;
 using System;
 
 namespace PasswordManager.Bot.Commands {

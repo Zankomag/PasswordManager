@@ -18,6 +18,7 @@ namespace PasswordManager.Bot {
 		}
 
 		public void Cancel(int userId) => assemblingAccounts.Remove(userId);
+
 		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for encryptionKey
 		// [2] /add AccountName \n Login => Ask for password => Ask for encryptionKey
 		// [3] /add AccountName \n Login \n Password => Ask for encryptionKey

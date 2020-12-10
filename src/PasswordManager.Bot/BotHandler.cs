@@ -73,9 +73,7 @@ namespace PasswordManager.Bot {
 					}
 				}
 
-				if(user == null) {
-					user = MapBotUser(userEntity);
-				}
+				user ??= MapBotUser(userEntity);
 
 				string commandText = message.Text.GetTextCommand();
 
@@ -136,10 +134,8 @@ namespace PasswordManager.Bot {
 					}
 					return;
 				}
-
-				if (user == null) {
-					user = MapBotUser(userEntity);
-				}
+					
+				user ??= MapBotUser(userEntity);
 
 				CallbackQueryCommandCode callbackCommandCode;
 				try {
