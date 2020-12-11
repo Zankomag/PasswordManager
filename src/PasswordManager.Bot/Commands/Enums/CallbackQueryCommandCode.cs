@@ -1,11 +1,8 @@
-﻿namespace PasswordManager.Bot.Enums {
+﻿namespace PasswordManager.Bot.Commands.Enums {
 
 	public enum CallbackQueryCommandCode { 
 		 SelectLanguage = 'L',
-		 SkipLink = 'S',  
-		 AutoLink = 'A',
 		 GeneratePassword = 'G',
-		 AcceptPassword = 'Z',
 		 Search = 'Q', 
 		 ShowPassword = 'P',
 		 ShowAccount = 'O',
@@ -13,7 +10,6 @@
 		 UpdateAccount = 'U',
 		 DeleteAccount = 'X',
 		 SetUpPasswordGenerator = 'T',
-		 EnterEncryptionyonKey = 'E',
 		 ShowEncryptionKeyHint = 'H'
 	}
 }
