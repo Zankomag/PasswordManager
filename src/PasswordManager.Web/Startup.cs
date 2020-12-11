@@ -14,6 +14,8 @@ using PasswordManager.Core.Repositories;
 using PasswordManager.Infrastructure.Repository;
 using System.Reflection;
 using System.Linq;
+using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Application.Services;
 
 namespace PasswordManager.Web {
 
@@ -53,6 +55,12 @@ namespace PasswordManager.Web {
 			foreach(var commandType in botCommands) {
 				services.AddScoped(commandType);
 			}
+			#endregion
+			#region Application
+			services.AddSingleton<IApplicationService, ApplicationService>();
+
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IAccountService, AccountService>();
 			#endregion
 
 

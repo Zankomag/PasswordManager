@@ -6,7 +6,6 @@ namespace PasswordManager.Bot {
 	/// </summary>
 	public class BotSettings {
 		public string Token { get; set; }
-		public int[] AdminIds { get; set; }
 		/// <summary>
 		/// Domain which Telegram will send webhook requests to
 		/// </summary>
