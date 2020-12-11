@@ -23,7 +23,8 @@ namespace PasswordManager.Bot.Commands {
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if (user.Action != UserAction.Search) {
-				accountAssemblingService.Cancel(user.Id);
+				if(user.Action == UserAction.AssembleAccount)
+					accountAssemblingService.Cancel(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				await botService.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
