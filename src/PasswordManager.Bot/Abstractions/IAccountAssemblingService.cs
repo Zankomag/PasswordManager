@@ -33,6 +33,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// </summary>
 		/// <returns>Next AssemblingStage</returns>
 		AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip);
+		string GetAccountName(int userId);
 
 	}
 }

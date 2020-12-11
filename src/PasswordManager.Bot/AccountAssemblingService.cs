@@ -155,5 +155,12 @@ namespace PasswordManager.Bot {
 			return accountAssemblingModel.AccountAssemblingStage = ((AccountAssemblingStage)accountAssemblingStageSkip) + 1;
 		}
 
+		public string GetAccountName(int userId) {
+			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				if (accountAssemblingModel.AccountName != null)
+					return accountAssemblingModel.AccountName;
+			}
+			throw new InvalidOperationException("AssemblingAccount doesn't have name yet");
+		}
 	}
 }
