@@ -9,7 +9,7 @@ namespace PasswordManager.Core.Entities {
 		AssembleAccount = 1,
 		Update = 2,
 		UpdatePasswordLength = 3,
-		EnterKey = 4
+		EnterDecriptionKey = 4
 	}
 
 	public class User {

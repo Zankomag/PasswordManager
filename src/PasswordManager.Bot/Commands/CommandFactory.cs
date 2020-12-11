@@ -63,7 +63,7 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.Search, typeof(SearchCommand));
 			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
 			AddActionCommand(UserAction.UpdatePasswordLength, typeof(SetUpPasswordGeneratorCommand));
-			AddActionCommand(UserAction.EnterKey, typeof(ShowPasswordCommand));
+			AddActionCommand(UserAction.EnterDecriptionKey, typeof(ShowPasswordCommand));
 		}
 
 		private void InitCallbackQueryCommands() {
