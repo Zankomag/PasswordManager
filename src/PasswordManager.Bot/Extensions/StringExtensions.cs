@@ -1,6 +1,6 @@
-﻿using PasswordManager.Bot.Enums;
-using System.Text;
+﻿using System.Text;
 using System;
+using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot.Extensions {
 	public static class StringExtensions {
@@ -50,12 +50,29 @@ namespace PasswordManager.Bot.Extensions {
 			return result;
 		}
 
-		public static string ToStringCode(this CallbackQueryCommandCode callbackCommandCode) {
-			return ((char)callbackCommandCode).ToString();
+		public static string ToStringCode(this CallbackQueryCommandCode callbackCommandCode) 
+			=> ((char)callbackCommandCode).ToString();
+
+		/// <param name="setUpPasswordGeneratorCommandCode"></param>
+		/// <returns><see cref="CallbackQueryCommandCode.SetUpPasswordGenerator"/> + setUpPasswordGeneratorCommandCode</returns>
+		public static string ToStringCode(this SetUpPasswordCommandCode setUpPasswordGeneratorCommandCode) {
+			StringBuilder commandBuilder 
+				= new StringBuilder(
+					((char)CallbackQueryCommandCode.SetUpPasswordGenerator)
+						.ToString());
+			return commandBuilder
+				.Append((char)setUpPasswordGeneratorCommandCode)
+				.ToString();
 		}
 
-		public static string ToStringCode(this SetUpPasswordCommandCode setUpPasswordCommandCode) {
-			return ((char)setUpPasswordCommandCode).ToString();
+		/// <param name="addAccountCommandCode"></param>
+		/// <returns><see cref="CallbackQueryCommandCode.AddAccount"/> + addAccountCommandCode</returns>
+		public static string ToStringCode(this AddAccountCommandCode addAccountCommandCode) {
+			StringBuilder commandBuilder
+				= new StringBuilder(
+					((char)CallbackQueryCommandCode.AddAccount)
+						.ToString());
+			return (commandBuilder.Append((char)addAccountCommandCode).ToString());
 		}
 
 		/// <returns>null if there is no command in message</returns>

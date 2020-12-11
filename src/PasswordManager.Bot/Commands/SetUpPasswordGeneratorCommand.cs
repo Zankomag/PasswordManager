@@ -119,7 +119,6 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsLowerChars.ToEmojiString(true) +
 							Localization.GetMessage("LowerChars", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.ContainsLowerChars.ToStringCode() +
 							containsLowerChars.ToReverseZeroOneString()
 						)
@@ -128,7 +127,6 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsUpperChars.ToEmojiString(true) +
 							Localization.GetMessage("UpperChars", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.ContainsUpperChars.ToStringCode() +
 							containsUpperChars.ToReverseZeroOneString()
 						)
@@ -137,14 +135,12 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsDigits.ToEmojiString(true) +
 							Localization.GetMessage("Digits", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.ContainsDigits.ToStringCode() +
 							containsDigits.ToReverseZeroOneString()
 						),
 						InlineKeyboardButton.WithCallbackData(
 							containsSpace.ToEmojiString(true) +
 							Localization.GetMessage("Spaces", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.ContainsSpace.ToStringCode() +
 							containsSpace.ToReverseZeroOneString()
 						)
@@ -153,7 +149,6 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							firstCharIsLetter.ToEmojiString(true) +
 							Localization.GetMessage("FirstChar", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.FirstCharIsLetter.ToStringCode() +
 							firstCharIsLetter.ToReverseZeroOneString()
 						)
@@ -162,21 +157,18 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsSpecialChars.ToEmojiString(true) +
 							Localization.GetMessage("SpecialChars", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.ContainsSpecialChars.ToStringCode() +
 							containsSpecialChars.ToReverseZeroOneString()
 						),
 						InlineKeyboardButton.WithCallbackData(
 							"⛓️ " +
 							Localization.GetMessage("Length", user.Lang) + " " + user.GenPattern.Substring(6),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.Length.ToStringCode()
 						)
 					},
 					new[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🌋 " + Localization.GetMessage("Generate", user.Lang),
-							CallbackQueryCommandCode.SetUpPasswordGenerator.ToStringCode() +
 							SetUpPasswordCommandCode.Generate.ToStringCode()
 						)
 					}
