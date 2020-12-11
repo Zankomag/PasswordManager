@@ -151,7 +151,9 @@ namespace PasswordManager.Bot {
 		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip) {
 			if (!assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel))
 				throw new InvalidOperationException("AccountAssembling doesn't exist.");
-			return accountAssemblingModel.AccountAssemblingStage = ((AccountAssemblingStage)accountAssemblingStageSkip) + 1;
+			if(accountAssemblingModel.AccountAssemblingStage == (AccountAssemblingStage)accountAssemblingStageSkip)
+				return ++accountAssemblingModel.AccountAssemblingStage;
+			throw new InvalidOperationException("AccountAssembling is on other stage.");
 		}
 
 		public string GetAccountName(int userId) {
