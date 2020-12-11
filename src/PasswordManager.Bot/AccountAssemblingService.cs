@@ -57,7 +57,7 @@ namespace PasswordManager.Bot {
 					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
 					break;
 				case 5:
-					accountAssemblingModel.Link = args[1].BuildLink();
+					accountAssemblingModel.Link = args[1];
 					accountAssemblingModel.Login = args[2];
 					accountAssemblingModel.Password = args[3].Encrypt(args[4]);
 					accountAssemblingModel.Encrypted = true;
@@ -65,7 +65,7 @@ namespace PasswordManager.Bot {
 					break;
 				default:
 				case 6:
-					accountAssemblingModel.Link = args[1].BuildLink();
+					accountAssemblingModel.Link = args[1];
 					accountAssemblingModel.Note = args[2];
 					accountAssemblingModel.Login = args[3];
 					accountAssemblingModel.Password = args[4].Encrypt(args[5]);
