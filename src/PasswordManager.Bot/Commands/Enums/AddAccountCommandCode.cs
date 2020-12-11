@@ -12,7 +12,7 @@ namespace PasswordManager.Bot.Commands.Enums {
 		SkipLink = 'S',
 		SkipNote = 'N',
 		AutoLink = 'A',
-		SkipEncryptionyonKey = 'E',
+		SkipEncryptionKey = 'E',
 		AcceptPassword = 'Z',
 	}
 }
