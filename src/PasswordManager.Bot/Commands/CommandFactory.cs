@@ -54,6 +54,7 @@ namespace PasswordManager.Bot.Commands {
 			AddMessageCommand("/adduser", typeof(AddUserCommand));
 			AddMessageCommand("/removeuser", typeof(RemoveUserCommand));
 			AddMessageCommand("/userlist", typeof(UserListCommand));
+			AddMessageCommand("/settings", typeof(SettingsCommand));
 		}
 
 		private void InitActionCommands() {
@@ -64,6 +65,7 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
 			AddActionCommand(UserAction.UpdatePasswordLength, typeof(SetUpPasswordGeneratorCommand));
 			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
+			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateOutdatedTimeCommand));
 		}
 
 		private void InitCallbackQueryCommands() {
@@ -80,6 +82,7 @@ namespace PasswordManager.Bot.Commands {
 			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateOutdatedTime, typeof(UpdateOutdatedTimeCommand));
 		}
 
 		private void AddMessageCommand(string messageCommand, Type commandType) {
