@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types.Enums;
 using MultiUserLocalization;
 using PasswordManager.Bot;
 using System.Linq;
@@ -15,6 +14,7 @@ using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
 using System;
+using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand, IActionCommand {
@@ -166,7 +166,7 @@ namespace PasswordManager.Bot.Commands {
 			InlineKeyboardButton[] backButton =
 				new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-							"⏪ " + Localization.GetMessage("Back", langCode),
+							"⬅️ " + Localization.GetMessage("Back", langCode),
 							CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) };
 
 			var keyboardMarkup = new InlineKeyboardMarkup(containsDeleteLinkButton ?

@@ -1,17 +1,18 @@
-﻿using System;
+﻿using PasswordManager.Core.Entities;
+using System;
 
 namespace PasswordManager.Bot.Abstractions {
 	public interface IPasswordDecryptionService {
 		/// <summary>
-		/// Saves encryptedPassword of user to return it for decryption later
+		/// Saves account with encrypted password of user to return it for decryption later
 		/// </summary>
-		void StartDecryptionRequest(int userId, string encryptedPassword);
+		void StartDecryptionRequest(int userId, Account account);
 		/// <summary>
 		/// Releases held encrypted password
 		/// </summary>
 		void FinishDecryptionRequest(int userId);
 		/// <summary></summary>
-		/// <returns>Encrypted password of user or <see langword="null"/> if there is no decryption request</returns>
-		string GetEncryptedPassword(int userId);
+		/// <returns>Account with encrypted password of user or <see langword="null"/> if there is no decryption request</returns>
+		Account GetAccount(int userId);
 	}
 }

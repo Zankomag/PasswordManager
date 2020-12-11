@@ -58,8 +58,7 @@ namespace PasswordManager.Infrastructure.Repository {
 				.Select(a => new Account() {
 					Id = accountId,
 					Encrypted = a.Encrypted,
-					Password = a.Password,
-					UserId = userId
+					Password = a.Password
 				})
 				.AsNoTracking()
 				.FirstOrDefaultAsync();

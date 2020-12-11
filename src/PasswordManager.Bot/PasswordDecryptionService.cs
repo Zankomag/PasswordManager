@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot {
 	public class PasswordDecryptionService : IPasswordDecryptionService {
-		private readonly Dictionary<int, string> encryptedPasswords;
+		private readonly Dictionary<int, Account> encryptedPasswords;
 
 		public PasswordDecryptionService() {
-			encryptedPasswords = new Dictionary<int, string>();
+			encryptedPasswords = new Dictionary<int, Account>();
 		}
 
-		public void StartDecryptionRequest(int userId, string encryptedPassword)
-			=> encryptedPasswords[userId] = encryptedPassword;
+		public void StartDecryptionRequest(int userId, Account account)
+			=> encryptedPasswords[userId] = account;
 
 		public void FinishDecryptionRequest(int userId)
 			=> encryptedPasswords.Remove(userId);
 
-		public string GetEncryptedPassword(int userId) {
-			if(encryptedPasswords.TryGetValue(userId, out string encryptedPassword))
-				return encryptedPassword;
+		public Account GetAccount(int userId) {
+			if(encryptedPasswords.TryGetValue(userId, out Account account))
+				return account;
 			return null;
 		}
 
