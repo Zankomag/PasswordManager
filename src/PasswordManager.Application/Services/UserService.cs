@@ -8,11 +8,13 @@ using PasswordManager.Core.Repositories;
 using Passwords;
 
 namespace PasswordManager.Application.Services {
-	class UserService : IUserService {
+	public class UserService : IUserService {
 		private readonly IUnitOfWork workUnit;
+		private readonly IApplicationService applicationService;
 
-		public UserService(IUnitOfWork workUnit) {
+		public UserService(IUnitOfWork workUnit, IApplicationService applicationService) {
 			this.workUnit = workUnit;
+			this.applicationService = applicationService;
 		}
 
 		public async Task<User> AddUserAsync(int userId, string langCode) {
@@ -57,6 +59,18 @@ namespace PasswordManager.Application.Services {
 			//keyHint can be null so we dont check it for null equality
 			workUnit.UserRepository.UpdateKeyHint(new User { Id = userId, KeyHint = keyHint });
 			await workUnit.SaveAsync();
+		}
+
+		public async Task<bool> DeleteUser(int userId) {
+			try {
+				if (!applicationService.Admins.Contains(userId)) {
+					if (workUnit.UserRepository.Delete(new User { Id = userId })) {
+						await workUnit.SaveAsync();
+						return true;
+					}
+				}
+			} catch { }
+			return false;
 		}
 	}
 }

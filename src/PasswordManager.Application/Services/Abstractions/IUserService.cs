@@ -14,5 +14,9 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<string> GetKeyHint(int userId);
 		Task UpdateKeyHint(int userId, string keyHint);
 		Task UpdateLanguage(int userId, string langCode);
+		/// <summary>
+		/// Deletes user if he is not admin
+		/// </summary>
+		Task<bool> DeleteUser(int userId);
 	}
 }
