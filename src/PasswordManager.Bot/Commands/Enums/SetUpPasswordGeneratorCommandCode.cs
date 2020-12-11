@@ -1,6 +1,6 @@
 ﻿
 namespace PasswordManager.Bot.Commands.Enums {
-	public enum SetUpPasswordCommandCode {
+	public enum SetUpPasswordGeneratorCommandCode {
 		ContainsLowerChars = 'L',
 		ContainsUpperChars = 'U',
 		ContainsDigits = 'D',

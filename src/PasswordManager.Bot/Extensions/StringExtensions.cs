@@ -55,7 +55,7 @@ namespace PasswordManager.Bot.Extensions {
 
 		/// <param name="setUpPasswordGeneratorCommandCode"></param>
 		/// <returns><see cref="CallbackQueryCommandCode.SetUpPasswordGenerator"/> + setUpPasswordGeneratorCommandCode</returns>
-		public static string ToStringCode(this SetUpPasswordCommandCode setUpPasswordGeneratorCommandCode) {
+		public static string ToStringCode(this SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode) {
 			StringBuilder commandBuilder 
 				= new StringBuilder(
 					((char)CallbackQueryCommandCode.SetUpPasswordGenerator)
