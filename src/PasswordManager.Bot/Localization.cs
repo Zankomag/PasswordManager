@@ -7,6 +7,7 @@ namespace MultiUserLocalization {
 		//TODO:
 		//Add class with all text variables and
 		//if variable has arguments that it has to be private and accept needed variables
+		//Add extension method for string that returns right localization object by langcode
 
 		private static Dictionary<string, Dictionary<string, string>> stringsByCode = new Dictionary<string, Dictionary<string, string>>();
 		public static int LanguageNumber { get => stringsByCode.Count; }

@@ -17,6 +17,8 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
+		//TODO:
+		//move this command to Add command
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			if (.AssemblingAccounts.TryGetValue(user.Id, out Account account)) {
 				if (account.AccountName != null) {
