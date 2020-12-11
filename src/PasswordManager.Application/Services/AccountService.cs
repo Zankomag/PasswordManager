@@ -20,13 +20,13 @@ namespace PasswordManager.Application.Services {
 		public async Task<int> GetCountAsync(int userId, string accountName = null)
 			=> await workUnit.AccountRepository.GetCountAsync(userId, accountName);
 
-		public async Task<Account> GetFullAsync(int userId, int accountId)
+		public async Task<Account> GetFullAsync(int userId, long accountId)
 			=> await workUnit.AccountRepository.GetFullAsync(userId, accountId);
 
-		public async Task<Account> GetPasswordAsync(int userId, int accountId)
+		public async Task<Account> GetPasswordAsync(int userId, long accountId)
 			=> await workUnit.AccountRepository.GetPasswordAsync(userId, accountId);
 
-		public async Task<bool> DeleteAccountAsync(int userId, int accountId) {
+		public async Task<bool> DeleteAccountAsync(int userId, long accountId) {
 			if(await workUnit.AccountRepository.DeleteAccountAsync(userId, accountId)) {
 				try {
 					await workUnit.SaveAsync();

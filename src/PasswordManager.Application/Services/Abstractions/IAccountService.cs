@@ -8,13 +8,13 @@ namespace PasswordManager.Application.Services.Abstractions {
 		/// <returns>Count of all accouns found by <paramref name="accountName"/></returns>
 		Task<int> GetCountAsync(int userId, string accountName = null);
 		/// <returns>Full Account info without password</returns>
-		Task<Account> GetFullAsync(int userId, int accountId);
+		Task<Account> GetFullAsync(int userId, long accountId);
 		/// <returns>List of basic Account info found by <paramref name="accountName"/></returns>
 		Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null);
 		/// <returns>Password and its encryption state info</returns>
-		Task<Account> GetPasswordAsync(int userId, int accountId);
+		Task<Account> GetPasswordAsync(int userId, long accountId);
 		/// <returns>True on success</returns>
-		Task<bool> DeleteAccountAsync(int userId, int accountId);
+		Task<bool> DeleteAccountAsync(int userId, long accountId);
 		Task<bool> AddAccountAsync(int userId, Account account);
 	}
 }
