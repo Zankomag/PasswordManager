@@ -63,7 +63,7 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
 			AddActionCommand(UserAction.Search, typeof(SearchCommand));
 			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
-			AddActionCommand(UserAction.UpdatePasswordLength, typeof(SetUpPasswordGeneratorCommand));
+			AddActionCommand(UserAction.EnterPasswordLength, typeof(SetUpPasswordGeneratorCommand));
 			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
 			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateOutdatedTimeCommand));
 		}

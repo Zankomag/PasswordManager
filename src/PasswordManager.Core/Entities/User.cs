@@ -10,7 +10,7 @@ namespace PasswordManager.Core.Entities {
 		Search = 0,
 		AssembleAccount = 1,
 		Update = 2,
-		UpdatePasswordLength = 3,
+		EnterPasswordLength = 3,
 		EnterDecryptionKey = 4,
 		EnterOutdatedTime = 5
 	}
