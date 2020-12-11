@@ -14,8 +14,6 @@ namespace PasswordManager.Bot.Abstractions {
 		void Cancel(int userId);
 		/// <returns>Assembled Account or null if there is no corresponding assembling account or it's not completely assembled</returns>
 		Account Release(int userId);
-		AccountAssemblingStage GetCurrentStage(int userId);
-		AccountAssemblingStage GetNextStage(int userId);
 		/// <summary>
 		/// Creates new AssemblingAccoun even if there already is one
 		/// </summary>

@@ -79,22 +79,6 @@ namespace PasswordManager.Bot {
 			return accountAssemblingModel.AccountAssemblingStage;
 		}
 
-		public AccountAssemblingStage GetCurrentStage(int userId) {
-			if(accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
-				return accountAssemblingModel.AccountAssemblingStage;
-			}
-			return AccountAssemblingStage.None;
-		}
-
-		public AccountAssemblingStage GetNextStage(int userId) {
-			if (accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
-				if (accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release)
-					throw new InvalidOperationException("Account is already assembled");
-				return accountAssemblingModel.AccountAssemblingStage + 1;
-			}
-			return AccountAssemblingStage.None;
-		}
-
 		public Account Release(int userId) {
 			if (accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				if(accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
