@@ -6,13 +6,18 @@ namespace PasswordManager.Bot.Extensions {
 	public static class StringExtensions {
 
 		///<returns>https://value</returns>
-		public static string BuildLink(this string value) 
-			=> (value.StartsWith("https://") || value.StartsWith("http://"))
+		public static string BuildLink(this string value) {
+			if (string.IsNullOrWhiteSpace(value))
+				throw new ArgumentException("string is null, whitespace or empty");
+			return (value.StartsWith("https://") || value.StartsWith("http://"))
 				? value.Trim() : "https://" + value.Trim();
+		}
 
 
 		/// ///<returns>first_word_in_string.com</returns>
 		public static string AutoLink(this string value) {
+			if (string.IsNullOrWhiteSpace(value))
+				throw new ArgumentException("string is null, whitespace or empty");
 			int spaceIndex;
 			string autoLink = (spaceIndex = value.IndexOf(' ')) == -1
 				? value.ToLower() : value.Substring(0, spaceIndex).ToLower();
