@@ -58,5 +58,11 @@ namespace PasswordManager.Infrastructure.Repository {
 				.Select(x => x.KeyHint)
 				.FirstOrDefaultAsync();
 
+		public void UpdateKeyHint(User user) {
+			if (user == null)
+				throw new ArgumentNullException(nameof(user));
+			//KeyHint can be null so we dont check it for null equality
+			context.Entry(user).Property(x => x.KeyHint).IsModified = true;
+		}
 	}
 }

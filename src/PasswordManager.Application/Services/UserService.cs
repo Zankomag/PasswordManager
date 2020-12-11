@@ -52,5 +52,11 @@ namespace PasswordManager.Application.Services {
 			workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Lang = langCode });
 			await workUnit.SaveAsync();
 		}
+
+		public async Task UpdateKeyHint(int userId, string keyHint) {
+			//keyHint can be null so we dont check it for null equality
+			workUnit.UserRepository.UpdateKeyHint(new User { Id = userId, KeyHint = keyHint });
+			await workUnit.SaveAsync();
+		}
 	}
 }
