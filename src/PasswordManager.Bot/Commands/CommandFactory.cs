@@ -83,17 +83,17 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private void AddMessageCommand(string messageCommand, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IMessageCommand)))
+			if (commandType.IsAssignableTo(typeof(IMessageCommand)) && commandType.IsClass)
 				messageCommands.Add(messageCommand, commandType);
 		}
 
 		private void AddCallbackQueryCommand(CallbackQueryCommandCode callbackCommandCode, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand)))
+			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand)) && commandType.IsClass)
 				callbackQueryCommands.Add(callbackCommandCode, commandType);
 		}
 
 		private void AddActionCommand(UserAction action, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IActionCommand)))
+			if (commandType.IsAssignableTo(typeof(IActionCommand)) && commandType.IsClass)
 				actionCommands.Add(action, commandType);
 		}
 
