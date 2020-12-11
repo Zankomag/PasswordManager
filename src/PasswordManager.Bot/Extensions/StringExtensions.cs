@@ -75,6 +75,16 @@ namespace PasswordManager.Bot.Extensions {
 			return (commandBuilder.Append((char)addAccountCommandCode).ToString());
 		}
 
+		/// <param name="selectLanguageCommandCode"></param>
+		/// <returns><see cref="CallbackQueryCommandCode.SelectLanguage"/> + selectLanguageCommandCode</returns>
+		public static string ToStringCode(this SelectLanguageCommandCode selectLanguageCommandCode) {
+			StringBuilder commandBuilder
+				= new StringBuilder(
+					((char)CallbackQueryCommandCode.SelectLanguage)
+						.ToString());
+			return (commandBuilder.Append((char)selectLanguageCommandCode).ToString());
+		}
+
 		/// <returns>null if there is no command in message</returns>
 		public static string GetTextCommand(this string messageText) {
 			//TODO:
