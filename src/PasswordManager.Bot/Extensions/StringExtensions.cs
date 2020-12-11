@@ -15,8 +15,8 @@ namespace PasswordManager.Bot.Extensions {
 		public static string AutoLink(this string value) {
 			int spaceIndex;
 			string autoLink = (spaceIndex = value.IndexOf(' ')) == -1
-				? value : value.Substring(0, spaceIndex);
-			StringBuilder autoLinkBuilder = new StringBuilder(autoLink.ToLower());
+				? value.ToLower() : value.Substring(0, spaceIndex).ToLower();
+			StringBuilder autoLinkBuilder = new StringBuilder(autoLink);
 			if (!autoLink.Contains('.')) {
 				autoLinkBuilder.Append(".com");
 				return autoLinkBuilder.ToString().BuildLink();
