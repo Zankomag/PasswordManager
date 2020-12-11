@@ -11,7 +11,7 @@ namespace PasswordManager.Bot.Extensions {
 				? value.Trim() : "https://" + value.Trim();
 
 
-		/// ///<returns>https://first_word_in_string.com</returns>
+		/// ///<returns>first_word_in_string.com</returns>
 		public static string AutoLink(this string value) {
 			int spaceIndex;
 			string autoLink = (spaceIndex = value.IndexOf(' ')) == -1
@@ -19,9 +19,9 @@ namespace PasswordManager.Bot.Extensions {
 			StringBuilder autoLinkBuilder = new StringBuilder(autoLink);
 			if (!autoLink.Contains('.')) {
 				autoLinkBuilder.Append(".com");
-				return autoLinkBuilder.ToString().BuildLink();
+				return autoLinkBuilder.ToString();
 			}
-			return autoLink.BuildLink();
+			return autoLink;
 		}
 
 		public static string ToZeroOneString(this bool param) {
