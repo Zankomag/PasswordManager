@@ -1,5 +1,5 @@
 ﻿using PasswordManager.Bot.Commands.Abstractions;
-using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -69,11 +69,9 @@ namespace PasswordManager.Bot.Commands {
 		private void InitCallbackQueryCommands() {
 			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
 
+			AddCallbackQueryCommand(CallbackQueryCommandCode.AddAccount, typeof(AddAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.SkipLink, typeof(AddAccountCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.AutoLink, typeof(AutoLinkCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.GeneratePassword, typeof(GeneratePasswordCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.AcceptPassword, typeof(AcceptPasswordCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.Search, typeof(SearchCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowPassword, typeof(ShowPasswordCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowAccount, typeof(ShowAccountCommand));
@@ -81,6 +79,7 @@ namespace PasswordManager.Bot.Commands {
 			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateAccount, typeof(UpdateAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand));
 		}
 
 		private void AddMessageCommand(string messageCommand, Type commandType) {
