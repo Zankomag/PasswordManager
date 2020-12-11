@@ -7,7 +7,7 @@ using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
 
 namespace PasswordManager.Application.Services {
-	class AccountService : IAccountService {
+	public class AccountService : IAccountService {
 		private readonly IUnitOfWork workUnit;
 
 		public AccountService(IUnitOfWork workUnit) {
