@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using PasswordManager.Bot;
 using MultiUserLocalization;
 using System;
 using PasswordManager.Bot.Commands.Abstractions;
@@ -16,21 +15,24 @@ namespace PasswordManager.Bot.Commands {
 			this.userService = userService;
 		}
 
+		//This command allows admin manually add users to bot
+		//Bot don't need this command if it has free registration
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-
 			if (botService.IsAdmin(user)) {
-				if (message.Text.Contains(' ')) {
+				int spaceIndex;
+				if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 					try {
-						string newUserIdStr = message.Text.Split(' ')[1];
+						string newUserIdStr = message.Text[(spaceIndex+1)..];
 						int newUserId = Convert.ToInt32(newUserIdStr);
-						.AddUser(newUserId, Localization.DefaultLanguageCode);
-						await botService.SendMessageToAllAdmins("Added new user.\n/userlist");
+						await userService.AddUserAsync(newUserId, Localization.DefaultLanguageCode);
 					}
 					catch {
-						await botService.SendMessageToAllAdmins("Invalid User Id");
+						await botService.Client.SendTextMessageAsync(user.Id, "Invalid user id");
+						return;
 					}
-					
+					await botService.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
 				}
+				await botService.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
 			}
 		}
 	}
