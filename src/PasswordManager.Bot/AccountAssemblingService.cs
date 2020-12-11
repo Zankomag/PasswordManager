@@ -120,8 +120,9 @@ namespace PasswordManager.Bot {
 				throw new ArgumentNullException(nameof(property));
 			if (accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				if (expectedAccountAssemblingStage != AccountAssemblingStage.None
-					&& accountAssemblingModel.AccountAssemblingStage != expectedAccountAssemblingStage)
+					&& accountAssemblingModel.AccountAssemblingStage != expectedAccountAssemblingStage) {
 					throw new InvalidOperationException("Actual AssemblingStage doesn't match the expected");
+				}
 				switch (accountAssemblingModel.AccountAssemblingStage) {
 					case AccountAssemblingStage.AddAccountName:
 						accountAssemblingModel.AccountName = property;
@@ -139,7 +140,7 @@ namespace PasswordManager.Bot {
 						accountAssemblingModel.Password = property;
 						break;
 					case AccountAssemblingStage.AddEncryptionKey:
-						accountAssemblingModel.Password = property.Encrypt(property);
+						accountAssemblingModel.Password = accountAssemblingModel.Password.Encrypt(property);
 						break;
 					case AccountAssemblingStage.Release:
 						throw new InvalidOperationException("Account is already assembled.");
