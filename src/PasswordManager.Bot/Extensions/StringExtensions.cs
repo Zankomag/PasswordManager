@@ -111,7 +111,7 @@ namespace PasswordManager.Bot.Extensions {
 				firstArgStartIndex = indexOfNewLine == -1 
 					? indexOfSpace + 1
 					: indexOfNewLine < indexOfSpace
-					? indexOfNewLine : indexOfSpace;
+					? indexOfNewLine + 1 : indexOfSpace + 1;
 			}
 			return commandText.Remove(0, firstArgStartIndex)
 				.Split('\n', StringSplitOptions.RemoveEmptyEntries);
