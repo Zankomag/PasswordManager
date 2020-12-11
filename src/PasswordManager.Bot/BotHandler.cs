@@ -1,10 +1,8 @@
 ﻿using MultiUserLocalization;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
-using PasswordManager.Bot.Commands;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Models;
-using PasswordManager.Bot.Enums;
 using PasswordManager.Core.Entities;
 using System;
 using System.Linq;
@@ -13,6 +11,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Extensions;
+using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot {
 	public class BotHandler : IBotHandler {
