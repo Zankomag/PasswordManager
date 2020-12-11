@@ -1,9 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using PasswordManager.Bot;
-using MultiUserLocalization;
-using System;
-using System.Data;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Abstractions;
@@ -19,24 +15,27 @@ namespace PasswordManager.Bot.Commands {
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			if(botService.IsAdmin(user)) {
-				try {
-					string userIdStr = message.Text.Split(' ')[1];
-					int userId = Convert.ToInt32(userIdStr);
-					if(botService.IsAdmin(user)) {
-						await botService.SendMessageToAllAdmins("You are trying to remove admin. I won't let you do this.");
-						return;
-					}
+				int spaceIndex;
+				if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
+					string userIdStr = message.Text[(spaceIndex+1)..];
+					if(int.TryParse(userIdStr, out int userId)){
+						if (botService.IsAdmin(user)) {
+							await botService.Client.SendTextMessageAsync(user.Id,
+								"You are trying to remove admin. I won't let you do this.");
+							return;
+						}
 
-					using (IDbConnection conn = new SQLiteConnection(botService.connString))
-					{
-						conn.Execute("delete from Users where Id = @userId",
-							new { userId});
+						if (await userService.DeleteUser(userId)) {
+							await botService.Client.SendTextMessageAsync(user.Id,
+								"User and their data have been removed.");
+						} else {
+							await botService.Client.SendTextMessageAsync(user.Id, "Invalid user id");
+						}
+					} else {
+						await botService.Client.SendTextMessageAsync(user.Id, "Invalid user id");
 					}
-					await botService.SendMessageToAllAdmins("User and their data have been removed.");
-				}
-				catch(Exception ex)
-				{
-					await botService.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
+				} else {
+					await botService.Client.SendTextMessageAsync(user.Id, "Use /adduser < user id >");
 				}
 			}
 		}
