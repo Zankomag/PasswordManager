@@ -4,6 +4,8 @@ using System;
 
 namespace PasswordManager.Core.Entities {
 
+	//This should be in separate database of telegram bot
+	//but it's here until service become larger
 	public enum UserAction {
 		Search = 0,
 		AssembleAccount = 1,
