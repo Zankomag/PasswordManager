@@ -3,6 +3,6 @@ namespace PasswordManager.Bot.Enums {
 	public enum AccountAssemblingStageSkip {
 		AddLink = AccountAssemblingStage.AddLink,
 		AddNote = AccountAssemblingStage.AddNote,
-		EncryptPassword = AccountAssemblingStage.AddEncryptionKey
+		AddEncryptionKey = AccountAssemblingStage.AddEncryptionKey
 	}
 }
