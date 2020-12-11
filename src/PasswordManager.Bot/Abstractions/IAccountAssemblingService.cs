@@ -24,10 +24,17 @@ namespace PasswordManager.Bot.Abstractions {
 		AccountAssemblingStage Create(int userId, string[] args);
 		/// <summary>
 		/// Adds property of Current AssemblingStage to AccountAssemblingModel
+		/// if current Assemling Stage equals to expected and accepts property.
+		/// Otherwise throws exception
 		/// </summary>
 		/// <param name="property">value of property to add to assembling</param>
+		/// <param name="expectedAccountAssemblingStage">excpected assembling stage. 
+		/// If expceted stage is unknows use <see cref="AccountAssemblingStage.None"/></param>
 		/// <returns>Next AssemblingStage</returns>
-		AccountAssemblingStage Assemble(int userId, string property);
+		/// <exception cref="System.InvalidOperationException"></exception>
+		/// <exception cref="System.ArgumentNullException"></exception>
+		AccountAssemblingStage Assemble(int userId, string property,
+			AccountAssemblingStage expectedAccountAssemblingStage = AccountAssemblingStage.None);
 		/// <summary>
 		/// Skips AccountAssemblingStage
 		/// </summary>

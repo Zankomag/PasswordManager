@@ -114,10 +114,14 @@ namespace PasswordManager.Bot {
 			return null;
 		}
 
-		public AccountAssemblingStage Assemble(int userId, string property) {
+		public AccountAssemblingStage Assemble(int userId, string property,
+			AccountAssemblingStage expectedAccountAssemblingStage = AccountAssemblingStage.None) {
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
 			if (assemblingAccounts.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
+				if (expectedAccountAssemblingStage != AccountAssemblingStage.None
+					&& accountAssemblingModel.AccountAssemblingStage != expectedAccountAssemblingStage)
+					throw new InvalidOperationException("Actual AssemblingStage doesn't match the expected");
 				switch (accountAssemblingModel.AccountAssemblingStage) {
 					case AccountAssemblingStage.AddAccountName:
 						accountAssemblingModel.AccountName = property;
