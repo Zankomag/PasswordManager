@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using Newtonsoft.Json;
-using PasswordManager.Infrastructure.Data;
-using PasswordManager.Bot.Abstractions;
-using PasswordManager.Bot;
-using PasswordManager.Bot.Commands.Abstractions;
-using PasswordManager.Bot.Commands;
-using PasswordManager.Core.Repositories;
-using PasswordManager.Infrastructure.Repository;
-using System.Reflection;
-using System.Linq;
-using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Application.Services;
+using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Commands;
+using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Services;
+using PasswordManager.Core.Repositories;
+using PasswordManager.Infrastructure.Data;
+using PasswordManager.Infrastructure.Repository;
+using Serilog;
+using System.Linq;
+using System.Reflection;
 
 namespace PasswordManager.Web {
 
@@ -29,7 +29,7 @@ namespace PasswordManager.Web {
 		public void ConfigureServices(IServiceCollection services) {
 
 			services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
-			
+
 			services.AddDbContext<PasswordManagerDbContext>(options => {
 				options.UseSqlite(Configuration.GetConnectionString("PasswordManager"));
 				////Adding "Microsoft.EntityFrameworkCore": "Information" 
@@ -52,7 +52,7 @@ namespace PasswordManager.Web {
 				.GetExportedTypes()
 				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
 			//Because IEnumerable doesn't have ForEach()
-			foreach(var commandType in botCommands) {
+			foreach (var commandType in botCommands) {
 				services.AddScoped(commandType);
 			}
 			#endregion
@@ -69,17 +69,17 @@ namespace PasswordManager.Web {
 					options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 					options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
 				});
-				//.ConfigureApiBehaviorOptions(options => {
-				//	//Override default model state error response
-				//	options.InvalidModelStateResponseFactory = context => {
-				//		if (context.ModelState.ErrorCount > 0) {
-				//			string messages = string.Join("; ", context.ModelState.Values
-				//				.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
-				//			return (ObjectResult)new Response<object>(messages);
-				//		}
-				//		return (ObjectResult)Response<object>.BadRequestResposne;
-				//	};
-				//});
+			//.ConfigureApiBehaviorOptions(options => {
+			//	//Override default model state error response
+			//	options.InvalidModelStateResponseFactory = context => {
+			//		if (context.ModelState.ErrorCount > 0) {
+			//			string messages = string.Join("; ", context.ModelState.Values
+			//				.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
+			//			return (ObjectResult)new Response<object>(messages);
+			//		}
+			//		return (ObjectResult)Response<object>.BadRequestResposne;
+			//	};
+			//});
 		}
 
 		public void Configure(IApplicationBuilder app) {

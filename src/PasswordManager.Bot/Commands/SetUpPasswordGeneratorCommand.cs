@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using PasswordManager.Bot;
 using MultiUserLocalization;
 using Telegram.Bot.Types.ReplyMarkups;
-using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Extensions;
 using System;
 using System.Text;
@@ -119,7 +118,7 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsLowerChars.ToEmojiString(true) +
 							Localization.GetMessage("LowerChars", user.Lang),
-							SetUpPasswordCommandCode.ContainsLowerChars.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.ContainsLowerChars.ToStringCode() +
 							containsLowerChars.ToReverseZeroOneString()
 						)
 					},
@@ -127,7 +126,7 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsUpperChars.ToEmojiString(true) +
 							Localization.GetMessage("UpperChars", user.Lang),
-							SetUpPasswordCommandCode.ContainsUpperChars.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.ContainsUpperChars.ToStringCode() +
 							containsUpperChars.ToReverseZeroOneString()
 						)
 					},
@@ -135,13 +134,13 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsDigits.ToEmojiString(true) +
 							Localization.GetMessage("Digits", user.Lang),
-							SetUpPasswordCommandCode.ContainsDigits.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.ContainsDigits.ToStringCode() +
 							containsDigits.ToReverseZeroOneString()
 						),
 						InlineKeyboardButton.WithCallbackData(
 							containsSpace.ToEmojiString(true) +
 							Localization.GetMessage("Spaces", user.Lang),
-							SetUpPasswordCommandCode.ContainsSpace.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.ContainsSpace.ToStringCode() +
 							containsSpace.ToReverseZeroOneString()
 						)
 					},
@@ -149,7 +148,7 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							firstCharIsLetter.ToEmojiString(true) +
 							Localization.GetMessage("FirstChar", user.Lang),
-							SetUpPasswordCommandCode.FirstCharIsLetter.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.FirstCharIsLetter.ToStringCode() +
 							firstCharIsLetter.ToReverseZeroOneString()
 						)
 					},
@@ -157,19 +156,19 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData(
 							containsSpecialChars.ToEmojiString(true) +
 							Localization.GetMessage("SpecialChars", user.Lang),
-							SetUpPasswordCommandCode.ContainsSpecialChars.ToStringCode() +
+							SetUpPasswordGeneratorCommandCode.ContainsSpecialChars.ToStringCode() +
 							containsSpecialChars.ToReverseZeroOneString()
 						),
 						InlineKeyboardButton.WithCallbackData(
 							"⛓️ " +
 							Localization.GetMessage("Length", user.Lang) + " " + user.GenPattern.Substring(6),
-							SetUpPasswordCommandCode.Length.ToStringCode()
+							SetUpPasswordGeneratorCommandCode.Length.ToStringCode()
 						)
 					},
 					new[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🌋 " + Localization.GetMessage("Generate", user.Lang),
-							SetUpPasswordCommandCode.Generate.ToStringCode()
+							SetUpPasswordGeneratorCommandCode.Generate.ToStringCode()
 						)
 					}
 				}
@@ -179,47 +178,47 @@ namespace PasswordManager.Bot.Commands {
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
-			if((SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Length &&
-				(SetUpPasswordCommandCode)callbackQuery.Data[1] != SetUpPasswordCommandCode.Generate &&
+			if((SetUpPasswordGeneratorCommandCode)callbackQuery.Data[1] != SetUpPasswordGeneratorCommandCode.Length &&
+				(SetUpPasswordGeneratorCommandCode)callbackQuery.Data[1] != SetUpPasswordGeneratorCommandCode.Generate &&
 				callbackQuery.Data[2] == '0') {
 
 				string genString = sb.ToString().Remove(4, 1);
 				if (genString.Count(x => x == '1') <= 1)
 					return;
 			}
-			switch ((SetUpPasswordCommandCode)callbackQuery.Data[1]) {
-				case SetUpPasswordCommandCode.ContainsLowerChars:
+			switch ((SetUpPasswordGeneratorCommandCode)callbackQuery.Data[1]) {
+				case SetUpPasswordGeneratorCommandCode.ContainsLowerChars:
 					sb[0] = callbackQuery.Data[2];
 					if(sb[0] == '0' && sb[1] == '0')
 						sb[4] = '0';
 				break;
 
-				case SetUpPasswordCommandCode.ContainsUpperChars:
+				case SetUpPasswordGeneratorCommandCode.ContainsUpperChars:
 					sb[1] = callbackQuery.Data[2];
 					if (sb[0] == '0' && sb[1] == '0')
 						sb[4] = '0';
 				break;
 
-				case SetUpPasswordCommandCode.ContainsDigits:
+				case SetUpPasswordGeneratorCommandCode.ContainsDigits:
 					sb[2] = callbackQuery.Data[2];
 				break;
 
-				case SetUpPasswordCommandCode.FirstCharIsLetter:
+				case SetUpPasswordGeneratorCommandCode.FirstCharIsLetter:
 					if (callbackQuery.Data[2] == '0' || (callbackQuery.Data[2] != '0' && (sb[0] != '0' || sb[1] != '0')))
 						sb[4] = callbackQuery.Data[2];
 					else
 						return;
 				break;
 
-				case SetUpPasswordCommandCode.ContainsSpecialChars:
+				case SetUpPasswordGeneratorCommandCode.ContainsSpecialChars:
 					sb[3] = callbackQuery.Data[2];
 				break;
 
-				case SetUpPasswordCommandCode.ContainsSpace:
+				case SetUpPasswordGeneratorCommandCode.ContainsSpace:
 					sb[5] = callbackQuery.Data[2];
 				break;
 
-				case SetUpPasswordCommandCode.Length:
+				case SetUpPasswordGeneratorCommandCode.Length:
 					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 						"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
 						.MinPasswordLength, .MaxPasswordLength));

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using PasswordManager.Application.Encryption;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Bot.Enums;
-using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Services {
 	public class AccountAssemblingService : IAccountAssemblingService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it

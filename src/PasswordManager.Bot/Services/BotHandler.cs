@@ -2,18 +2,20 @@
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Bot.Commands.Abstractions;
+using PasswordManager.Bot.Commands.Enums;
+using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using User = PasswordManager.Core.Entities.User;
-using PasswordManager.Bot.Extensions;
-using PasswordManager.Bot.Commands.Enums;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Services {
+	/// <summary>
+	/// Handles Telegram Bot Updates
+	/// </summary>
 	public class BotHandler : IBotHandler {
 		private readonly IBotService botService;
 		private readonly IUserService userService;
@@ -133,19 +135,19 @@ namespace PasswordManager.Bot {
 					}
 					return;
 				}
-					
+
 				user ??= MapBotUser(userEntity);
 
 				CallbackQueryCommandCode callbackCommandCode;
 				try {
 					callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
-				} catch(Exception exeption) {
+				} catch (Exception exeption) {
 					//TODO: Log Exception
 					throw;
 				}
 
 				var callbackQueryCommand = commandFactory.GetCallBackQueryCommand(callbackCommandCode);
-				if(callbackQueryCommand != null) {
+				if (callbackQueryCommand != null) {
 					await callbackQueryCommand.ExecuteAsync(callbackQuery, user);
 				} else {
 					try {

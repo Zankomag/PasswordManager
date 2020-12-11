@@ -2,7 +2,7 @@
 using PasswordManager.Bot.Abstractions;
 using PasswordManager.Core.Entities;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Services {
 	public class PasswordDecryptionService : IPasswordDecryptionService {
 		private readonly Dictionary<int, Account> encryptedPasswords;
 

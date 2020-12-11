@@ -6,12 +6,10 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Services {
 	public class BotUIService : IBotUIService {
 		private readonly IBotService botService;
 
@@ -26,24 +24,23 @@ namespace PasswordManager.Bot {
 				string message = account.Link != null ? account.AccountName + "\n" + account.Link + "\n" +
 					Localization.GetMessage("Login", user.Lang) + ": " + account.Login :
 					account.AccountName + "\n" + Localization.GetMessage("Login", user.Lang) + ": " + account.Login;
-				var keyboardMarkup = new InlineKeyboardMarkup(
-					new InlineKeyboardButton[][] {
-						new InlineKeyboardButton[] {
-							InlineKeyboardButton.WithCallbackData(
-								"🔑 " + Localization.GetMessage("Password", user.Lang),
-								CallbackQueryCommandCode.ShowPassword.ToStringCode() + account.Id)},
-						new InlineKeyboardButton[] {
-							InlineKeyboardButton.WithCallbackData(
-								"✏️ " + Localization.GetMessage("UpdateAcc", user.Lang),
-								CallbackQueryCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
-						new InlineKeyboardButton[] {
-							InlineKeyboardButton.WithCallbackData(
-								"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
-								CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
-						new InlineKeyboardButton[] {
-						InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							CallbackQueryCommandCode.DeleteMessage.ToStringCode())
-						}
+				var keyboardMarkup = new InlineKeyboardMarkup( new InlineKeyboardButton[][] {
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔑 " + Localization.GetMessage("Password", user.Lang),
+							CallbackQueryCommandCode.ShowPassword.ToStringCode() + account.Id)},
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"✏️ " + Localization.GetMessage("UpdateAcc", user.Lang),
+							CallbackQueryCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
+							CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
+					new InlineKeyboardButton[] {
+					InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+						CallbackQueryCommandCode.DeleteMessage.ToStringCode())
+					}
 					});
 				if (extraMessage != null) {
 					message = extraMessage + "\n\n" + message;

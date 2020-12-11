@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using PasswordManager.Application;
+using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Models;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
-using Microsoft.Extensions.Options;
-using PasswordManager.Bot.Abstractions;
 using Telegram.Bot.Types;
-using PasswordManager.Bot.Models;
-using System.Linq;
-using PasswordManager.Application;
+using Telegram.Bot.Types.Enums;
 
-namespace PasswordManager.Bot {
+namespace PasswordManager.Bot.Services {
 
 	/// <summary>
 	/// Telegram Bot Service
@@ -58,7 +58,7 @@ namespace PasswordManager.Bot {
 						allowedUpdates: new UpdateType[] {
 					UpdateType.Message,
 					UpdateType.CallbackQuery});
-			} catch(Exception exception) {
+			} catch (Exception exception) {
 				await SendMessageToAllAdmins("EXception was thrown while setting webhook.\nBot has bot started.\nSee logs for more info.");
 				//TODO
 				//Log exception
