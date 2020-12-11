@@ -10,6 +10,7 @@ namespace PasswordManager.Bot.Commands.Enums {
 	/// </summary>
 	public enum AddAccountCommandCode {
 		SkipLink = 'S',
+		SkipNote = 'N',
 		AutoLink = 'A',
 		SkipEncryptionyonKey = 'E',
 		AcceptPassword = 'Z',
