@@ -21,6 +21,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// </summary>
 		/// <param name="args">inline Arguments of account to assemble</param>
 		/// <returns>Next AssemblingState</returns>
+		/// <exception cref="System.ComponentModel.DataAnnotations.ValidationException"></exception>
 		AccountAssemblingStage Create(int userId, string[] args);
 		/// <summary>
 		/// Adds property of Current AssemblingStage to AccountAssemblingModel
@@ -33,6 +34,7 @@ namespace PasswordManager.Bot.Abstractions {
 		/// <returns>Next AssemblingStage</returns>
 		/// <exception cref="System.InvalidOperationException"></exception>
 		/// <exception cref="System.ArgumentNullException"></exception>
+		/// <exception cref="System.ComponentModel.DataAnnotations.ValidationException"></exception>
 		AccountAssemblingStage Assemble(int userId, string property,
 			AccountAssemblingStage expectedAccountAssemblingStage = AccountAssemblingStage.None);
 		/// <summary>

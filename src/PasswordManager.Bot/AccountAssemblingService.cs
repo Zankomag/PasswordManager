@@ -19,9 +19,10 @@ namespace PasswordManager.Bot {
 
 		public void Cancel(int userId) => accountAssemblings.Remove(userId);
 
-		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for encryptionKey
-		// [2] /add AccountName \n Login => Ask for password => Ask for encryptionKey
-		// [3] /add AccountName \n Login \n Password => Ask for encryptionKey
+		// [0] /add => Ask for AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
+		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
+		// [2] /add AccountName \n Login => Ask for password => Ask for EncryptionKey
+		// [3] /add AccountName \n Login \n Password => Ask for EncryptionKey
 		// [4] /add AccountName \n Login \n Password \n EncryptionKey
 		// [5] /add AccountName \n Link \n Login \n Password \n EncryptionKey
 		// [6] /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
@@ -143,7 +144,7 @@ namespace PasswordManager.Bot {
 						accountAssemblingModel.Password = accountAssemblingModel.Password.Encrypt(property);
 						break;
 					case AccountAssemblingStage.Release:
-						throw new InvalidOperationException("Account is already assembled.");
+						return accountAssemblingModel.AccountAssemblingStage;
 					default:
 						throw new InvalidOperationException("Unexpected Account Assembling Stage");
 				}
