@@ -4,9 +4,10 @@ namespace PasswordManager.Bot.Abstractions {
 	public interface IPasswordDecryptionService {
 		/// <summary>
 		/// Saves encryptedPassword of user to return it for decryption later
+		/// </summary>
 		void SaveDecryptionRequest(int userId, string encryptedPassword);
-		/// <returns>Encrypted password of user</returns>
-		/// <exception cref="InvalidOperationException"></exception>
+		/// <summary></summary>
+		/// <returns>Encrypted password of user or <see langword="null"/> if there is no decryption request</returns>
 		string GetEncryptedPassword(int userId);
 	}
 }

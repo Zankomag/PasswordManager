@@ -14,10 +14,9 @@ namespace PasswordManager.Bot {
 			=> encryptedPasswords[userId] = encryptedPassword;
 
 		public string GetEncryptedPassword(int userId) {
-			if(encryptedPasswords.TryGetValue(userId, out string encryptedPassword)){
+			if(encryptedPasswords.Remove(userId, out string encryptedPassword))
 				return encryptedPassword;
-			}
-			throw new InvalidOperationException("User does not have password waiting for decryption");
+			return null;
 		}
 	}
 }
