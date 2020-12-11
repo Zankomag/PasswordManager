@@ -10,13 +10,17 @@ namespace PasswordManager.Bot {
 			encryptedPasswords = new Dictionary<int, string>();
 		}
 
-		public void SaveDecryptionRequest(int userId, string encryptedPassword)
+		public void StartDecryptionRequest(int userId, string encryptedPassword)
 			=> encryptedPasswords[userId] = encryptedPassword;
 
+		public void FinishDecryptionRequest(int userId)
+			=> encryptedPasswords.Remove(userId);
+
 		public string GetEncryptedPassword(int userId) {
-			if(encryptedPasswords.Remove(userId, out string encryptedPassword))
+			if(encryptedPasswords.TryGetValue(userId, out string encryptedPassword))
 				return encryptedPassword;
 			return null;
 		}
+
 	}
 }
