@@ -1,22 +1,27 @@
 ﻿using PasswordManager.Bot.Enums;
+using System.Text;
 using System;
 
 namespace PasswordManager.Bot.Extensions {
 	public static class StringExtensions {
 
-		public static string BuildLink(this string value) {
-			return (value.StartsWith("https://") || value.StartsWith("http://"))
+		///<returns>https://value</returns>
+		public static string BuildLink(this string value) 
+			=> (value.StartsWith("https://") || value.StartsWith("http://"))
 				? value.Trim() : "https://" + value.Trim();
-		}
 
-		/// <summary>Returns first_word_in_string.com</summary>
+
+		/// ///<returns>https://first_word_in_string.com</returns>
 		public static string AutoLink(this string value) {
-			string autoLink = value.Contains(' ') ?
-								value.Substring(0,
-									value.IndexOf(' ')).ToLower() :
-								value.ToLower();
-			autoLink += ".com";
-			return autoLink;
+			int spaceIndex;
+			string autoLink = (spaceIndex = value.IndexOf(' ')) == -1
+				? value : value.Substring(0, spaceIndex);
+			StringBuilder autoLinkBuilder = new StringBuilder(autoLink.ToLower());
+			if (!autoLink.Contains('.')) {
+				autoLinkBuilder.Append(".com");
+				return autoLinkBuilder.ToString().BuildLink();
+			}
+			return autoLink.BuildLink();
 		}
 
 		public static string ToZeroOneString(this bool param) {
