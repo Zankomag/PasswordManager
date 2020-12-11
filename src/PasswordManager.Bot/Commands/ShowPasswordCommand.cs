@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Data;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using MultiUserLocalization;
-using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;
@@ -13,60 +11,97 @@ using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Encryption;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Commands.Enums;
+using System.Text;
+using System.Collections.Generic;
 
 namespace PasswordManager.Bot.Commands {
 	public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand, IActionCommand {
 		private readonly IAccountService accountService;
+		private readonly IPasswordDecryptionService passwordDecryptionService;
+		private readonly IUserService userService;
 
-		public ShowPasswordCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public ShowPasswordCommand(IBotService botService,
+			IAccountService accountService,
+			IPasswordDecryptionService passwordDecryptionService,
+			IUserService userService)
+			: base(botService) {
+
 			this.accountService = accountService;
+			this.passwordDecryptionService = passwordDecryptionService;
+			this.userService = userService;
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-			int accountId;
+			long accountId;
 			try {
-				accountId = Convert.ToInt32(callbackQuery.Data[1..]);
+				accountId = Convert.ToInt64(callbackQuery.Data[1..]);
 			} catch(Exception exception) {
 				//TODO: Log exception
 				throw;
 			}
 			Account account = await accountService.GetPasswordAsync(user.Id, accountId);
-			if(account!= null) {
-
-				
-				if(!account.Encrypted)
-					await botService.Client.SendTextMessageAsync(callbackQuery.From.Id,
-						"`" + account.Password + "`",
-						replyMarkup: new InlineKeyboardMarkup(
-							InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-								CallbackQueryCommandCode.DeleteMessage.ToStringCode())),
+			if (account != null) {
+				if (!account.Encrypted) {
+					await botService.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+						GetPasswordMessage(account.Password),
+						replyMarkup: GetDecryptionKeyInvitationKeyboard(accountId, user, false),
 						parseMode: ParseMode.Markdown);
-				else {
-					try {
-						//TODO
-						//ADD **GOOD CODED** DECRYPTION BY KEY (this is temporary messed working code)
-						string decryptedPassword = account.Password.Decrypt("supa dupa secret ke");
-					} catch {
-						//TODO
-						//If user does not have hint - don't show "show hint" button, but remember that user failed his key
-						//after he enters right key - send invintation to create hint
-						await botService.Client.SendTextMessageAsync(callbackQuery.From.Id,
-						"`" + account.Password + "`",
-						replyMarkup: new InlineKeyboardMarkup(new InlineKeyboardButton[][] {
-							new InlineKeyboardButton[]{
-								InlineKeyboardButton.WithCallbackData("🔁 " + Localization.GetMessage("TryAgain", user.Lang),
-									CallbackQueryCommandCode.EnterEncryptionyonKey.ToStringCode()) },
-							new InlineKeyboardButton[] {
-								InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
-										CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode()) }
-						}),
-						parseMode: ParseMode.Markdown);
-					}
+				} else {
+					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
+					await botService.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+						"🔑 " + Localization.GetMessage("EnterDecryptionKey", user.Lang),
+						replyMarkup: GetDecryptionKeyInvitationKeyboard(accountId, user, false));
 				}
 			}
 		}
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) => _NONIMPLEMENTED_ throw new NotImplementedException();
+		//TODO: Move to BotUIService
+		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(long accountId, BotUser user, bool showShowHintButton) {
+			List<InlineKeyboardButton[]> keyboard = new List<InlineKeyboardButton[]> {
+				new InlineKeyboardButton[] {
+					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
+						CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId)
+				}
+			};
+			if (showShowHintButton) {
+				keyboard.Add(
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
+							CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode()) 
+					});
+			}
+			keyboard.Add(
+				new InlineKeyboardButton[] {
+				InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+					CallbackQueryCommandCode.DeleteMessage.ToStringCode())
+				});
+			return new InlineKeyboardMarkup(keyboard);
+		}
+
+		private string GetPasswordMessage(string password) 
+			=> new StringBuilder('`').Append(password).Append('`').ToString();
+
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
+			Account account = passwordDecryptionService.GetAccount(user.Id);
+			if (account != null) {
+				string decryptedPassword = null;
+				try {
+					decryptedPassword = account.Password.Decrypt(message.Text);
+				} catch {
+					await botService.Client.SendTextMessageAsync(user.Id,
+					Localization.GetMessage("WrongKey", user.Lang),
+					replyMarkup: GetDecryptionKeyInvitationKeyboard(account.Id, user, true),
+					parseMode: ParseMode.Markdown);
+				}
+				await botService.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword));
+				passwordDecryptionService.FinishDecryptionRequest(user.Id);
+			} else {
+				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await botService.Client.SendTextMessageAsync(message.From.Id,
+					Localization.GetMessage("Cancel", user.Lang));
+			}
+		}
 	}
 }
