@@ -11,5 +11,7 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<IList<User>> GetAllBasicInfoAsync();
 		Task UpdateActionAsync(int userId, UserAction action);
 		Task UpdateActionAsync(User user);
+		Task<string> GetKeyHint(int userId);
+		Task UpdateLanguage(int userId, string langCode);
 	}
 }

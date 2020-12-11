@@ -11,5 +11,6 @@ namespace PasswordManager.Core.Repositories {
 		void UpdateAction(User user);
 		void UpdateLanguage(User user);
 		void UpdatePasswordPattern(User user);
+		Task<string> GetKeyHint(int userId);
 	}
 }

@@ -12,24 +12,22 @@ namespace PasswordManager.Infrastructure.Repository {
 
 		private IQueryable<User> GetUser(int id) => dbSet.Where(x => x.Id == id);
 
-		public async Task<User> GetUserWithLangAsync(int userId) {
-			return await GetUser(userId)
+		public async Task<User> GetUserWithLangAsync(int userId)
+			=> await GetUser(userId)
 				.Select(x => new User { Id = userId, Lang = x.Lang})
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
-		}
 
 		public async Task<IList<User>> GetAllBasicInfoAsync()
 			//=> await base.Get()
 			//	.Select(x => new User { Id = x.Id, Accounts = new List<Account>(x.Accounts.Count) })
-			//	.Include(u => u.Accounts.Count)
 			//	.ToListAsync();
 			//
 			//TODO: 
 			//If this call doesn't work or is not optimazed 
 			//then try call above
 			//If it is too not optimized
-			//then use special UserInfo model with AccountField and cast x.Accounts.Count to it
+			//then use Tuple
 			=> await base.Get()
 				.Select(x => new User { Id = x.Id })
 				.Include(u => u.Accounts.Count)
@@ -43,16 +41,22 @@ namespace PasswordManager.Infrastructure.Repository {
 		public void UpdateLanguage(User user) {
 			if (user == null)
 				throw new ArgumentNullException(nameof(user));
-			if(user.Lang == null)
-				throw new ArgumentNullException(nameof(user.Lang));
+			if (user.Lang == null)
+				throw new ArgumentException("user.Lang cannot be null", nameof(user));
 			context.Entry(user).Property(x => x.Lang).IsModified = true;
 		}
 		public void UpdatePasswordPattern(User user) {
 			if (user == null)
 				throw new ArgumentNullException(nameof(user));
-			if (user.Lang == null)
-				throw new ArgumentNullException(nameof(user.Lang));
+			if (user.GenPattern == null)
+				throw new ArgumentException("user.GenPattern cannot be null", nameof(user));
 			context.Entry(user).Property(x => x.GenPattern).IsModified = true;
 		}
+
+		public async Task<string> GetKeyHint(int userId)
+			=> await GetUser(userId)
+				.Select(x => x.KeyHint)
+				.FirstOrDefaultAsync();
+
 	}
 }

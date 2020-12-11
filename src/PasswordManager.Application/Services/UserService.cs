@@ -43,5 +43,14 @@ namespace PasswordManager.Application.Services {
 		public async Task UpdateActionAsync(int userId, UserAction action) 
 			=> await UpdateActionAsync(new User { Id = userId, Action = action });
 
+		public async Task<string> GetKeyHint(int userId)
+			=> await workUnit.UserRepository.GetKeyHint(userId);
+
+		public async Task UpdateLanguage(int userId, string langCode) {
+			if (langCode == null)
+				throw new ArgumentNullException(nameof(langCode));
+			workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Lang = langCode });
+			await workUnit.SaveAsync();
+		}
 	}
 }
