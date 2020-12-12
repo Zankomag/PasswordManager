@@ -12,6 +12,6 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		void FinishEncryptionRequest(int userId);
 		/// <summary></summary>
 		/// <returns>accountId of user or <see langword="null"/> if there is no encryption request</returns>
-		long? GetAccount(int userId);
+		long? GetAccountId(int userId);
 	}
 }

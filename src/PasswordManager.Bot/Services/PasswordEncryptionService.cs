@@ -1,5 +1,4 @@
 ﻿using PasswordManager.Bot.Services.Abstractions;
-using PasswordManager.Core.Entities;
 using System.Collections.Generic;
 
 namespace PasswordManager.Bot.Services {
@@ -16,7 +15,7 @@ namespace PasswordManager.Bot.Services {
 		public void FinishEncryptionRequest(int userId)
 			=> accountIds.Remove(userId);
 
-		public long? GetAccount(int userId) {
+		public long? GetAccountId(int userId) {
 			if (accountIds.TryGetValue(userId, out long accountId))
 				return accountId;
 			return null;
