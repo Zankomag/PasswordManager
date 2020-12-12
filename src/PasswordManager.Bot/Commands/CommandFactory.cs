@@ -66,6 +66,7 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.EnterPasswordLength, typeof(SetUpPasswordGeneratorCommand));
 			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
 			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateUserSettingsCommand));
+			AddActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
 		}
 
 		private void InitCallbackQueryCommands() {
