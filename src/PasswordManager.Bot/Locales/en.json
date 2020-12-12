@@ -61,5 +61,7 @@
 	"Reencrypt": "Re-encrypt",
 	"Encrypt": "Encrypt",
 	"EncryptInstruction": "In order to encrypt password, send the encryption key in reply to this message.",
-	"PasswordEncrypted": "Password has been successfully encrypted."
+	"PasswordEncrypted": "Password has been successfully encrypted.",
+	"SendKeyInReplyToPasswordMessage": "You have to send the encryption key in reply to message with password you want to encrypt.\nClick on corresponding message, select \"Reply\", type the encryption key and send message. It's simple.",
+	"NotPasswordMessageReply": "That's not message with password you want to encrypt.\nIf you want to encrypt other password, /cancel current action, find other password and click Encrypt|Re-encrypt button."
 }
