@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using PasswordManager.Application.Services;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Services;

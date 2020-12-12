@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 
 namespace PasswordManager.Web.Controllers
 {
