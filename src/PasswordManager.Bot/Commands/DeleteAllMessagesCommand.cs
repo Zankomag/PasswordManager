@@ -9,11 +9,6 @@ namespace PasswordManager.Bot.Commands {
 	//public class DeleteAllMessagesCommand : Abstractions.BotCommand, IMessageCommand {
 
 	//	public DeleteAllMessagesCommand(Ibot bot) : base(bot) { }
-	//	//
-	//	//===========================================================================
-	//	//EXPERIMENTAL FEATURE
-	//	//==========================================================================
-	//	//
 	//	async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 	//		//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 	//		try {

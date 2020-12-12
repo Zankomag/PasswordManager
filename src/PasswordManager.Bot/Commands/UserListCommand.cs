@@ -30,12 +30,12 @@ namespace PasswordManager.Bot.Commands {
 					}
 					//TODO:
 					//fix @UPwdBot, get bot nickname from bot and save in in bot class
-					await bot.SendMessageToAllAdmins("All @UPwdBot users:\nUser: Number of accounts\n" + response,
+					await bot.Client.SendTextMessageAsync(user.Id, "All @UPwdBot users:\nUser: Number of accounts\n" + response,
 						Telegram.Bot.Types.Enums.ParseMode.Markdown);
 				}
 				catch(Exception ex) {
-					await bot.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
-					//Log Exception
+					await bot.Client.SendTextMessageAsync(user.Id, "Error occured:\n\n" + ex.ToString());
+					//TODO: Log Exception
 				}
 			}
 		}
