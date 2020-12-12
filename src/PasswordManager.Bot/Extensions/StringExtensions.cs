@@ -53,20 +53,28 @@ namespace PasswordManager.Bot.Extensions {
 		public static string ToStringCode(this CallbackQueryCommandCode callbackCommandCode) 
 			=> ((char)callbackCommandCode).ToString();
 
+		///<summary></summary>
 		/// <param name="setUpPasswordGeneratorCommandCode"></param>
 		/// <returns><see cref="CallbackQueryCommandCode.SetUpPasswordGenerator"/> + setUpPasswordGeneratorCommandCode</returns>
 		public static string ToStringCode(this SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode)
-			=> GetStringCode(CallbackQueryCommandCode.SetUpPasswordGenerator, (char)setUpPasswordGeneratorCommandCode);	
+			=> GetStringCode(CallbackQueryCommandCode.SetUpPasswordGenerator, (char)setUpPasswordGeneratorCommandCode);
 
+		///<summary></summary>
 		/// <param name="addAccountCommandCode"></param>
 		/// <returns><see cref="CallbackQueryCommandCode.AddAccount"/> + addAccountCommandCode</returns>
 		public static string ToStringCode(this AddAccountCommandCode addAccountCommandCode)
 			=> GetStringCode(CallbackQueryCommandCode.AddAccount, (char)addAccountCommandCode);
 
+		///<summary></summary>
 		/// <param name="selectLanguageCommandCode"></param>
 		/// <returns><see cref="CallbackQueryCommandCode.SelectLanguage"/> + selectLanguageCommandCode</returns>
 		public static string ToStringCode(this SelectLanguageCommandCode selectLanguageCommandCode) 
 			=> GetStringCode(CallbackQueryCommandCode.SelectLanguage, (char)selectLanguageCommandCode);
+		///<summary></summary>
+		/// <param name="updateAccountCommandCode"></param>
+		/// <returns><see cref="CallbackQueryCommandCode.UpdateAccount"/> + updateAccountCommandCode</returns>
+		public static string ToStringCode(this UpdateAccountCommandCode updateAccountCommandCode)
+			=> GetStringCode(CallbackQueryCommandCode.UpdateAccount, (char)updateAccountCommandCode);
 
 		/// <summary></summary>
 		/// <param name="additionalCommand">Command that need to be appended to <paramref name="callbackQueryCommandCode"/></param>
