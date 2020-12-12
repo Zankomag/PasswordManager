@@ -12,6 +12,7 @@
 		DeleteAccount = 'X',
 		SetUpPasswordGenerator = 'T',
 		ShowEncryptionKeyHint = 'H',
-		UpdateOutdatedTime = 'W'
+		UpdateOutdatedTime = 'W',
+		EncryptPassword = 'E'
 	}
 }
