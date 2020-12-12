@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using PasswordManager.Application;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Models;
 using System;
 using System.Linq;

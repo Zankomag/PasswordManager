@@ -1,5 +1,5 @@
 ﻿using MultiUserLocalization;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Models;

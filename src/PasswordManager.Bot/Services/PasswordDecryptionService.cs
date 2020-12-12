@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Services {
