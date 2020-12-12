@@ -9,6 +9,7 @@ namespace PasswordManager.Bot.Commands {
 		private Dictionary<string, Type> messageCommands;
 		private Dictionary<CallbackQueryCommandCode, Type> callbackQueryCommands;
 		private Dictionary<UserAction, Type> actionCommands;
+		private Dictionary<UserAction, Type> replyActionCommands;
 
 		private readonly IServiceProvider serviceProvider;
 
@@ -20,6 +21,7 @@ namespace PasswordManager.Bot.Commands {
 		private void InitCommands() {
 			InitMessageCommands();
 			InitActionCommands();
+			InitReplyActionCommands();
 			InitCallbackQueryCommands();
 		}
 
@@ -69,6 +71,11 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
 		}
 
+		private void InitReplyActionCommands() {
+			replyActionCommands = new Dictionary<UserAction, Type>();
+			AddReplyActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
+		}
+
 		private void InitCallbackQueryCommands() {
 			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
 
@@ -88,18 +95,27 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private void AddMessageCommand(string messageCommand, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IMessageCommand)) && commandType.IsClass)
+			if (commandType.IsAssignableTo(typeof(IMessageCommand))
+				&& commandType.IsClass && !commandType.IsAbstract)
 				messageCommands.Add(messageCommand, commandType);
 		}
 
 		private void AddCallbackQueryCommand(CallbackQueryCommandCode callbackCommandCode, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand)) && commandType.IsClass)
+			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand))
+				&& commandType.IsClass && !commandType.IsAbstract)
 				callbackQueryCommands.Add(callbackCommandCode, commandType);
 		}
 
 		private void AddActionCommand(UserAction action, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IActionCommand)) && commandType.IsClass)
+			if (commandType.IsAssignableTo(typeof(IActionCommand))
+				&& commandType.IsClass && !commandType.IsAbstract)
 				actionCommands.Add(action, commandType);
+		}
+
+		private void AddReplyActionCommand(UserAction action, Type commandType) {
+			if (commandType.IsAssignableTo(typeof(IReplyActionCommand))
+				&& commandType.IsClass && !commandType.IsAbstract)
+				replyActionCommands.Add(action, commandType);
 		}
 
 		public ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode) {
@@ -115,6 +131,12 @@ namespace PasswordManager.Bot.Commands {
 		public IActionCommand GetActionCommand(UserAction action) {
 			if (actionCommands.TryGetValue(action, out Type type))
 				return (IActionCommand)serviceProvider.GetService(type);
+			return null;
+		}
+
+		public IReplyActionCommand GetReplyActionCommand(UserAction action) {
+			if (replyActionCommands.TryGetValue(action, out Type type))
+				return (IReplyActionCommand)serviceProvider.GetService(type);
 			return null;
 		}
 	}

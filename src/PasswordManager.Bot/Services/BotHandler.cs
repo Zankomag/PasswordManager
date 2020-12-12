@@ -70,6 +70,7 @@ namespace PasswordManager.Bot.Services {
 							return;
 						}
 					} else {
+						//Bot can send some kind of "You are not registered user" response here
 						return;
 					}
 				}
@@ -89,6 +90,13 @@ namespace PasswordManager.Bot.Services {
 						} catch { }
 					}
 				} else {
+					if(message.ReplyToMessage != null) {
+						var replyActionCommand = commandFactory.GetReplyActionCommand(user.Action);
+						if(replyActionCommand != null) {
+							await replyActionCommand.ExecuteAsync(message, user);
+							return;
+						}
+					}
 					var actionCommand = commandFactory.GetActionCommand(user.Action);
 					if (actionCommand != null) {
 						await actionCommand.ExecuteAsync(message, user);
@@ -133,6 +141,7 @@ namespace PasswordManager.Bot.Services {
 							return;
 						}
 					}
+					//Bot can send some kind of "You are not registered user" response here
 					return;
 				}
 
@@ -156,7 +165,6 @@ namespace PasswordManager.Bot.Services {
 							showAlert: true);
 					} catch { }
 				}
-
 			} catch (Telegram.Bot.Exceptions.InvalidParameterException exeption) {
 				//TODO: Log Exception
 			} catch (Exception exeption) {

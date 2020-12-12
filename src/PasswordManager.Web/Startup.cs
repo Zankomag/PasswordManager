@@ -49,6 +49,7 @@ namespace PasswordManager.Web {
 			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+			//Add all commands using reflection
 			var botCommands = Assembly.GetAssembly(typeof(IBotCommand))
 				.GetExportedTypes()
 				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
