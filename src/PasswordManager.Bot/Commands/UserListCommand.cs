@@ -15,7 +15,7 @@ namespace PasswordManager.Bot.Commands {
 	public class UserListCommand: Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
 
-		public UserListCommand(IBotService botService, IUserService userService) : base(botService) {
+		public UserListCommand(IBot botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 		}
 

@@ -16,7 +16,7 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IUserService userService;
 		private readonly IPasswordEncryptionService passwordEncryptionService;
 
-		public EncryptPasswordCommand(IBotService botService, IAccountService accountService,
+		public EncryptPasswordCommand(IBot botService, IAccountService accountService,
 			IUserService userService, IPasswordEncryptionService passwordEncryptionService) : base(botService) {
 			this.accountService = accountService;
 			this.userService = userService;

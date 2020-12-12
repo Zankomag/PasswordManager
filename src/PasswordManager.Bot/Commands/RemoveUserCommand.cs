@@ -9,7 +9,7 @@ namespace PasswordManager.Bot.Commands {
 	public class RemoveUserCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
 
-		public RemoveUserCommand(IBotService botService, IUserService userService) : base(botService) {
+		public RemoveUserCommand(IBot botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 		}
 

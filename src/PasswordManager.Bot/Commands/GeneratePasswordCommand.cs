@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountService accountService;
 		private readonly IUserService userService;
 
-		public GeneratePasswordCommand(IBotService botService,
+		public GeneratePasswordCommand(IBot botService,
 			IAccountService accountService, 
 			IUserService userService)
 			: base(botService) {

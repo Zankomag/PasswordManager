@@ -9,9 +9,9 @@ namespace PasswordManager.Web.Controllers
     public class BotUpdateController : ControllerBase {
 
 		private readonly IBotHandler botHandler;
-		private readonly IBotService botService;
+		private readonly IBot botService;
 
-		public BotUpdateController(IBotHandler botHandler, IBotService botService) {
+		public BotUpdateController(IBotHandler botHandler, IBot botService) {
 			this.botHandler = botHandler;
 			this.botService = botService;
 		}

@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand, IActionCommand {
 		private readonly IAccountService accountService;
 
-		public UpdateAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public UpdateAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
 

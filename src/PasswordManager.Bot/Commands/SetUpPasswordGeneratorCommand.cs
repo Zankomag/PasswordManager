@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 	public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
 		private readonly IUserService userService;
 
-		public SetUpPasswordGeneratorCommand(IBotService botService, IUserService userService) : base(botService) {
+		public SetUpPasswordGeneratorCommand(IBot botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 		}
 

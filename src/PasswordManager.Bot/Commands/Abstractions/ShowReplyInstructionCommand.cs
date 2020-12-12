@@ -13,7 +13,7 @@ namespace PasswordManager.Bot.Commands.Abstractions {
 	/// </summary>
 	public abstract class ShowReplyInstructionCommand : BotCommand, IActionCommand {
 
-		public ShowReplyInstructionCommand(IBotService botService) : base(botService) { }
+		public ShowReplyInstructionCommand(IBot botService) : base(botService) { }
 
 		//If this method was marked as IActionCommand.ExecuteAsync,
 		//it would be unoverridable. Now to override in from derived class it has

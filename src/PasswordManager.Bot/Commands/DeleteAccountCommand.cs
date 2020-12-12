@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 	public class DeleteAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 
-		public DeleteAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public DeleteAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
 

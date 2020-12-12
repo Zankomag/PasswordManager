@@ -13,7 +13,7 @@ namespace PasswordManager.Bot.Services {
 	/// <summary>
 	/// Telegram Bot Service
 	/// </summary>
-	public class BotService : IBotService {
+	public class Bot : IBot {
 
 		public TelegramBotClient Client { get; private set; }
 
@@ -23,7 +23,7 @@ namespace PasswordManager.Bot.Services {
 
 		private readonly string token;
 
-		public BotService(IOptions<BotSettings> botSettingsConfig) {
+		public Bot(IOptions<BotSettings> botSettingsConfig) {
 			BotSettings botSettings = botSettingsConfig.Value;
 
 			token = botSettings.Token;

@@ -9,7 +9,7 @@ namespace PasswordManager.Bot.Commands {
 	public class ShowAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 
-		public ShowAccountCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public ShowAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
 

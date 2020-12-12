@@ -11,7 +11,7 @@ namespace PasswordManager.Bot.Commands {
 	public class AddUserCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
 
-		public AddUserCommand(IBotService botService, IUserService userService) : base(botService) {
+		public AddUserCommand(IBot botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 		}
 

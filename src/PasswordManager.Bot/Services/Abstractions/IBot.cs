@@ -9,7 +9,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 	/// <summary>
 	/// Telegram Bot Service
 	/// </summary>
-	public interface IBotService {
+	public interface IBot {
 		public TelegramBotClient Client { get; }
 
 		public Task<bool> SendMessageToAllAdmins(string message, ParseMode parseMode = ParseMode.Markdown);

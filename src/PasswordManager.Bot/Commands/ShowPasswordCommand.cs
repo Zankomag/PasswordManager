@@ -21,7 +21,7 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IPasswordDecryptionService passwordDecryptionService;
 		private readonly IUserService userService;
 
-		public ShowPasswordCommand(IBotService botService,
+		public ShowPasswordCommand(IBot botService,
 			IAccountService accountService,
 			IPasswordDecryptionService passwordDecryptionService,
 			IUserService userService)

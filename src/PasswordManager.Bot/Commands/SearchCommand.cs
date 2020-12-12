@@ -16,7 +16,7 @@ namespace PasswordManager.Bot.Commands {
 		private const int maxAccsByPage = 3;
 		private readonly IAccountService accountService;
 
-		public SearchCommand(IBotService botService, IAccountService accountService) : base(botService) {
+		public SearchCommand(IBot botService, IAccountService accountService) : base(botService) {
 			this.accountService = accountService;
 		}
 

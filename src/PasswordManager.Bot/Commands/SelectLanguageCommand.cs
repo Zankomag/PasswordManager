@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 	public class SelectLanguageCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
 		private readonly IUserService userService;
 
-		public SelectLanguageCommand(IBotService botService, IUserService userService) : base(botService) {
+		public SelectLanguageCommand(IBot botService, IUserService userService) : base(botService) {
 			this.userService = userService;
 			
 		}

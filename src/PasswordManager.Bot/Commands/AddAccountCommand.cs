@@ -21,7 +21,7 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountAssemblingService accountAssemblingService;
 		private readonly IBotUIService botUIService;
 
-		public AddAccountCommand(IBotService botService, IAccountService accountService,
+		public AddAccountCommand(IBot botService, IAccountService accountService,
 			IUserService userService, IAccountAssemblingService accountAssemblingService,
 			IBotUIService botUIService) : base(botService)
 			=> (this.accountService, this.userService, this.accountAssemblingService, this.botUIService)

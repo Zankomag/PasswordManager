@@ -12,7 +12,7 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IUserService userService;
 		private readonly IAccountAssemblingService accountAssemblingService;
 
-		public CancelCommand(IBotService botService,
+		public CancelCommand(IBot botService,
 			IUserService userService,
 			IAccountAssemblingService accountAssemblingService)
 			: base(botService) {

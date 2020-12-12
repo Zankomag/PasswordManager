@@ -11,9 +11,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services {
 	public class BotUIService : IBotUIService {
-		private readonly IBotService botService;
+		private readonly IBot botService;
 
-		public BotUIService(IBotService botService) {
+		public BotUIService(IBot botService) {
 			this.botService = botService;
 		}
 

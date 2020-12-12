@@ -17,11 +17,11 @@ namespace PasswordManager.Bot.Services {
 	/// Handles Telegram Bot Updates
 	/// </summary>
 	public class BotHandler : IBotHandler {
-		private readonly IBotService botService;
+		private readonly IBot botService;
 		private readonly IUserService userService;
 		private readonly ICommandFactory commandFactory;
 
-		public BotHandler(IBotService botService, IUserService userService, ICommandFactory commandFactory) {
+		public BotHandler(IBot botService, IUserService userService, ICommandFactory commandFactory) {
 			this.botService = botService;
 			this.userService = userService;
 			this.commandFactory = commandFactory;
