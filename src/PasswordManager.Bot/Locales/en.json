@@ -58,5 +58,6 @@
 	"UnknownCommand": "Unknown command",
 	"EnterDecryptionKey": "Enter the decryption key.",
 	"WrongKey": "Wrong key. Try again",
-	"Reencrypt": "Re-encrypt"
+	"Reencrypt": "Re-encrypt",
+	"Encrypt": "Encrypt"
 }
