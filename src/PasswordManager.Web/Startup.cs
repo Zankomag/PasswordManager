@@ -16,6 +16,7 @@ using PasswordManager.Infrastructure.Repository;
 using Serilog;
 using System.Linq;
 using System.Reflection;
+using PasswordManager.Application;
 
 namespace PasswordManager.Web {
 
@@ -38,6 +39,9 @@ namespace PasswordManager.Web {
 			});
 
 			#region Telegram Bot
+			//TODO:
+			//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
+			AAAA
 			services.AddSingleton<IBotService, BotService>();
 			services.AddSingleton<IBotUIService, BotUIService>();
 			services.AddSingleton<ICommandFactory, CommandFactory>();

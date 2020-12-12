@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using PasswordManager.Application;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Models;
 using System;
@@ -24,9 +23,8 @@ namespace PasswordManager.Bot.Services {
 
 		private readonly string token;
 
-		public BotService(IOptions<BotSettings> botSettingsConfig, IOptions<ApplicationSettings> appSettingsConfig) {
+		public BotService(IOptions<BotSettings> botSettingsConfig) {
 			BotSettings botSettings = botSettingsConfig.Value;
-			ApplicationSettings appSettings = appSettingsConfig.Value;
 
 			token = botSettings.Token;
 			try {
@@ -36,17 +34,17 @@ namespace PasswordManager.Bot.Services {
 				//Log exception
 				throw;
 			}
-			if (appSettings.AdminIds.Length == 0) {
+			if (botSettings.AdminIds == null || botSettings.AdminIds.Length == 0) {
 				//App is not closed here because it can run without telegram bot
 				//using only site and API
 				ArgumentException exception = new ArgumentException(
 					"Bot cannot have zero admins",
-					nameof(appSettings));
+					nameof(botSettings));
 				//TODO
 				//Log exception
 				throw exception;
 			}
-			admins = appSettings.AdminIds;
+			admins = botSettings.AdminIds;
 			SetWebhook(botSettings.Domain).Wait();
 			ReportStart().Wait();
 		}
