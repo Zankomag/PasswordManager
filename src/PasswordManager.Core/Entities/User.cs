@@ -13,7 +13,7 @@ namespace PasswordManager.Core.Entities {
 		EnterPasswordLength = 3,
 		EnterDecryptionKey = 4,
 		EnterOutdatedTime = 5,
-		EnterEncryptionKey = 6
+		EncryptPassword = 6
 	}
 
 	public class User {
