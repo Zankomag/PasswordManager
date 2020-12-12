@@ -57,5 +57,6 @@
 	"EnterHint": "Please enter a hint of your encryption key.\nThis can be anything that can help you recall the key.\n*FOR GOD'S SAKE, NEVER WRITE DOWN ACTUAL KEY IN HINT! THAT'S NOT HOW SECURITY WORKS*.",
 	"UnknownCommand": "Unknown command",
 	"EnterDecryptionKey": "Enter the decryption key.",
-	"WrongKey": "Wrong key. Try again"
+	"WrongKey": "Wrong key. Try again",
+	"Reencrypt": "Re-encrypt"
 }
