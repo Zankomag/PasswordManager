@@ -7,7 +7,6 @@
 	"AddNote": "You can also add a note that contains additional info about account.",
 	"Skip": "Skip",
 	"CantWithoutNewAcc": "Add a new account first.",
-	"NoAccName": "You have to choose account name first.",
 	"AddLogin": "Nice. Choose a login for your account.\n",
 	"AddPassword": "Now you should send or generate a password for your account.\nUse a strong password with upper and lower case, numbers and special characters, you do NOT need to remember this password.\nUse {0} to set up password generator.",
 	"AddEncryptionKey": "If you want to encrypt the password (which you *MUST* do if it's not some junk account), send me the encryption key.",
