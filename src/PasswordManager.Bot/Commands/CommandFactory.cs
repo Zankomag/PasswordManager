@@ -65,7 +65,7 @@ namespace PasswordManager.Bot.Commands {
 			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
 			AddActionCommand(UserAction.EnterPasswordLength, typeof(SetUpPasswordGeneratorCommand));
 			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
-			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateOutdatedTimeCommand));
+			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateUserSettingsCommand));
 		}
 
 		private void InitCallbackQueryCommands() {
@@ -81,8 +81,9 @@ namespace PasswordManager.Bot.Commands {
 			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateAccount, typeof(UpdateAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateOutdatedTime, typeof(UpdateOutdatedTimeCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateOutdatedTime, typeof(UpdateUserSettingsCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.EncryptPassword, typeof(EncryptPasswordCommand));
 		}
 
 		private void AddMessageCommand(string messageCommand, Type commandType) {
