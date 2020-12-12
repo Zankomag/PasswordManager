@@ -46,76 +46,70 @@ namespace PasswordManager.Bot.Commands {
 			//All message commands MUST be in lower case
 			messageCommands = new Dictionary<string, Type>();
 
-			AddMessageCommand("/help", typeof(HelpCommand));
-			AddMessageCommand("/start", typeof(HelpCommand));
-			AddMessageCommand("/language", typeof(SelectLanguageCommand));
-			AddMessageCommand("/all", typeof(ShowAllAccountsCommand));
-			AddMessageCommand("/add", typeof(AddAccountCommand));
-			AddMessageCommand("/cancel", typeof(CancelCommand));
-			AddMessageCommand("/generator", typeof(SetUpPasswordGeneratorCommand));
-			AddMessageCommand("/adduser", typeof(AddUserCommand));
-			AddMessageCommand("/removeuser", typeof(RemoveUserCommand));
-			AddMessageCommand("/userlist", typeof(UserListCommand));
-			AddMessageCommand("/settings", typeof(UserSettingsCommand));
+			Add<IMessageCommand, HelpCommand>("/help");
+			Add<IMessageCommand, HelpCommand>("/start");
+			Add<IMessageCommand, SelectLanguageCommand>("/language");
+			Add<IMessageCommand, ShowAllAccountsCommand>("/all");
+			Add<IMessageCommand, AddAccountCommand>("/add");
+			Add<IMessageCommand, CancelCommand>("/cancel");
+			Add<IMessageCommand, SetUpPasswordGeneratorCommand>("/generator");
+			Add<IMessageCommand, AddUserCommand>("/adduser");
+			Add<IMessageCommand, RemoveUserCommand>("/removeuser");
+			Add<IMessageCommand, UserListCommand>("/userlist");
+			Add<IMessageCommand, UserSettingsCommand>("/settings");
 		}
 
 		private void InitActionCommands() {
 			actionCommands = new Dictionary<UserAction, Type>();
 
-			AddActionCommand(UserAction.Search, typeof(SearchCommand));
-			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
-			AddActionCommand(UserAction.UpdateAccount, typeof(UpdateAccountCommand));
-			AddActionCommand(UserAction.SetUpPasswordGeneratorLength, typeof(SetUpPasswordGeneratorCommand));
-			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
-			AddActionCommand(UserAction.UpdateUserSettings, typeof(UpdateUserSettingsCommand));
-			AddActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
+			Add<IActionCommand, SearchCommand>(UserAction.Search);
+			Add<IActionCommand, AddAccountCommand>(UserAction.AssembleAccount);
+			Add<IActionCommand, UpdateAccountCommand>(UserAction.UpdateAccount);
+			Add<IActionCommand, SetUpPasswordGeneratorCommand>(UserAction.SetUpPasswordGeneratorLength);
+			Add<IActionCommand, ShowPasswordCommand>(UserAction.EnterDecryptionKey);
+			Add<IActionCommand, UpdateUserSettingsCommand>(UserAction.UpdateUserSettings);
+			Add<IActionCommand, EncryptPasswordCommand>(UserAction.EncryptPassword);
 		}
 
 		private void InitReplyActionCommands() {
 			replyActionCommands = new Dictionary<UserAction, Type>();
-			AddReplyActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
+			Add<IReplyActionCommand, EncryptPasswordCommand>(UserAction.EncryptPassword);
 		}
 
 		private void InitCallbackQueryCommands() {
 			callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
 
-			AddCallbackQueryCommand(CallbackQueryCommandCode.AddAccount, typeof(AddAccountCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.GeneratePassword, typeof(GeneratePasswordCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.Search, typeof(SearchCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowPassword, typeof(ShowPasswordCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowAccount, typeof(ShowAccountCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteMessage, typeof(DeleteMessageCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateAccount, typeof(UpdateAccountCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateUserSettings, typeof(UpdateUserSettingsCommand));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.EncryptPassword, typeof(EncryptPasswordCommand));
+			Add<ICallbackQueryCommand, AddAccountCommand> (CallbackQueryCommandCode.AddAccount);
+			Add<ICallbackQueryCommand, SelectLanguageCommand> (CallbackQueryCommandCode.SelectLanguage);
+			Add<ICallbackQueryCommand, GeneratePasswordCommand>(CallbackQueryCommandCode.GeneratePassword);
+			Add<ICallbackQueryCommand, SearchCommand>(CallbackQueryCommandCode.Search);
+			Add<ICallbackQueryCommand, ShowPasswordCommand>(CallbackQueryCommandCode.ShowPassword);
+			Add<ICallbackQueryCommand, ShowAccountCommand>(CallbackQueryCommandCode.ShowAccount);
+			Add<ICallbackQueryCommand, DeleteMessageCommand>(CallbackQueryCommandCode.DeleteMessage);
+			Add<ICallbackQueryCommand, UpdateAccountCommand>(CallbackQueryCommandCode.UpdateAccount);
+			Add<ICallbackQueryCommand, DeleteAccountCommand>(CallbackQueryCommandCode.DeleteAccount);
+			Add<ICallbackQueryCommand, SetUpPasswordGeneratorCommand>(CallbackQueryCommandCode.SetUpPasswordGenerator);
+			Add<ICallbackQueryCommand, ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/>(CallbackQueryCommandCode.ShowEncryptionKeyHint);
+			Add<ICallbackQueryCommand, UpdateUserSettingsCommand>(CallbackQueryCommandCode.UpdateUserSettings);
+			Add<ICallbackQueryCommand, EncryptPasswordCommand>(CallbackQueryCommandCode.EncryptPassword);
 		}
 
-		private void AddMessageCommand(string messageCommand, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IMessageCommand))
-				&& commandType.IsClass && !commandType.IsAbstract)
-				messageCommands.Add(messageCommand, commandType);
-		}
-
-		private void AddCallbackQueryCommand(CallbackQueryCommandCode callbackCommandCode, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(ICallbackQueryCommand))
-				&& commandType.IsClass && !commandType.IsAbstract)
-				callbackQueryCommands.Add(callbackCommandCode, commandType);
-		}
-
-		private void AddActionCommand(UserAction action, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IActionCommand))
-				&& commandType.IsClass && !commandType.IsAbstract)
-				actionCommands.Add(action, commandType);
-		}
-
-		private void AddReplyActionCommand(UserAction action, Type commandType) {
-			if (commandType.IsAssignableTo(typeof(IReplyActionCommand))
-				&& commandType.IsClass && !commandType.IsAbstract)
-				replyActionCommands.Add(action, commandType);
+		private void Add<TCommandType, TCommand>(object commandKey) 
+			where TCommandType : IBotCommand 
+			where TCommand : class, TCommandType {
+			if (!typeof(TCommand).IsAbstract) {
+				(typeof(TCommandType) switch {
+					IMessageCommand => (Action)(() => { 
+						messageCommands.Add((string)commandKey, typeof(TCommandType)); }),
+					IReplyActionCommand => (Action)(() => { 
+						replyActionCommands.Add((UserAction)commandKey, typeof(TCommandType)); }),
+					IActionCommand => (Action)(() => { 
+						actionCommands.Add((UserAction)commandKey, typeof(TCommandType)); }),
+					ICallbackQueryCommand => (Action)(() => { 
+						callbackQueryCommands.Add((CallbackQueryCommandCode)commandKey, typeof(TCommandType)); }),
+					_ => throw new NotImplementedException()
+				})();
+			}
 		}
 
 		public ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode) {
