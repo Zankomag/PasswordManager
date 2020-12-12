@@ -4,20 +4,20 @@ using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Services {
 	public class PasswordDecryptionService : IPasswordDecryptionService {
-		private readonly Dictionary<int, Account> encryptedPasswords;
+		private readonly Dictionary<int, Account> accounts;
 
 		public PasswordDecryptionService() {
-			encryptedPasswords = new Dictionary<int, Account>();
+			accounts = new Dictionary<int, Account>();
 		}
 
 		public void StartDecryptionRequest(int userId, Account account)
-			=> encryptedPasswords[userId] = account;
+			=> accounts[userId] = account;
 
 		public void FinishDecryptionRequest(int userId)
-			=> encryptedPasswords.Remove(userId);
+			=> accounts.Remove(userId);
 
 		public Account GetAccount(int userId) {
-			if(encryptedPasswords.TryGetValue(userId, out Account account))
+			if(accounts.TryGetValue(userId, out Account account))
 				return account;
 			return null;
 		}
