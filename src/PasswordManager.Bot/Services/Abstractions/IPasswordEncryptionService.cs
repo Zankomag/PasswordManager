@@ -3,15 +3,15 @@
 namespace PasswordManager.Bot.Services.Abstractions {
 	public interface IPasswordEncryptionService {
 		/// <summary>
-		/// Saves account with encrypted or not password of user to return it for recryption later
+		/// Saves accountId of user to return it for recryption later
 		/// </summary>
-		void StartEncryptionRequest(int userId, Account account);
+		void StartEncryptionRequest(int userId, long accountId);
 		/// <summary>
-		/// Releases held account
+		/// Releases held accountId
 		/// </summary>
 		void FinishEncryptionRequest(int userId);
 		/// <summary></summary>
-		/// <returns>Account with encrypted or not password of user or <see langword="null"/> if there is no encryption request</returns>
-		Account GetAccount(int userId);
+		/// <returns>accountId of user or <see langword="null"/> if there is no encryption request</returns>
+		long? GetAccount(int userId);
 	}
 }

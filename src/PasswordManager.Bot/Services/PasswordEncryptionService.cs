@@ -4,21 +4,21 @@ using System.Collections.Generic;
 
 namespace PasswordManager.Bot.Services {
 	public class PasswordEncryptionService : IPasswordEncryptionService {
-		private readonly Dictionary<int, Account> accounts;
+		private readonly Dictionary<int, long> accountIds;
 
 		public PasswordEncryptionService() {
-			accounts = new Dictionary<int, Account>();
+			accountIds = new Dictionary<int, long>();
 		}
 
-		public void StartEncryptionRequest(int userId, Account account)
-			=> accounts[userId] = account;
+		public void StartEncryptionRequest(int userId, long accountId)
+			=> accountIds[userId] = accountId;
 
 		public void FinishEncryptionRequest(int userId)
-			=> accounts.Remove(userId);
+			=> accountIds.Remove(userId);
 
-		public Account GetAccount(int userId) {
-			if (accounts.TryGetValue(userId, out Account account))
-				return account;
+		public long? GetAccount(int userId) {
+			if (accountIds.TryGetValue(userId, out long accountId))
+				return accountId;
 			return null;
 		}
 	}
