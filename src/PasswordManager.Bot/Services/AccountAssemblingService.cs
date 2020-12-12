@@ -91,7 +91,7 @@ namespace PasswordManager.Bot.Services {
 						Password = accountAssemblingModel.Password,
 						Encrypted = accountAssemblingModel.Encrypted,
 						OutdatedTime = new TimeSpan(0, 0, 0),
-						PasswordUpdatedDate = DateTime.Now,
+						PasswordUpdatedDate = DateTime.UtcNow.Date,
 					};
 				}
 			}
