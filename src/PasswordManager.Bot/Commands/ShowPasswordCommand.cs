@@ -51,6 +51,7 @@ namespace PasswordManager.Bot.Commands {
 						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true),
 						parseMode: ParseMode.Markdown);
 				} else {
+					passwordDecryptionService.StartDecryptionRequest(user.Id, account);
 					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
 					await botService.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						"🔑 " + Localization.GetMessage("EnterDecryptionKey", user.Lang),
