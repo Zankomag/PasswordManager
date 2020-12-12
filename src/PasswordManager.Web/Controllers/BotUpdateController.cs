@@ -9,16 +9,16 @@ namespace PasswordManager.Web.Controllers
     public class BotUpdateController : ControllerBase {
 
 		private readonly IBotHandler botHandler;
-		private readonly IBot botService;
+		private readonly IBot bot;
 
-		public BotUpdateController(IBotHandler botHandler, IBot botService) {
+		public BotUpdateController(IBotHandler botHandler, IBot bot) {
 			this.botHandler = botHandler;
-			this.botService = botService;
+			this.bot = bot;
 		}
 
 		[HttpPost("{token}")]
 		public IActionResult Post([FromBody]Update update, string token) {
-			if (botService.IsTokenCorrect(token)) {
+			if (bot.IsTokenCorrect(token)) {
 				botHandler.HandleUpdate(update);
 			}
 			return Ok();

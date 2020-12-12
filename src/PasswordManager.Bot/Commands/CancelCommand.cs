@@ -12,10 +12,10 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IUserService userService;
 		private readonly IAccountAssemblingService accountAssemblingService;
 
-		public CancelCommand(IBot botService,
+		public CancelCommand(IBot bot,
 			IUserService userService,
 			IAccountAssemblingService accountAssemblingService)
-			: base(botService) {
+			: base(bot) {
 
 			this.userService = userService;
 			this.accountAssemblingService = accountAssemblingService;
@@ -26,11 +26,11 @@ namespace PasswordManager.Bot.Commands {
 				if(user.Action == UserAction.AssembleAccount)
 					accountAssemblingService.Cancel(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await botService.Client.SendTextMessageAsync(message.From.Id,
+				await bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 			else {
-				await botService.Client.SendTextMessageAsync(message.From.Id,
+				await bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("NoCancel", user.Lang));
 			}
 		}

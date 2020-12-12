@@ -18,10 +18,10 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountService accountService;
 		private readonly IUserService userService;
 
-		public GeneratePasswordCommand(IBot botService,
+		public GeneratePasswordCommand(IBot bot,
 			IAccountService accountService, 
 			IUserService userService)
-			: base(botService) {
+			: base(bot) {
 
 			this.accountService = accountService;
 			this.userService = userService;
@@ -32,7 +32,7 @@ namespace PasswordManager.Bot.Commands {
 				password = user.GenPattern.GeneratePasswordByPattern();
 			} catch (ArgumentException ex) {
 				.SetUserPasswordPattern(user);
-				await botService.Client.SendTextMessageAsync(
+				await bot.Client.SendTextMessageAsync(
 					callbackQuery.From.Id,
 					ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
 				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);

@@ -2,10 +2,10 @@
 
 namespace PasswordManager.Bot.Commands.Abstractions {
 	public abstract class BotCommand : IBotCommand {
-		protected readonly IBot botService;
+		protected readonly IBot bot;
 
-		public BotCommand(IBot botService) {
-			this.botService = botService;
+		public BotCommand(IBot bot) {
+			this.bot = bot;
 		}
 
 	}

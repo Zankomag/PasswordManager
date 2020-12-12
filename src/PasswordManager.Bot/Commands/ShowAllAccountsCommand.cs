@@ -9,7 +9,7 @@ namespace PasswordManager.Bot.Commands {
 	public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IAccountService accountService;
 
-		public ShowAllAccountsCommand(IBot botService, IAccountService accountService) : base(botService) {
+		public ShowAllAccountsCommand(IBot bot, IAccountService accountService) : base(bot) {
 			this.accountService = accountService;
 		}
 

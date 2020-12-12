@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 	public class DeleteAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 
-		public DeleteAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
+		public DeleteAccountCommand(IBot bot, IAccountService accountService) : base(bot) {
 			this.accountService = accountService;
 		}
 
@@ -35,14 +35,14 @@ namespace PasswordManager.Bot.Commands {
 								CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
 					});
 
-				await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+				await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						Localization.GetMessage("SureDeleteAcc", user.Lang) + "\n\n" + callbackQuery.Message.Text,
 						replyMarkup: keyboardMarkup,
 						disableWebPagePreview: true);
 			} else {
 				if(accountId != 0 && await accountService.DeleteAccountAsync(user.Id, accountId)) {
-					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+					await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 						callbackQuery.Message.MessageId,
 						"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
 				}

@@ -13,7 +13,7 @@ namespace PasswordManager.Bot.Commands.Abstractions {
 	/// </summary>
 	public abstract class ShowReplyInstructionCommand : BotCommand, IActionCommand {
 
-		public ShowReplyInstructionCommand(IBot botService) : base(botService) { }
+		public ShowReplyInstructionCommand(IBot bot) : base(bot) { }
 
 		//If this method was marked as IActionCommand.ExecuteAsync,
 		//it would be unoverridable. Now to override in from derived class it has
@@ -32,7 +32,7 @@ namespace PasswordManager.Bot.Commands.Abstractions {
 		// 2: Using reflection: (More comlpex solution) (https://stackoverflow.com/a/12044000/11101834)
 
 		public async virtual Task ExecuteAsync(Message message, BotUser user)
-			=> await botService.Client.SendTextMessageAsync(user.Id,
+			=> await bot.Client.SendTextMessageAsync(user.Id,
 				Localization.GetMessage("SendMessageInReply", user.Lang));
 	}
 }

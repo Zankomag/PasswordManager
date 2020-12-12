@@ -16,8 +16,8 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IUserService userService;
 		private readonly IPasswordEncryptionService passwordEncryptionService;
 
-		public EncryptPasswordCommand(IBot botService, IAccountService accountService,
-			IUserService userService, IPasswordEncryptionService passwordEncryptionService) : base(botService) {
+		public EncryptPasswordCommand(IBot bot, IAccountService accountService,
+			IUserService userService, IPasswordEncryptionService passwordEncryptionService) : base(bot) {
 			this.accountService = accountService;
 			this.userService = userService;
 			this.passwordEncryptionService = passwordEncryptionService;
@@ -33,7 +33,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 			passwordEncryptionService.StartEncryptionRequest(user.Id, accountId);
 			await userService.UpdateActionAsync(user.Id, UserAction.EncryptPassword);
-			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 				Localization.GetMessage("EncryptInstruction", user.Lang),
 				showAlert: true);
 		}
@@ -72,7 +72,7 @@ namespace PasswordManager.Bot.Commands {
 							}
 						}
 						await userService.UpdateActionAsync(user.Id, UserAction.Search);
-						await botService.Client.SendTextMessageAsync(message.From.Id,
+						await bot.Client.SendTextMessageAsync(message.From.Id,
 							Localization.GetMessage("Cancel", user.Lang));
 						return;
 					}
@@ -82,11 +82,11 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) 
-			=> await botService.Client.SendTextMessageAsync(user.Id,
+			=> await bot.Client.SendTextMessageAsync(user.Id,
 				Localization.GetMessage("SendKeyInReplyToPasswordMessage", user.Lang));
 
 		private async Task ReportWrongReply(BotUser user) {
-			await botService.Client.SendTextMessageAsync(user.Id,
+			await bot.Client.SendTextMessageAsync(user.Id,
 						Localization.GetMessage("NotPasswordMessageReply", user.Lang));
 		}
 

@@ -21,9 +21,9 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountAssemblingService accountAssemblingService;
 		private readonly IBotUIService botUIService;
 
-		public AddAccountCommand(IBot botService, IAccountService accountService,
+		public AddAccountCommand(IBot bot, IAccountService accountService,
 			IUserService userService, IAccountAssemblingService accountAssemblingService,
-			IBotUIService botUIService) : base(botService)
+			IBotUIService botUIService) : base(bot)
 			=> (this.accountService, this.userService, this.accountAssemblingService, this.botUIService)
 				= (	 accountService,	  userService,		accountAssemblingService,	   botUIService);
 
@@ -45,7 +45,7 @@ namespace PasswordManager.Bot.Commands {
 		private async Task SendValidationError(BotUser user, ValidationException validationException) {
 			//TODO:
 			//Change to good translated message
-			await botService.Client.SendTextMessageAsync(user.Id, validationException.Message);
+			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
 		}
 
 		private async Task HandleNextStage(BotUser user, AccountAssemblingStage nextAccountAssemblingStage) {
@@ -106,12 +106,12 @@ namespace PasswordManager.Bot.Commands {
 			};
 
 			if (messageToEditId == null) {
-				await botService.Client
+				await bot.Client
 					.SendTextMessageAsync(user.Id, message,
 						replyMarkup: replyMarkup,
 						parseMode: ParseMode.Markdown);
 			} else {
-				await botService.Client.EditMessageTextAsync(
+				await bot.Client.EditMessageTextAsync(
 					user.Id, messageToEditId.Value, message,
 					replyMarkup: replyMarkup,
 					parseMode: ParseMode.Markdown);
@@ -120,7 +120,7 @@ namespace PasswordManager.Bot.Commands {
 
 		//Moved from password manager
 		private async Task ReportExceededLength(BotUser user, int maxAccountDataLength, string accountDataType) {
-			await botService.Client.SendTextMessageAsync(user.Id,
+			await bot.Client.SendTextMessageAsync(user.Id,
 				String.Format(Localization.GetMessage("MaxLength", user.Lang),
 					Localization.GetMessage(accountDataType, user.Lang),
 						maxAccountDataLength));
@@ -171,7 +171,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private async Task ReportAbsenceOfNewAccount(BotUser user, string callbackQueryId)
-			=> await botService.Client.AnswerCallbackQueryAsync(callbackQueryId,
+			=> await bot.Client.AnswerCallbackQueryAsync(callbackQueryId,
 				text: Localization.GetMessage("CantWithoutNewAcc", user.Lang), showAlert: true);
 		
 

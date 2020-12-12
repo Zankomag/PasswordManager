@@ -9,12 +9,12 @@ namespace PasswordManager.Bot.Commands {
 	public class ShowAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 
-		public ShowAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
+		public ShowAccountCommand(IBot bot, IAccountService accountService) : base(bot) {
 			this.accountService = accountService;
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			string accountId = callbackQuery.Data.Substring(1);
 
 			await .ShowAccountById(

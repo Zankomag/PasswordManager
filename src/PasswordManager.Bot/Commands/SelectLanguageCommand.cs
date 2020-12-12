@@ -14,7 +14,7 @@ namespace PasswordManager.Bot.Commands {
 	public class SelectLanguageCommand : Abstractions.BotCommand, IMessageCommand, ICallbackQueryCommand {
 		private readonly IUserService userService;
 
-		public SelectLanguageCommand(IBot botService, IUserService userService) : base(botService) {
+		public SelectLanguageCommand(IBot bot, IUserService userService) : base(bot) {
 			this.userService = userService;
 			
 		}
@@ -42,7 +42,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			await botService.Client.SendTextMessageAsync(user.Id,
+			await bot.Client.SendTextMessageAsync(user.Id,
 				Localization.GetMessage("ChooseLang", user.Lang),
 				replyMarkup: GetLanguagesKeyboard());
 		}
@@ -50,7 +50,7 @@ namespace PasswordManager.Bot.Commands {
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			//If user pressed on "Change lang" button in settings, bot shows invitation to select language
 			if (callbackQuery.Data[1] == (char)SelectLanguageCommandCode.SelectLanguage){
-				await botService.Client.EditMessageTextAsync(user.Id,
+				await bot.Client.EditMessageTextAsync(user.Id,
 					callbackQuery.Message.MessageId,
 					Localization.GetMessage("ChooseLang", user.Lang),
 					replyMarkup: GetLanguagesKeyboard());
@@ -65,7 +65,7 @@ namespace PasswordManager.Bot.Commands {
 
 			//TODO:
 			//Create public static method in HelpCommand that returns help message
-			await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+			await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", user.Lang) + "\n\n" +
 				string.Format(Localization.GetMessage("Help", user.Lang),
 				"/add", "/all", "/generator", "/language", "/cancel", "/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);

@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IMessageCommand, IActionCommand {
 		private readonly IAccountService accountService;
 
-		public UpdateAccountCommand(IBot botService, IAccountService accountService) : base(botService) {
+		public UpdateAccountCommand(IBot bot, IAccountService accountService) : base(bot) {
 			this.accountService = accountService;
 		}
 
@@ -63,7 +63,7 @@ namespace PasswordManager.Bot.Commands {
 							string.Join('\n', accountData));
 					}
 					else {
-						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+						await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 						.SetUserAction(user, UserAction.UpdateAccount);
 						UpdateAccountCommandCode accountDataType = (UpdateAccountCommandCode)(byte)callbackQuery.Data[1];
 						InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == UpdateAccountCommandCode.Password ? 
@@ -79,7 +79,7 @@ namespace PasswordManager.Bot.Commands {
 					break;
 				case CallbackQueryCommandCode.AcceptPassword:
 					if (.UpdatingAccounts.ContainsKey(callbackQuery.From.Id)) {
-						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+						await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 						await .UpdateAccountDataAsync(
 							callbackQuery.Message.Text,
 							.UpdatingAccounts[callbackQuery.From.Id].AccountToUpdateId,
@@ -104,7 +104,7 @@ namespace PasswordManager.Bot.Commands {
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) _ERRORR_
 
 		private async Task<Message> RequestUpdateData(ChatId chatId, string dataKey, string langCode, InlineKeyboardMarkup inlineKeyboardMarkup = null) {
-			return await botService.Client.SendTextMessageAsync(
+			return await bot.Client.SendTextMessageAsync(
 				chatId,
 				string.Format(Localization.GetMessage("UpdateAccData", langCode), Localization.GetMessage(dataKey, langCode)),
 				replyMarkup: inlineKeyboardMarkup);
@@ -122,7 +122,7 @@ namespace PasswordManager.Bot.Commands {
 				} else {
 					data = data.Trim();
 				}
-				using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
 					conn.Execute($"update Account set {accountUpdate.AccountDataType.ToString()} = @data where Id = @accountId and UserId = @userId",
 						new { data, accountId, userId });
 				}
@@ -186,7 +186,7 @@ namespace PasswordManager.Bot.Commands {
 						passwordButton,
 						backButton});
 
-			await botService.Client.EditMessageTextAsync(chatId,
+			await bot.Client.EditMessageTextAsync(chatId,
 				messageId,
 				message + "\n\n" +
 				((messageText.Count(x => x == '\n') > 3) ?
@@ -198,7 +198,7 @@ namespace PasswordManager.Bot.Commands {
 
 		//Moved from 
 		private void DeleteAccountLink(User user, string accountId) {
-			using (IDbConnection conn = new SQLiteConnection(botService.connString)) {
+			using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
 				if (user != null) {
 					conn.Execute("update Accounts set Link = NULL where Id = @accountId and UserId = @Id",
 						new { accountId, user.Id });

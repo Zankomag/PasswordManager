@@ -11,10 +11,10 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services {
 	public class BotUIService : IBotUIService {
-		private readonly IBot botService;
+		private readonly IBot bot;
 
-		public BotUIService(IBot botService) {
-			this.botService = botService;
+		public BotUIService(IBot bot) {
+			this.bot = bot;
 		}
 
 		//TODO: 
@@ -47,10 +47,10 @@ namespace PasswordManager.Bot.Services {
 				}
 
 				if (messageToEditId != null) {
-					await botService.Client.SendTextMessageAsync(user.Id, message,
+					await bot.Client.SendTextMessageAsync(user.Id, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				} else {
-					await botService.Client.EditMessageTextAsync(user.Id, messageToEditId.Value, message,
+					await bot.Client.EditMessageTextAsync(user.Id, messageToEditId.Value, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
 				}
 			}

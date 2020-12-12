@@ -11,14 +11,14 @@ namespace PasswordManager.Bot.Commands {
 	public class AddUserCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
 
-		public AddUserCommand(IBot botService, IUserService userService) : base(botService) {
+		public AddUserCommand(IBot bot, IUserService userService) : base(bot) {
 			this.userService = userService;
 		}
 
 		//This command allows admin manually add users to bot
 		//Bot don't need this command if it has free registration
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			if (botService.IsAdmin(user)) {
+			if (bot.IsAdmin(user)) {
 				int spaceIndex;
 				if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 					try {
@@ -27,12 +27,12 @@ namespace PasswordManager.Bot.Commands {
 						await userService.AddUserAsync(newUserId, Localization.DefaultLanguageCode);
 					}
 					catch {
-						await botService.Client.SendTextMessageAsync(user.Id, "Invalid user id");
+						await bot.Client.SendTextMessageAsync(user.Id, "Invalid user id");
 						return;
 					}
-					await botService.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
+					await bot.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
 				}
-				await botService.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
+				await bot.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
 			}
 		}
 	}

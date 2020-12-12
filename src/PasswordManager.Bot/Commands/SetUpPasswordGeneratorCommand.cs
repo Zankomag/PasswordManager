@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 	public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
 		private readonly IUserService userService;
 
-		public SetUpPasswordGeneratorCommand(IBot botService, IUserService userService) : base(botService) {
+		public SetUpPasswordGeneratorCommand(IBot bot, IUserService userService) : base(bot) {
 			this.userService = userService;
 		}
 
@@ -32,7 +32,7 @@ namespace PasswordManager.Bot.Commands {
 				try {
 					length = Convert.ToInt32(message.Text);
 					if(length < .MinPasswordLength || length > .MaxPasswordLength) {
-						await botService.Client.SendTextMessageAsync(message.From.Id,
+						await bot.Client.SendTextMessageAsync(message.From.Id,
 							"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
 							.MinPasswordLength, .MaxPasswordLength));
 						return;
@@ -43,7 +43,7 @@ namespace PasswordManager.Bot.Commands {
 					await SendGeneratorSettings(user, message);
 				}
 				catch(Exception) {
-					await botService.Client.SendTextMessageAsync(message.From.Id,
+					await bot.Client.SendTextMessageAsync(message.From.Id,
 						"⛓️ " + String.Format(Localization.GetMessage("WrongLength", user.Lang),
 						.MinPasswordLength, .MaxPasswordLength));
 				}
@@ -56,7 +56,7 @@ namespace PasswordManager.Bot.Commands {
 
 			InlineKeyboardMarkup keyboard = GetGeneratorSettingsKeyboard(user);
 
-			await botService.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
+			await bot.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 		}
 
 		string GetMessageText(ref User user, string messageText) {
@@ -176,7 +176,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			StringBuilder sb = new StringBuilder(user.GenPattern.Substring(0, 6));
 			if((SetUpPasswordGeneratorCommandCode)callbackQuery.Data[1] != SetUpPasswordGeneratorCommandCode.Length &&
 				(SetUpPasswordGeneratorCommandCode)callbackQuery.Data[1] != SetUpPasswordGeneratorCommandCode.Generate &&
@@ -219,7 +219,7 @@ namespace PasswordManager.Bot.Commands {
 				break;
 
 				case SetUpPasswordGeneratorCommandCode.Length:
-					await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
+					await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 						"⛓️ " + String.Format(Localization.GetMessage("EnterLength", user.Lang),
 						.MinPasswordLength, .MaxPasswordLength));
 					.SetUserAction(user, UserAction.UpdatePasswordLength);
@@ -231,7 +231,7 @@ namespace PasswordManager.Bot.Commands {
 			string messageText = GetMessageText(ref user, callbackQuery.Message.Text);
 			
 			var keyboard = GetGeneratorSettingsKeyboard(user);
-			await botService.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+			await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 				callbackQuery.Message.MessageId, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 
 		}

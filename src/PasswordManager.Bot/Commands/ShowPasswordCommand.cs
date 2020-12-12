@@ -21,11 +21,11 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IPasswordDecryptionService passwordDecryptionService;
 		private readonly IUserService userService;
 
-		public ShowPasswordCommand(IBot botService,
+		public ShowPasswordCommand(IBot bot,
 			IAccountService accountService,
 			IPasswordDecryptionService passwordDecryptionService,
 			IUserService userService)
-			: base(botService) {
+			: base(bot) {
 
 			this.accountService = accountService;
 			this.passwordDecryptionService = passwordDecryptionService;
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Commands {
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			//TODO:
 			//Delete answering callbackquery when messages will be edited instead of sending
-			await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			long accountId;
 			try {
 				accountId = Convert.ToInt64(callbackQuery.Data[1..]);
@@ -46,14 +46,14 @@ namespace PasswordManager.Bot.Commands {
 			Account account = await accountService.GetPasswordAsync(user.Id, accountId);
 			if (account != null) {
 				if (!account.Encrypted) {
-					await botService.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						GetPasswordMessage(account.Password),
 						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true),
 						parseMode: ParseMode.Markdown);
 				} else {
 					passwordDecryptionService.StartDecryptionRequest(user.Id, account);
 					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
-					await botService.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						"🔑 " + Localization.GetMessage("EnterDecryptionKey", user.Lang),
 						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, false));
 				}
@@ -98,17 +98,17 @@ namespace PasswordManager.Bot.Commands {
 				try {
 					decryptedPassword = account.Password.Decrypt(message.Text);
 				} catch {
-					await botService.Client.SendTextMessageAsync(user.Id,
+					await bot.Client.SendTextMessageAsync(user.Id,
 					Localization.GetMessage("WrongKey", user.Lang),
 					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, true, false),
 					parseMode: ParseMode.Markdown);
 				}
-				await botService.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
+				await bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
 					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true));
 				passwordDecryptionService.FinishDecryptionRequest(user.Id);
 			} else {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await botService.Client.SendTextMessageAsync(message.From.Id,
+				await bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 		}

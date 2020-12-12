@@ -17,12 +17,12 @@ namespace PasswordManager.Bot.Services {
 	/// Handles Telegram Bot Updates
 	/// </summary>
 	public class BotHandler : IBotHandler {
-		private readonly IBot botService;
+		private readonly IBot bot;
 		private readonly IUserService userService;
 		private readonly ICommandFactory commandFactory;
 
-		public BotHandler(IBot botService, IUserService userService, ICommandFactory commandFactory) {
-			this.botService = botService;
+		public BotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory) {
+			this.bot = bot;
 			this.userService = userService;
 			this.commandFactory = commandFactory;
 		}
@@ -49,7 +49,7 @@ namespace PasswordManager.Bot.Services {
 					//ONLY If unauthorized user is admin - bot treats them as new user
 					//Not-admin users must be added to bot by Admin manually
 					//If you want to allow free registration in your bot for any user - disable this admin check
-					if (botService.IsAdmin(message.From.Id)) {
+					if (bot.IsAdmin(message.From.Id)) {
 						//TODO:
 						//Separate adding new account logic to othee method
 						if (Localization.ContainsLanguage(message.From.LanguageCode)) {
@@ -85,7 +85,7 @@ namespace PasswordManager.Bot.Services {
 						await messageCommand.ExecuteAsync(message, user);
 					} else {
 						try {
-							await botService.Client.SendTextMessageAsync(message.From.Id,
+							await bot.Client.SendTextMessageAsync(message.From.Id,
 									text: Localization.GetMessage("UnknownCommand", user.Lang));
 						} catch { }
 					}
@@ -112,7 +112,7 @@ namespace PasswordManager.Bot.Services {
 					}
 				}
 			} catch (Exception ex) {
-				await botService.SendMessageToAllAdmins(ex.ToString());
+				await bot.SendMessageToAllAdmins(ex.ToString());
 				//TODO: Log Exception
 				throw;
 			}
@@ -129,7 +129,7 @@ namespace PasswordManager.Bot.Services {
 					//ONLY If unauthorized user is admin - bot treats them as new user
 					//Not-admin users must be added to bot by Admin manually
 					//If you want to allow free registration in your bot for any user - disable this admin check
-					if (botService.IsAdmin(callbackQuery.From.Id)) {
+					if (bot.IsAdmin(callbackQuery.From.Id)) {
 						//TODO:
 						//Separate adding new account logic to othee method
 						if (callbackQuery.Data[0] == (char)CallbackQueryCommandCode.SelectLanguage) {
@@ -160,7 +160,7 @@ namespace PasswordManager.Bot.Services {
 					await callbackQueryCommand.ExecuteAsync(callbackQuery, user);
 				} else {
 					try {
-						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+						await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 							text: Localization.GetMessage("UnknownCommand", user.Lang),
 							showAlert: true);
 					} catch { }
@@ -171,7 +171,7 @@ namespace PasswordManager.Bot.Services {
 				string message = "EXCEPTION: " + exeption.ToString();
 				if (user != null)
 					message += "\n\nUSER: [user](tg://user?id=" + user.Id.ToString() + ")";
-				await botService.SendMessageToAllAdmins(message);
+				await bot.SendMessageToAllAdmins(message);
 				//TODO: Log exception
 			}
 		}

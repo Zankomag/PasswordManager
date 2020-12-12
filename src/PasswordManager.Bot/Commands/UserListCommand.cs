@@ -15,12 +15,12 @@ namespace PasswordManager.Bot.Commands {
 	public class UserListCommand: Abstractions.BotCommand, IMessageCommand {
 		private readonly IUserService userService;
 
-		public UserListCommand(IBot botService, IUserService userService) : base(botService) {
+		public UserListCommand(IBot bot, IUserService userService) : base(bot) {
 			this.userService = userService;
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			if(botService.IsAdmin(user)) {
+			if(bot.IsAdmin(user)) {
 				try {
 					IList<User> users = await userService.GetAllBasicInfoAsync();
 					string response = string.Empty;
@@ -30,11 +30,11 @@ namespace PasswordManager.Bot.Commands {
 					}
 					//TODO:
 					//fix @UPwdBot, get bot nickname from bot and save in in bot class
-					await botService.SendMessageToAllAdmins("All @UPwdBot users:\nUser: Number of accounts\n" + response,
+					await bot.SendMessageToAllAdmins("All @UPwdBot users:\nUser: Number of accounts\n" + response,
 						Telegram.Bot.Types.Enums.ParseMode.Markdown);
 				}
 				catch(Exception ex) {
-					await botService.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
+					await bot.SendMessageToAllAdmins("Error occured:\n\n" + ex.ToString());
 					//Log Exception
 				}
 			}

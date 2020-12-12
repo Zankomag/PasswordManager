@@ -8,7 +8,7 @@ using PasswordManager.Bot.Services.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	public class HelpCommand : Abstractions.BotCommand, IMessageCommand {
 
-		public HelpCommand(IBot botService) : base(botService) { }
+		public HelpCommand(IBot bot) : base(bot) { }
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 			//TODO:

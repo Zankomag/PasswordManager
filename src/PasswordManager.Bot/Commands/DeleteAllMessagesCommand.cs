@@ -8,7 +8,7 @@ using PasswordManager.Application.Services.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	//public class DeleteAllMessagesCommand : Abstractions.BotCommand, IMessageCommand {
 
-	//	public DeleteAllMessagesCommand(IBotService botService) : base(botService) { }
+	//	public DeleteAllMessagesCommand(Ibot bot) : base(bot) { }
 	//	//
 	//	//===========================================================================
 	//	//EXPERIMENTAL FEATURE
@@ -17,7 +17,7 @@ namespace PasswordManager.Bot.Commands {
 	//	async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
 	//		//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 	//		try {
-	//			await botService.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+	//			await bot.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);
 	//		}
 	//		catch (Telegram.Bot.Exceptions.ApiRequestException) {
 	//			//
