@@ -50,5 +50,19 @@ namespace PasswordManager.Application.Services {
 				return false;
 			}
 		}
+
+		public async Task UpdatePassword(int userId, long accountId, string password, bool encrypted) {
+			if (password == null)
+				throw new ArgumentNullException(nameof(password));
+
+			Account account = await workUnit.AccountRepository.GetBasicAccountInfo(accountId);
+			if(account.UserId == userId) {
+				account.Password = password;
+				account.Encrypted = encrypted;
+				workUnit.AccountRepository.UpdatePassword(account);
+				await workUnit.SaveAsync();
+			}
+		}
+
 	}
 }

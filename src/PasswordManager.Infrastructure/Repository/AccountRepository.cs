@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -52,8 +53,8 @@ namespace PasswordManager.Infrastructure.Repository {
 				.FirstOrDefaultAsync();
 		}
 
-		public async Task<Account> GetPasswordAsync(int userId, long accountId) {
-			return await GetByUser(userId)
+		public async Task<Account> GetPasswordAsync(int userId, long accountId) 
+			=> await GetByUser(userId)
 				.Where(x => x.Id == accountId)
 				.Select(a => new Account() {
 					Id = accountId,
@@ -62,7 +63,7 @@ namespace PasswordManager.Infrastructure.Repository {
 				})
 				.AsNoTracking()
 				.FirstOrDefaultAsync();
-		}
+		
 
 		public async Task<bool> DeleteAccountAsync(int userId, long accountId) {
 			var account = await dbSet
@@ -70,5 +71,24 @@ namespace PasswordManager.Infrastructure.Repository {
 				.FirstOrDefaultAsync();
 			return base.Delete(account);
 		}
+
+		public void UpdatePassword(Account account) {
+			if (account == null)
+				throw new ArgumentNullException(nameof(account));
+			if (account.Password == null)
+				throw new ArgumentException("user.GenPattern cannot be null", nameof(account));
+			context.Entry(account).Property(x => x.Password).IsModified = true;
+			context.Entry(account).Property(x => x.Encrypted).IsModified = true;
+		}
+
+		public async Task<Account> GetBasicAccountInfo(long accountId)
+			=> await dbSet.Where(x => x.Id == accountId)
+				.Select(a => new Account() {
+					Id = accountId,
+					UserId = a.UserId
+				})
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+		
 	}
 }

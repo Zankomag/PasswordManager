@@ -19,5 +19,13 @@ namespace PasswordManager.Core.Repositories {
 		Task<Account> GetPasswordAsync(int userId, long accountId);
 		/// <returns>True on success</returns>
 		Task<bool> DeleteAccountAsync(int userId, long accountId);
+		/// <summary>
+		/// Updates Password and Encrypted fields
+		/// </summary>
+		/// <param name="account"></param>
+		void UpdatePassword(Account account);
+		/// <summary></summary>
+		/// <returns>Account Id and User Id</returns>
+		Task<Account> GetBasicAccountInfo(long accountId);
 	}
 }
