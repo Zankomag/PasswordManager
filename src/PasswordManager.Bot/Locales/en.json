@@ -59,5 +59,7 @@
 	"EnterDecryptionKey": "Enter the decryption key.",
 	"WrongKey": "Wrong key. Try again",
 	"Reencrypt": "Re-encrypt",
-	"Encrypt": "Encrypt"
+	"Encrypt": "Encrypt",
+	"EncryptInstruction": "In order to encrypt password, send the encryption key in reply to this message.",
+	"PasswordEncrypted": "Password has been successfully encrypted."
 }
