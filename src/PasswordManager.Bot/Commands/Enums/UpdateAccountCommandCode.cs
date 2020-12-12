@@ -6,6 +6,7 @@ namespace PasswordManager.Bot.Commands.Enums {
 		Link = 'R',
 		Note = 'N',
 		Login = 'L',
-		Password = 'P'
+		Password = 'P',
+		RemoveEncryption = 'D'
 	}
 }
