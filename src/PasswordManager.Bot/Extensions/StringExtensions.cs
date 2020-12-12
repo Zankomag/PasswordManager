@@ -70,6 +70,7 @@ namespace PasswordManager.Bot.Extensions {
 		/// <returns><see cref="CallbackQueryCommandCode.SelectLanguage"/> + selectLanguageCommandCode</returns>
 		public static string ToStringCode(this SelectLanguageCommandCode selectLanguageCommandCode) 
 			=> GetStringCode(CallbackQueryCommandCode.SelectLanguage, (char)selectLanguageCommandCode);
+
 		///<summary></summary>
 		/// <param name="updateAccountCommandCode"></param>
 		/// <returns><see cref="CallbackQueryCommandCode.UpdateAccount"/> + updateAccountCommandCode</returns>

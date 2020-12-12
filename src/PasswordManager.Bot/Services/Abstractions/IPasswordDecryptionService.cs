@@ -8,7 +8,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// </summary>
 		void StartDecryptionRequest(int userId, Account account);
 		/// <summary>
-		/// Releases held encrypted password
+		/// Releases held account
 		/// </summary>
 		void FinishDecryptionRequest(int userId);
 		/// <summary></summary>

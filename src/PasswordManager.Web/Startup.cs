@@ -44,6 +44,7 @@ namespace PasswordManager.Web {
 			services.AddSingleton<IAccountUpdateService, AccountUpdateService>();
 			services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
 			services.AddSingleton<IPasswordDecryptionService, PasswordDecryptionService>();
+			services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 
 			services.AddScoped<IBotHandler, BotHandler>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
