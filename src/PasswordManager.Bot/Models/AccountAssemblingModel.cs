@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Services.Enums;
 
 namespace PasswordManager.Bot.Models {
 	//TODO: Move validation to Service

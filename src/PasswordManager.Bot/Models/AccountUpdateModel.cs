@@ -1,4 +1,4 @@
-﻿using PasswordManager.Bot.Enums;
+﻿using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot.Models {
 	public class AccountUpdateModel {
@@ -22,7 +22,7 @@ namespace PasswordManager.Bot.Models {
 		/// <param name="messageToDeleteId1">Message with selection what you want to update</param>
 		/// <param name="messageToDeleteId2">Message with invitation to send new data like send new password</param>
 		/// <param name="accountDataType"></param>
-		public AccountUpdateModel(string accountToUpdateId, int messageToDeleteId1, int messageToDeleteId2, AccountDataType accountDataType) {
+		public AccountUpdateModel(string accountToUpdateId, int messageToDeleteId1, int messageToDeleteId2, UpdateAccountCommandCode accountDataType) {
 			AccountToUpdateId = accountToUpdateId;
 			MessagetoDeleteId = new int[2];
 			MessagetoDeleteId[0] = messageToDeleteId1;
@@ -31,6 +31,6 @@ namespace PasswordManager.Bot.Models {
 		}
 		public string AccountToUpdateId;
 		public int[] MessagetoDeleteId;
-		public AccountDataType AccountDataType;
+		public UpdateAccountCommandCode AccountDataType;
 	}
 }

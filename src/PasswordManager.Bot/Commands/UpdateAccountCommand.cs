@@ -2,17 +2,15 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using MultiUserLocalization;
-using PasswordManager.Bot;
 using System.Linq;
 using System.Collections.Generic;
-using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using System;
 using PasswordManager.Bot.Commands.Enums;
 
@@ -67,8 +65,8 @@ namespace PasswordManager.Bot.Commands {
 					else {
 						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 						.SetUserAction(user, UserAction.Update);
-						AccountDataType accountDataType = (AccountDataType)(byte)callbackQuery.Data[1];
-						InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == AccountDataType.Password ? 
+						UpdateAccountCommandCode accountDataType = (UpdateAccountCommandCode)(byte)callbackQuery.Data[1];
+						InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == UpdateAccountCommandCode.Password ? 
 							.GeneratePasswordButtonMarkup(user.Lang) : 
 							null;
 						Message sentMessage = await RequestUpdateData(callbackQuery.From.Id, accountDataType.ToString(), user.Lang, inlineKeyboardMarkup);
@@ -116,10 +114,10 @@ namespace PasswordManager.Bot.Commands {
 		private async Task UpdateAccountDataAsync(string data, string accountId, int userId, string langCode) {
 			if (UpdatingAccounts.ContainsKey(userId)) {
 				AccountUpdateModel accountUpdate = UpdatingAccounts[userId];
-				if (accountUpdate.AccountDataType == AccountDataType.Password) {
+				if (accountUpdate.AccountDataType == UpdateAccountCommandCode.Password) {
 					//TODO: ENCRYPT
 					data = data.Trim();
-				} else if (accountUpdate.AccountDataType == AccountDataType.Link) {
+				} else if (accountUpdate.AccountDataType == UpdateAccountCommandCode.Link) {
 					data = data.BuildLink();
 				} else {
 					data = data.Trim();

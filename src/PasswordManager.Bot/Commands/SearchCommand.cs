@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using Telegram.Bot.Types.ReplyMarkups;
 

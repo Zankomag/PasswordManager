@@ -1,7 +1,7 @@
 ﻿using PasswordManager.Core.Entities;
 using System;
 
-namespace PasswordManager.Bot.Abstractions {
+namespace PasswordManager.Bot.Services.Abstractions {
 	public interface IPasswordDecryptionService {
 		/// <summary>
 		/// Saves account with encrypted password of user to return it for decryption later

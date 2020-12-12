@@ -1,6 +1,6 @@
 ﻿using MultiUserLocalization;
 using PasswordManager.Application.Services.Abstractions;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Extensions;

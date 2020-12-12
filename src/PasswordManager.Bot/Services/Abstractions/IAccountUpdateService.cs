@@ -1,6 +1,6 @@
 ﻿
 
-namespace PasswordManager.Bot.Abstractions {
+namespace PasswordManager.Bot.Services.Abstractions {
 
 	/// <summary>
 	/// This service is responsible for handlinmg account update

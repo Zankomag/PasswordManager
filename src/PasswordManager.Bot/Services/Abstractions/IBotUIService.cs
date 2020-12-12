@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManager.Bot.Abstractions {
+namespace PasswordManager.Bot.Services.Abstractions {
 	public interface IBotUIService {
 		/// <summary>
 		/// Sends account data with buttons

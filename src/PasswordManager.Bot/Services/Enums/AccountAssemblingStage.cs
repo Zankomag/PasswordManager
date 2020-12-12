@@ -1,5 +1,5 @@
 ﻿
-namespace PasswordManager.Bot.Enums {
+namespace PasswordManager.Bot.Services.Enums {
 	public enum AccountAssemblingStage {
 		None = -1,
 		AddAccountName = 0,

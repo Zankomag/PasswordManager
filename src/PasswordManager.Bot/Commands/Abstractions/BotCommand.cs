@@ -1,4 +1,4 @@
-﻿using PasswordManager.Bot.Abstractions;
+﻿using PasswordManager.Bot.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands.Abstractions {
 	public abstract class BotCommand : IBotCommand {

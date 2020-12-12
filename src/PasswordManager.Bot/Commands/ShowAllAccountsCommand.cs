@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using PasswordManager.Bot.Models;
 using PasswordManager.Application.Services.Abstractions;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {

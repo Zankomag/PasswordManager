@@ -10,7 +10,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Application.Encryption;
 using PasswordManager.Application.Services.Abstractions;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
 using System.Text;
 using System.Collections.Generic;

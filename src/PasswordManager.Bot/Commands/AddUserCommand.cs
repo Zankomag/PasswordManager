@@ -4,8 +4,8 @@ using MultiUserLocalization;
 using System;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Models;
-using PasswordManager.Bot.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
 	public class AddUserCommand : Abstractions.BotCommand, IMessageCommand {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using PasswordManager.Application.Encryption;
-using PasswordManager.Bot.Abstractions;
-using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
+using PasswordManager.Bot.Services.Enums;
 
 namespace PasswordManager.Bot.Services {
 	public class AccountAssemblingService : IAccountAssemblingService {

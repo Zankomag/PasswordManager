@@ -10,7 +10,7 @@ using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {

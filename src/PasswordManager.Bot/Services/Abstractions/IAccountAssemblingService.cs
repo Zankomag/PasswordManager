@@ -1,7 +1,7 @@
 ﻿using PasswordManager.Core.Entities;
-using PasswordManager.Bot.Enums;
+using PasswordManager.Bot.Services.Enums;
 
-namespace PasswordManager.Bot.Abstractions {
+namespace PasswordManager.Bot.Services.Abstractions {
 
 	/// <summary>
 	/// This service is responsible for assembling account 

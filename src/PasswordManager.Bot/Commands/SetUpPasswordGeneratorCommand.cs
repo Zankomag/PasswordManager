@@ -12,7 +12,7 @@ using System.Linq;
 using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
-using PasswordManager.Bot.Abstractions;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 
 namespace PasswordManager.Bot.Commands {
