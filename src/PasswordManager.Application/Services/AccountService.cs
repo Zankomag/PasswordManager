@@ -51,7 +51,7 @@ namespace PasswordManager.Application.Services {
 			}
 		}
 
-		public async Task UpdatePassword(int userId, long accountId, string password, bool encrypted) {
+		public async Task UpdatePasswordAsync(int userId, long accountId, string password, bool encrypted) {
 			if (password == null)
 				throw new ArgumentNullException(nameof(password));
 
