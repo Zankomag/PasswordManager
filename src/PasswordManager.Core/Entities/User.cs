@@ -12,7 +12,8 @@ namespace PasswordManager.Core.Entities {
 		Update = 2,
 		EnterPasswordLength = 3,
 		EnterDecryptionKey = 4,
-		EnterOutdatedTime = 5
+		EnterOutdatedTime = 5,
+		EnterEncryptionKey = 6
 	}
 
 	public class User {
