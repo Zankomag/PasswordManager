@@ -9,10 +9,10 @@ namespace PasswordManager.Core.Entities {
 	public enum UserAction {
 		Search = 0,
 		AssembleAccount = 1,
-		Update = 2,
-		EnterPasswordLength = 3,
+		UpdateAccount = 2,
+		SetUpPasswordGeneratorLength = 3,
 		EnterDecryptionKey = 4,
-		EnterOutdatedTime = 5,
+		UpdateUserSettings = 5,
 		EncryptPassword = 6
 	}
 

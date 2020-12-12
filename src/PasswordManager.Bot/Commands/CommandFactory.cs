@@ -54,18 +54,18 @@ namespace PasswordManager.Bot.Commands {
 			AddMessageCommand("/adduser", typeof(AddUserCommand));
 			AddMessageCommand("/removeuser", typeof(RemoveUserCommand));
 			AddMessageCommand("/userlist", typeof(UserListCommand));
-			AddMessageCommand("/settings", typeof(SettingsCommand));
+			AddMessageCommand("/settings", typeof(UserSettingsCommand));
 		}
 
 		private void InitActionCommands() {
 			actionCommands = new Dictionary<UserAction, Type>();
 
-			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
 			AddActionCommand(UserAction.Search, typeof(SearchCommand));
-			AddActionCommand(UserAction.Update, typeof(UpdateAccountCommand));
-			AddActionCommand(UserAction.EnterPasswordLength, typeof(SetUpPasswordGeneratorCommand));
+			AddActionCommand(UserAction.AssembleAccount, typeof(AddAccountCommand));
+			AddActionCommand(UserAction.UpdateAccount, typeof(UpdateAccountCommand));
+			AddActionCommand(UserAction.SetUpPasswordGeneratorLength, typeof(SetUpPasswordGeneratorCommand));
 			AddActionCommand(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
-			AddActionCommand(UserAction.EnterOutdatedTime, typeof(UpdateUserSettingsCommand));
+			AddActionCommand(UserAction.UpdateUserSettings, typeof(UpdateUserSettingsCommand));
 			AddActionCommand(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
 		}
 
@@ -83,7 +83,7 @@ namespace PasswordManager.Bot.Commands {
 			AddCallbackQueryCommand(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.ShowEncryptionKeyHint, typeof(ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/));
-			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateOutdatedTime, typeof(UpdateUserSettingsCommand));
+			AddCallbackQueryCommand(CallbackQueryCommandCode.UpdateUserSettings, typeof(UpdateUserSettingsCommand));
 			AddCallbackQueryCommand(CallbackQueryCommandCode.EncryptPassword, typeof(EncryptPasswordCommand));
 		}
 

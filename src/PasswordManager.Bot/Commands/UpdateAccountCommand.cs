@@ -64,7 +64,7 @@ namespace PasswordManager.Bot.Commands {
 					}
 					else {
 						await botService.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-						.SetUserAction(user, UserAction.Update);
+						.SetUserAction(user, UserAction.UpdateAccount);
 						UpdateAccountCommandCode accountDataType = (UpdateAccountCommandCode)(byte)callbackQuery.Data[1];
 						InlineKeyboardMarkup inlineKeyboardMarkup = accountDataType == UpdateAccountCommandCode.Password ? 
 							.GeneratePasswordButtonMarkup(user.Lang) : 
