@@ -23,7 +23,7 @@ namespace PasswordManager.Infrastructure.Data {
 
 			//Set default value for 6 month
 			modelBuilder.Entity<User>().Property(u => u.OutdatedTime)
-				.HasDefaultValue(new TimeSpan(days: 180, 0, 0, 0));
+				.HasDefaultValue(new TimeSpan(days: 365, 0, 0, 0));
 		}
 	}
 }

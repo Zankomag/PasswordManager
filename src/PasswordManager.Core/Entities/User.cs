@@ -13,7 +13,9 @@ namespace PasswordManager.Core.Entities {
 		SetUpPasswordGeneratorLength = 3,
 		EnterDecryptionKey = 4,
 		UpdateUserSettings = 5,
-		EncryptPassword = 6
+		//Used to Re-encrypt or encrypt unencrypted existing passwords
+		//Encryption during account assembling is handled by AddAccount action command
+		EncryptPassword = 6 
 	}
 
 	public class User {
