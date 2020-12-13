@@ -18,33 +18,64 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		//TODO: refacor
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			int accountId;
-			Int32.TryParse(callbackQuery.Data[2..], out accountId);
-			if (callbackQuery.Data[1] == '0') {
-				var keyboardMarkup = new InlineKeyboardMarkup(
-					new InlineKeyboardButton[][] {
-						new InlineKeyboardButton[] {
-							InlineKeyboardButton.WithCallbackData(
-								Localization.GetMessage("ImSure", user.Lang),
-							 CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '1' + accountId)},
-						new InlineKeyboardButton[] {
-							InlineKeyboardButton.WithCallbackData(
-								"❌ " + Localization.GetMessage("No!", user.Lang),
-								CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
-					});
+			if (long.TryParse(callbackQuery.Data[2..], out long accountId)) {
+				if (!string.IsNullOrEmpty(callbackQuery.Data)
+					&& callbackQuery.Data[0] == (char)CallbackQueryCommandCode.DeleteAccount) {
 
-				await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
-						callbackQuery.Message.MessageId,
-						Localization.GetMessage("SureDeleteAcc", user.Lang) + "\n\n" + callbackQuery.Message.Text,
-						replyMarkup: keyboardMarkup,
-						disableWebPagePreview: true);
-			} else {
-				if(accountId != 0 && await accountService.DeleteAccountAsync(user.Id, accountId)) {
-					await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
-						callbackQuery.Message.MessageId,
-						"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
+					//TODO: move keyboards to ui service
+					await (callbackQuery.Data[1] switch {
+						(char)DeleteAccountCommandCode.AskForDeletion => (Func<Task>)(async () => {
+							var keyboardMarkup = new InlineKeyboardMarkup(
+							new InlineKeyboardButton[][] {
+								new InlineKeyboardButton[] {
+									InlineKeyboardButton.WithCallbackData(
+										Localization.GetMessage("ImSure1", user.Lang),
+										DeleteAccountCommandCode.AskForDeletion2.ToStringCode() + accountId)},
+								new InlineKeyboardButton[] {
+									InlineKeyboardButton.WithCallbackData(
+										"❌ " + Localization.GetMessage("No1", user.Lang),
+										CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
+							});
+
+							await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+									callbackQuery.Message.MessageId,
+									Localization.GetMessage("SureDeleteAcc1", user.Lang) + "\n\n" + callbackQuery.Message.Text,
+									replyMarkup: keyboardMarkup,
+									disableWebPagePreview: true);
+						}),
+						(char)DeleteAccountCommandCode.AskForDeletion2 => (Func<Task>)(async () => {
+							var keyboardMarkup = new InlineKeyboardMarkup(
+							new InlineKeyboardButton[][] {
+								new InlineKeyboardButton[] {
+									InlineKeyboardButton.WithCallbackData(
+										Localization.GetMessage("ImSure2", user.Lang),
+										DeleteAccountCommandCode.AskForDeletion2.ToStringCode() + accountId)},
+								new InlineKeyboardButton[] {
+									InlineKeyboardButton.WithCallbackData(
+										"❌ " + Localization.GetMessage("No2", user.Lang),
+										CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
+							});
+
+							await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+									callbackQuery.Message.MessageId,
+									Localization.GetMessage("SureDeleteAcc2", user.Lang) + "\n\n" + callbackQuery.Message.Text,
+									replyMarkup: keyboardMarkup,
+									disableWebPagePreview: true);
+						}),
+						(char)DeleteAccountCommandCode.Delete => (Func<Task>)(async () => {
+							if (await accountService.DeleteAccountAsync(user.Id, accountId)) {
+								await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+									callbackQuery.Message.MessageId,
+									"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
+							} else {
+								await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+									callbackQuery.Message.MessageId,
+									Localization.GetMessage("ErrorTryAgainLater", user.Lang));
+							}
+						}),
+						_ => throw new ArgumentException("Unexpected value")
+					})();
 				}
 			}
 		}

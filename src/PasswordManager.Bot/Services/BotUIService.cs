@@ -42,10 +42,11 @@ namespace PasswordManager.Bot.Services {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
-							CallbackQueryCommandCode.DeleteAccount.ToStringCode() + '0' + account.Id) },
+							DeleteAccountCommandCode.AskForDeletion.ToStringCode() + account.Id) },
 					new InlineKeyboardButton[] {
-					InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-						CallbackQueryCommandCode.DeleteMessage.ToStringCode())
+						InlineKeyboardButton.WithCallbackData(
+							"🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+							CallbackQueryCommandCode.DeleteMessage.ToStringCode())
 					}
 					});
 				if (extraMessage != null) {
