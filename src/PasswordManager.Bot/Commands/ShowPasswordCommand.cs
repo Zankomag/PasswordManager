@@ -63,19 +63,25 @@ namespace PasswordManager.Bot.Commands {
 		//TODO: Move to BotUIService
 		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser user,
 			bool showShowHintButton, bool showReencryptButton) {
-			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>> {
-				new List<InlineKeyboardButton> {
-					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
-						CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id)
-				}
+			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>>(); {
+				
+				
 			};
 			if (showShowHintButton) {
 				keyboard.Add(
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
-							CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode()) 
+							CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode())
 					});
 			}
+			keyboard.Add(
+				new List<InlineKeyboardButton> {
+					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
+					CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
+					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("Update", user.Lang),
+						UpdateAccountCommandCode.Password.ToStringCode() + account.Id)
+				}
+			);
 			List<InlineKeyboardButton> lowerButtons = new List<InlineKeyboardButton>();
 			if (showReencryptButton) {
 				lowerButtons.Add(InlineKeyboardButton.WithCallbackData(
