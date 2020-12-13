@@ -30,7 +30,7 @@
 	"MaxLength": "Max {0} length is {1} characters. Try again.",
 	"Link": "Link",
 	"DeleteMsg": "Delete message",
-	"UpdateAcc": "Update account",
+	"UpdateAcc": "Edit account",
 	"DeleteAcc": "Delete account",
 	"AccountName": "Account name",
 	"ChooseWhatUpdate": "What you want to update?",
