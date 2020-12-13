@@ -77,7 +77,7 @@ namespace PasswordManager.Bot.Commands {
 			keyboard.Add(
 				new List<InlineKeyboardButton> {
 					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
-					CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
+						CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
 					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("Update", user.Lang),
 						UpdateAccountCommandCode.Password.ToStringCode() + account.Id)
 				}

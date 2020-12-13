@@ -45,35 +45,36 @@ namespace PasswordManager.Bot.Commands {
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
 					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
 						&& (callbackData = y.CallbackData)[0] == (char)CallbackQueryCommandCode.EncryptPassword))) {
-							long passwordAccountId;
-							try {
-								passwordAccountId = Convert.ToInt64(callbackData[1..]);
-							} catch (Exception exception) {
-								//TODO: Log exception
-								throw;
-							}
-							long? accountId = passwordEncryptionService.GetAccountId(user.Id);
-							if (accountId != null && message.ReplyToMessage.Text != null) {
-								if (accountId == passwordAccountId) {
-									string encryptedPassword;
-									try {
-										encryptedPassword = message.ReplyToMessage.Text
-											.Encrypt(message.Text);
-									} catch (Exception exception) {
-										//TODO; Log Exception
-										throw;
-									}
-									await accountService.UpdatePasswordAsync(user.Id, accountId.Value,
-										encryptedPassword, true);
-									return;
-								}
-								await ReportWrongReply(user);
-								return;
-							}
-							await userService.UpdateActionAsync(user.Id, UserAction.Search);
-							await bot.Client.SendTextMessageAsync(message.From.Id,
-								Localization.GetMessage("Cancel", user.Lang));
-							return;
+
+				long passwordAccountId;
+				try {
+					passwordAccountId = Convert.ToInt64(callbackData[1..]);
+				} catch (Exception exception) {
+					//TODO: Log exception
+					throw;
+				}
+				long? accountId = passwordEncryptionService.GetAccountId(user.Id);
+				if (accountId != null && message.ReplyToMessage.Text != null) {
+					if (accountId == passwordAccountId) {
+						string encryptedPassword;
+						try {
+							encryptedPassword = message.ReplyToMessage.Text
+								.Encrypt(message.Text);
+						} catch (Exception exception) {
+							//TODO; Log Exception
+							throw;
+						}
+						await accountService.UpdatePasswordAsync(user.Id, accountId.Value,
+							encryptedPassword, true);
+						return;
+					}
+					await ReportWrongReply(user);
+					return;
+				}
+				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await bot.Client.SendTextMessageAsync(message.From.Id,
+					Localization.GetMessage("Cancel", user.Lang));
+				return;
 			}
 			await ReportWrongReply(user);
 		}
