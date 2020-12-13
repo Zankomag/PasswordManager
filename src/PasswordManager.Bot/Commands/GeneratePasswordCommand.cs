@@ -12,6 +12,7 @@ using User = PasswordManager.Core.Entities.User;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot.Commands {
 	public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
@@ -52,7 +53,7 @@ namespace PasswordManager.Bot.Commands {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
 							CallbackQueryCommandCode.GeneratePassword.ToStringCode()),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-							CallbackQueryCommandCode.AcceptPassword.ToStringCode())
+							AddAccountCommandCode.AcceptPassword.ToStringCode())
 					}
 				});
 
