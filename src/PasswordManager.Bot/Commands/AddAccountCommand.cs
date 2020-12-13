@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -15,7 +16,7 @@ using PasswordManager.Bot.Commands.Enums;
 using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.Bot.Commands {
-	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
+	public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IReplyActionCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 		private readonly IUserService userService;
 		private readonly IAccountAssemblingService accountAssemblingService;
@@ -186,6 +187,29 @@ namespace PasswordManager.Bot.Commands {
 			}
 
 			await HandleNextStage(user, nextAssemblingStage);
+		}
+
+		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
+			//This command allows to bypass pressing "Accept password" button and than entering encryption key
+			//by sending encryption key right in reply to suggested password message
+			if (message.ReplyToMessage.ReplyMarkup != null
+				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
+					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
+						&& y.CallbackData == AddAccountCommandCode.AcceptPassword.ToStringCode()))) {
+				AccountAssemblingStage nextAssemblingStage = AccountAssemblingStage.None;
+				try {
+					accountAssemblingService.Assemble(user.Id, message.ReplyToMessage.Text,
+						AccountAssemblingStage.AddPassword);
+					nextAssemblingStage = accountAssemblingService
+						.Assemble(user.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
+				} catch (ValidationException exception) {
+					await SendValidationError(user, exception);
+				} catch (InvalidOperationException) {
+					await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				}
+
+				await HandleNextStage(user, nextAssemblingStage);
+			}
 		}
 	}
 }
