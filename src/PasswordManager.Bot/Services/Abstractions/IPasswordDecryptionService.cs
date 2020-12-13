@@ -1,5 +1,4 @@
 ﻿using PasswordManager.Core.Entities;
-using System;
 
 namespace PasswordManager.Bot.Services.Abstractions {
 	public interface IPasswordDecryptionService {
