@@ -8,13 +8,13 @@ using PasswordManager.Bot;
 using PasswordManager.Bot.Models;
 
 namespace PasswordManager.Bot.Services {
-	public class AccountUpdateService : IAccountUpdateService {
+	public class AccountUpdatingService : IAccountUpdatingService {
 		//Updating Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AccountUpdateModel> updatingAccounts;
+		private readonly Dictionary<int, AccountUpdatingModel> updatingAccounts;
 
-		public AccountUpdateService() {
-			updatingAccounts = new Dictionary<int, AccountUpdateModel>();
+		public AccountUpdatingService() {
+			updatingAccounts = new Dictionary<int, AccountUpdatingModel>();
 		}
 	}
 }
