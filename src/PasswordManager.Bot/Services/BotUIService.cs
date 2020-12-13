@@ -19,7 +19,9 @@ namespace PasswordManager.Bot.Services {
 
 		//TODO: 
 		//Refactor, get rid of using hardcoded emoji and callback codes like '0'
-		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null, string extraMessage = null) {
+		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null,
+			string extraMessage = null, InlineKeyboardButton backButton = null) {
+
 			if (account != null) {
 				//TODO: Show PasswordUpdatedDate (Password updated : 75 days ago) ( if 0 days = today)
 				//TODO: Show password outdated time like (outdated in (PasswordUpdatedDate + UpdatedDate - DateTime.UTC.Now)
@@ -44,6 +46,9 @@ namespace PasswordManager.Bot.Services {
 							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
 							DeleteAccountCommandCode.AskForDeletion.ToStringCode() + account.Id) },
 					new InlineKeyboardButton[] {
+						//TODO:
+						//Make sure this works
+						backButton,
 						InlineKeyboardButton.WithCallbackData(
 							"🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
 							CallbackQueryCommandCode.DeleteMessage.ToStringCode())
