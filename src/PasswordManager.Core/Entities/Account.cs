@@ -20,9 +20,9 @@ namespace PasswordManager.Core.Entities {
 		/// Time period after which user get notification that he needs to update his password
 		/// If equals to 0 than outdated checking is disabled 
 		/// This field overrides global field in User
-		/// Default is 0
+		/// Default is null
 		/// </summary>
-		public TimeSpan OutdatedTime { get; set; }
+		public TimeSpan? OutdatedTime { get; set; }
 
 
 		public virtual User User { get; set; }

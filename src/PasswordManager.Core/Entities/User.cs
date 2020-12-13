@@ -38,7 +38,7 @@ namespace PasswordManager.Core.Entities {
 		/// Can be overrided individually for each account
 		/// Default is 6 months
 		/// </summary>
-		public TimeSpan OutdatedTime { get; set; }
+		public TimeSpan? OutdatedTime { get; set; }
 
 
 		public virtual List<Account> Accounts { get; set; }
