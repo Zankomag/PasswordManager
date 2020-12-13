@@ -43,11 +43,6 @@ namespace PasswordManager.Bot.Services {
 				BotUser botUser = null;
 				if ((botUser = await GetUser(update)) != null)
 					await handleUpdateFunc(botUser);
-				//When botUser is null, it means he
-				//isn't allowed to interact with bot. 
-				//In this case bot doesn't respond with message
-				//explaining that user is not registered, instead bot 
-				//ignores user pretending it's dead
 			}
 		}
 

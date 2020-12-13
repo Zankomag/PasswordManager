@@ -29,6 +29,10 @@ namespace PasswordManager.Bot.Services {
 			BotUser botUser = await userService.GetUserWithLangAsync(userId.Value);
 			if (botUser == null) {
 				//If bot is private, only admins can be treated as new users
+				//In case user is not admin bot doesn't respond with message
+				//explaining that user is not registered, instead bot 
+				//ignores user pretending it's dead.
+				//This behavior can vary depending on your requirements
 				if (!bot.IsPublic && !bot.IsAdmin(userId.Value))
 					return null;
 				return await RegisterUser(update);
