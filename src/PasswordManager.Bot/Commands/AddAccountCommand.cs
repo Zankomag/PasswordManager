@@ -97,7 +97,8 @@ namespace PasswordManager.Bot.Commands {
 					=> ("📇 " + Localization.GetMessage("AddLogin", user.Lang), null),
 				AccountAssemblingStage.AddPassword
 					=> ("🔑 " + String.Format(
-						Localization.GetMessage("AddPassword", user.Lang), "/generator"),
+						//TODO: user /generator command from command list
+							Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 						new InlineKeyboardMarkup(InlineKeyboardButton
 							.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
 								CallbackQueryCommandCode.GeneratePassword.ToStringCode()))),

@@ -7,6 +7,7 @@ namespace PasswordManager.Bot.Commands.Enums {
 		Note = 'N',
 		Login = 'L',
 		Password = 'P',
+		OutdatedTime = 'T',
 		RemoveEncryption = 'D'
 	}
 }
