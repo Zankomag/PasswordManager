@@ -10,7 +10,6 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using User = PasswordManager.Core.Entities.User;	
 
 namespace PasswordManager.Bot.Services {
 	/// <summary>
@@ -20,61 +19,55 @@ namespace PasswordManager.Bot.Services {
 		private readonly IBot bot;
 		private readonly IUserService userService;
 		private readonly ICommandFactory commandFactory;
+		private readonly IBotUserService botUserService;
 
-		public BotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory) {
+		public BotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory, IBotUserService botUserService) {
 			this.bot = bot;
 			this.userService = userService;
 			this.commandFactory = commandFactory;
+			this.botUserService = botUserService;
 		}
 
-		public async void HandleUpdate(Update update) {
-			switch (update.Type) {
-				case UpdateType.Message:
+		public async virtual Task HandleUpdateAsync(Update update) { 
+			Func<BotUser, Task> handleUpdateFunc = update.Type switch {
+				UpdateType.Message => (Func<BotUser, Task>)(async (BotUser botUser) => {
 					if (update.Message.Type == MessageType.Text)
-						await HandleMessage(update.Message);
-					return;
-				case UpdateType.CallbackQuery:
-					await HandleCallbackQuery(update.CallbackQuery);
-					return;
+						await HandleMessageAsync(update.Message, botUser);
+				}),
+				UpdateType.CallbackQuery => (Func<BotUser, Task>)(async (BotUser botUser)
+					=> await HandleCallbackQueryAsync(update.CallbackQuery, botUser)),
+				_ => null
+			};
+			//We do not call the database if there is no reason to retrieve the user
+			if (handleUpdateFunc != null) {
+				BotUser botUser = null;
+				if ((botUser = await GetUser(update)) != null)
+					await handleUpdateFunc(botUser);
+				//When botUser is null, it means he
+				//isn't allowed to interact with bot. 
+				//In this case bot doesn't respond with message
+				//explaining that user is not registered, instead bot 
+				//ignores user pretending it's dead
 			}
 		}
 
-		private async Task HandleMessage(Message message) {
-			BotUser user = null;
-			User userEntity = await userService.GetUserWithLangAsync(message.From.Id);
-			if (userEntity == null) {
-				//User must choose language before be added to db and using any command
-				//
-				//ONLY If unauthorized user is admin - bot treats them as new user
-				//Not-admin users must be added to bot by Admin manually
-				//If you want to allow free registration in your bot for any user - disable this admin check
-				if (bot.IsAdmin(message.From.Id)) {
-					//TODO:
-					//Separate adding new account logic to othee method
-					if (Localization.ContainsLanguage(message.From.LanguageCode)) {
-						userEntity = await userService
-							.AddUserAsync(message.From.Id, message.From.LanguageCode);
-					} else {
-						//TODO: 
-						//Use key from new BotCommand system, not hardcoded
-						//
-						//User is don't added to DB here as in CallbackQuerry Handler
-						//because he should not be treated as registered user
-						//untill he selects language
-						await commandFactory.GetMessageCommand("/language")
-							.ExecuteAsync(message, new BotUser {
-								Id = message.From.Id,
-								Lang = Localization.DefaultLanguageCode
-							});
-						return;
-					}
-				} else {
-					//Bot can send some kind of "You are not registered user" response here
-					return;
-				}
-			}
+		protected async virtual Task<BotUser> GetUser(Update update)
+			=> await botUserService.GetUser(update);
+		
 
-			user ??= MapBotUser(userEntity);
+		protected async virtual Task HandleMessageAsync(Message message, BotUser user) {
+			if (message == null) {
+				ArgumentNullException exception = new ArgumentNullException(nameof(message));
+				//TODO:
+				//Log exception
+				throw exception;
+			} 
+			if (user == null) {
+				ArgumentNullException exception = new ArgumentNullException(nameof(user));
+				//TODO:
+				//Log exception
+				throw exception;
+			}
 
 			string commandText = message.Text.GetTextCommand();
 
@@ -102,9 +95,8 @@ namespace PasswordManager.Bot.Services {
 				} else {
 					//If ActionCommand is unknown - hanlde it as Search
 					if (user.Action != UserAction.Search) {
-						userEntity.Action = UserAction.Search;
 						user.Action = UserAction.Search;
-						await userService.UpdateActionAsync(userEntity);
+						await userService.UpdateActionAsync(user.Id, UserAction.Search);
 					}
 					await commandFactory.GetActionCommand(UserAction.Search)
 						.ExecuteAsync(message, user);
@@ -113,32 +105,19 @@ namespace PasswordManager.Bot.Services {
 		}
 
 
-		private async Task HandleCallbackQuery(CallbackQuery callbackQuery) {
-			BotUser user = null;
-			User userEntity = await userService.GetUserWithLangAsync(callbackQuery.From.Id);
-			if (userEntity == null) {
-				//Add new user to db when he selected language for the first time
-				//
-				//ONLY If unauthorized user is admin - bot treats them as new user
-				//Not-admin users must be added to bot by Admin manually
-				//If you want to allow free registration in your bot for any user - disable this admin check
-				if (bot.IsAdmin(callbackQuery.From.Id)) {
-					//TODO:
-					//Separate adding new account logic to othee method
-					if (callbackQuery.Data[0] == (char)CallbackQueryCommandCode.SelectLanguage) {
-						userEntity = await userService
-							.AddUserAsync(callbackQuery.From.Id, Localization.DefaultLanguageCode);
-						user = MapBotUser(userEntity);
-						await commandFactory.GetCallBackQueryCommand(CallbackQueryCommandCode.SelectLanguage)
-							.ExecuteAsync(callbackQuery, user);
-						return;
-					}
-				}
-				//Bot can send some kind of "You are not registered user" response here
-				return;
+		protected async virtual Task HandleCallbackQueryAsync(CallbackQuery callbackQuery, BotUser user) {
+			if (callbackQuery == null) {
+				ArgumentNullException exception = new ArgumentNullException(nameof(callbackQuery));
+				//TODO:
+				//Log exception
+				throw exception;
 			}
-
-			user ??= MapBotUser(userEntity);
+			if (user == null) {
+				ArgumentNullException exception = new ArgumentNullException(nameof(user));
+				//TODO:
+				//Log exception
+				throw exception;
+			}
 
 			CallbackQueryCommandCode callbackCommandCode;
 			try {
@@ -158,14 +137,6 @@ namespace PasswordManager.Bot.Services {
 						showAlert: true);
 				} catch { }
 			}
-		}
-
-		private BotUser MapBotUser(User user) {
-			return new BotUser {
-				Id = user.Id,
-				Lang = user.Lang,
-				Action = user.Action
-			};
 		}
 
 	}

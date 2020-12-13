@@ -15,7 +15,9 @@ namespace PasswordManager.Bot.Services {
 	/// </summary>
 	public class Bot : IBot {
 
-		public TelegramBotClient Client { get; private set; }
+		public TelegramBotClient Client { get; }
+
+		public bool IsPublic { get; }
 
 		//TODO:
 		//Add feature to edit admins at runtime
@@ -27,13 +29,6 @@ namespace PasswordManager.Bot.Services {
 			BotSettings botSettings = botSettingsConfig.Value;
 
 			token = botSettings.Token;
-			try {
-				Client = new TelegramBotClient(botSettings.Token);
-			} catch (ArgumentException exception) {
-				//TODO
-				//Log exception
-				throw;
-			}
 			if (botSettings.AdminIds == null || botSettings.AdminIds.Length == 0) {
 				//App is not closed here because it can run without telegram bot
 				//using only site and API
@@ -44,18 +39,30 @@ namespace PasswordManager.Bot.Services {
 				//Log exception
 				throw exception;
 			}
+			try {
+				Client = new TelegramBotClient(botSettings.Token);
+			} catch (ArgumentException exception) {
+				//TODO
+				//Log exception
+				throw;
+			}
+			IsPublic = botSettings.IsPublic;
 			admins = botSettings.AdminIds;
-			SetWebhook(botSettings.Domain).Wait();
-			ReportStart().Wait();
+			//TODO:
+			//Write allowedUpdates in botsettings config
+			UpdateType[] allowedUpdates = new UpdateType[] {
+				UpdateType.Message,
+				UpdateType.CallbackQuery
+			};
+			SetWebhook(botSettings.Domain, allowedUpdates).GetAwaiter().GetResult();
+			ReportStart().GetAwaiter().GetResult();
 		}
 
-		private async Task SetWebhook(string domain) {
+		private async Task SetWebhook(string domain, UpdateType[] allowedUpdates) {
 			try {
 				await Client.SetWebhookAsync(
 						$"https://{domain}/api/bots/{token}",
-						allowedUpdates: new UpdateType[] {
-					UpdateType.Message,
-					UpdateType.CallbackQuery});
+						allowedUpdates: allowedUpdates);
 			} catch (Exception exception) {
 				await SendMessageToAllAdmins("EXception was thrown while setting webhook.\nBot has bot started.\nSee logs for more info.");
 				//TODO

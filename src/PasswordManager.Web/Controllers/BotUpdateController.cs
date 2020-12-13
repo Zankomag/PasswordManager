@@ -19,7 +19,7 @@ namespace PasswordManager.Web.Controllers
 		[HttpPost("{token}")]
 		public IActionResult Post([FromBody]Update update, string token) {
 			if (bot.IsTokenCorrect(token)) {
-				botHandler.HandleUpdate(update);
+				botHandler.HandleUpdateAsync(update);
 			}
 			return Ok();
 		}

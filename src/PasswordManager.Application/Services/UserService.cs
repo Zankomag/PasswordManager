@@ -22,7 +22,7 @@ namespace PasswordManager.Application.Services {
 				Id = userId,
 				Lang = langCode,
 				GenPattern = Password.DefaultPasswordGeneratorPattern,
-				Action = UserAction.Search,
+				Action = UserAction.Search
 			};
 			await workUnit.UserRepository.AddAsync(user);
 			await workUnit.SaveAsync();
