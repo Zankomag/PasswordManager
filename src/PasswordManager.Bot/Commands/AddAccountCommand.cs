@@ -92,7 +92,7 @@ namespace PasswordManager.Bot.Commands {
 					=> ("🗒 " + Localization.GetMessage("AddNote", user.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
 							"⏩ " + Localization.GetMessage("Skip", user.Lang),
-							AddAccountCommandCode.SkipLink.ToStringCode()))),
+							AddAccountCommandCode.SkipNote.ToStringCode()))),
 				AccountAssemblingStage.AddLogin
 					=> ("📇 " + Localization.GetMessage("AddLogin", user.Lang), null),
 				AccountAssemblingStage.AddPassword
@@ -102,7 +102,10 @@ namespace PasswordManager.Bot.Commands {
 							.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
 								CallbackQueryCommandCode.GeneratePassword.ToStringCode()))),
 				AccountAssemblingStage.AddEncryptionKey
-					=> ("📇 " + Localization.GetMessage("AddEncryptionKey", user.Lang), null),
+					=> ("📇 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
+						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
+							"⏩ " + Localization.GetMessage("Skip", user.Lang),
+							AddAccountCommandCode.SkipEncryptionKey.ToStringCode()))),
 				_ => throw new ArgumentException("Unexcpected AccountAssemblingStage")
 			};
 
