@@ -7,6 +7,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Core.Entities;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
@@ -39,15 +40,14 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
-			if (message.ReplyToMessage.ReplyMarkup != null) {
-				foreach (var buttonRow in message.ReplyToMessage.ReplyMarkup.InlineKeyboard) {
-					foreach (var button in buttonRow) {
-						if (!string.IsNullOrEmpty(button.CallbackData)
-							&& button.CallbackData[0] == (char)CallbackQueryCommandCode.EncryptPassword) {
-
+			string callbackData = null;
+			if (message.ReplyToMessage.ReplyMarkup != null
+				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
+					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
+						&& (callbackData = y.CallbackData)[0] == (char)CallbackQueryCommandCode.EncryptPassword))) {
 							long passwordAccountId;
 							try {
-								passwordAccountId = Convert.ToInt64(button.CallbackData[1..]);
+								passwordAccountId = Convert.ToInt64(callbackData[1..]);
 							} catch (Exception exception) {
 								//TODO: Log exception
 								throw;
@@ -70,13 +70,10 @@ namespace PasswordManager.Bot.Commands {
 								await ReportWrongReply(user);
 								return;
 							}
-						}
-						await userService.UpdateActionAsync(user.Id, UserAction.Search);
-						await bot.Client.SendTextMessageAsync(message.From.Id,
-							Localization.GetMessage("Cancel", user.Lang));
-						return;
-					}
-				}
+							await userService.UpdateActionAsync(user.Id, UserAction.Search);
+							await bot.Client.SendTextMessageAsync(message.From.Id,
+								Localization.GetMessage("Cancel", user.Lang));
+							return;
 			}
 			await ReportWrongReply(user);
 		}
