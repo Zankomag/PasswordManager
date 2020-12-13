@@ -28,7 +28,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// </summary>
 		/// <param name="property">value of property to add to assembling</param>
 		/// <param name="expectedAccountAssemblingStage">excpected assembling stage. 
-		/// If expceted stage is unknows use <see cref="AccountAssemblingStage.None"/></param>
+		/// If expceted stage is unknown use <see cref="AccountAssemblingStage.None"/></param>
 		/// <returns>Next AssemblingStage</returns>
 		/// <exception cref="System.InvalidOperationException"></exception>
 		/// <exception cref="System.ArgumentNullException"></exception>

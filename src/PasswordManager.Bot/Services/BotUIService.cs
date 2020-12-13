@@ -21,13 +21,15 @@ namespace PasswordManager.Bot.Services {
 		//Refactor, get rid of using hardcoded emoji and callback codes like '0'
 		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null, string extraMessage = null) {
 			if (account != null) {
-				//TODO: Show password outdated time
+				//TODO: Show PasswordUpdatedDate (Password updated : 75 days ago) ( if 0 days = today)
+				//TODO: Show password outdated time like (outdated in (PasswordUpdatedDate + UpdatedDate - DateTime.UTC.Now)
 				//TODO: RECODE THIS SHIT
 				string message = account.AccountName 
 					+ (account.Link == null ? "\n" + account.Link : null)
 					+ (account.Note == null ? "\n" + account.Note : null)
 					+ "\n" + Localization.GetMessage("Login", user.Lang) + ": " + account.Login;
-					
+				//TODO: Change Update account to edit account and delete Update password button from update account page
+				//and add this button here instead
 				var keyboardMarkup = new InlineKeyboardMarkup( new InlineKeyboardButton[][] {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
