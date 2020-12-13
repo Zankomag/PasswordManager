@@ -38,7 +38,7 @@ namespace PasswordManager.Bot.Services {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"✏️ " + Localization.GetMessage("UpdateAcc", user.Lang),
-							CallbackQueryCommandCode.UpdateAccount.ToStringCode() + '0' + account.Id) },
+							UpdateAccountCommandCode.SelectUpdateType.ToStringCode() + account.Id) },
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
 							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
