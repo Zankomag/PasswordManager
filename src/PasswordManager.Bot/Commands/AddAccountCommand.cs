@@ -96,13 +96,13 @@ namespace PasswordManager.Bot.Commands {
 				AccountAssemblingStage.AddLogin
 					=> ("📇 " + Localization.GetMessage("AddLogin", user.Lang), null),
 				AccountAssemblingStage.AddPassword
-					=> ("🔐 " + String.Format(
+					=> ("🔑 " + String.Format(
 						Localization.GetMessage("AddPassword", user.Lang), "/generator"),
 						new InlineKeyboardMarkup(InlineKeyboardButton
 							.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
 								CallbackQueryCommandCode.GeneratePassword.ToStringCode()))),
 				AccountAssemblingStage.AddEncryptionKey
-					=> ("📇 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
+					=> ("🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
 							"⏩ " + Localization.GetMessage("Skip", user.Lang),
 							AddAccountCommandCode.SkipEncryptionKey.ToStringCode()))),
