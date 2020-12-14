@@ -99,9 +99,8 @@ namespace PasswordManager.Bot.Commands {
 					=> ("🔑 " + String.Format(
 						//TODO: user /generator command from command list
 							Localization.GetMessage("AddPassword", user.Lang), "/generator"),
-						new InlineKeyboardMarkup(InlineKeyboardButton
-							.WithCallbackData("🌋 " + Localization.GetMessage("Generate", user.Lang),
-								CallbackQueryCommandCode.GeneratePassword.ToStringCode()))),
+							botUIService.GeneratePasswordKeyboardMarkup(user,
+								GeneratePasswordCommandCode.Assembling)),
 				AccountAssemblingStage.AddEncryptionKey
 					=> ("🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(

@@ -83,6 +83,12 @@ namespace PasswordManager.Bot.Extensions {
 		public static string ToStringCode(this DeleteAccountCommandCode deleteAccountCommandCode)
 			=> GetStringCode(CallbackQueryCommandCode.DeleteAccount, (char)deleteAccountCommandCode);
 
+		///<summary></summary>
+		/// <param name="generatePasswordCommandCode"></param>
+		/// <returns><see cref="CallbackQueryCommandCode.GeneratePassword"/> + generatePasswordCommandCode</returns>
+		public static string ToStringCode(this GeneratePasswordCommandCode generatePasswordCommandCode)
+			=> GetStringCode(CallbackQueryCommandCode.GeneratePassword, (char)generatePasswordCommandCode);
+
 		/// <summary></summary>
 		/// <param name="additionalCommand">Command that need to be appended to <paramref name="callbackQueryCommandCode"/></param>
 		/// <returns><paramref name="callbackQueryCommandCode"/> + <paramref name="additionalCommand"/></returns>

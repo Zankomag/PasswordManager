@@ -5,7 +5,6 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using MultiUserLocalization;
 using Passwords;
-using PasswordManager.Bot.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Commands.Abstractions;
 using User = PasswordManager.Core.Entities.User;
@@ -13,6 +12,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
+using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Commands {
 	public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
@@ -47,13 +47,20 @@ namespace PasswordManager.Bot.Commands {
 
 			password = password.Trim();
 
+
 			var inlineKeyBoard = new InlineKeyboardMarkup(
 				new InlineKeyboardButton[][] {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
-							CallbackQueryCommandCode.GeneratePassword.ToStringCode()),
+							callbackQuery.Data),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
-							AddAccountCommandCode.AcceptPassword.ToStringCode())
+							callbackQuery.Data[1] switch {
+								(char)GeneratePasswordCommandCode.Assembling
+									=> AddAccountCommandCode.AcceptPassword.ToStringCode(),
+								(char)GeneratePasswordCommandCode.Updating
+									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode(),
+								_ => throw new InvalidOperationException("Unknown password accepting command")
+							})
 					}
 				});
 
@@ -66,11 +73,6 @@ namespace PasswordManager.Bot.Commands {
 			
 		}
 
-		//Moved from 
-		public static InlineKeyboardMarkup GeneratePasswordButtonMarkup(string langCode) {
-			return new InlineKeyboardMarkup(
-						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("Generate", langCode),
-							CallbackQueryCommandCode.GeneratePassword.ToStringCode()));
-		}
+		
 	}
 }
