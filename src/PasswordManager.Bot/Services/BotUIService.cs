@@ -18,13 +18,15 @@ namespace PasswordManager.Bot.Services {
 		}
 
 		//TODO: 
-		//Refactor, get rid of using hardcoded emoji and callback codes like '0'
+		//Refactor, get rid of using hardcoded emoji
 		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null,
 			string extraMessage = null, InlineKeyboardButton backButton = null) {
 
 			if (account != null) {
-				//TODO: Show PasswordUpdatedDate (Password updated : 75 days ago) ( if 0 days = today)
-				//TODO: Show password outdated time like (outdated in (PasswordUpdatedDate + UpdatedDate - DateTime.UTC.Now)
+				//TODO: Show Expiration settings button here
+				//TODO: Show password outdated time like
+				//(You should change the password in [PasswordUpdatedDate + UpdatedDate - DateTime.UTC.Now.Date])
+				//TODO: Show login as `login` (monospace that can be copied)
 				//TODO: RECODE THIS SHIT
 				string message = account.AccountName 
 					+ (account.Link == null ? "\n" + account.Link : null)
@@ -67,5 +69,15 @@ namespace PasswordManager.Bot.Services {
 				}
 			}
 		}
+
+		//TODO: Expiration settings 
+		//Show PasswordUpdatedDate (Password updated : 75 days ago/today. (17.03.2019))
+		//Show OutdatedTime (It is considered outdated 365 days after it's been updated (in 40 days/today/*NOW*)
+		//and should be changed after this period)
+		//Explain when it takes outdated time 
+		//([This password uses global validity period from your /settings.\n]
+		//If you want to change validity period for this password, click the button below.)
+		//*button* (Change validity period)
+
 	}
 }

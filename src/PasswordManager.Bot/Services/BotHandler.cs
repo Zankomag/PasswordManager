@@ -21,6 +21,8 @@ namespace PasswordManager.Bot.Services {
 		private readonly ICommandFactory commandFactory;
 		private readonly IBotUserService botUserService;
 
+		//TODO:
+		//Make BaseBotHandler for framework
 		public BotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory, IBotUserService botUserService) {
 			this.bot = bot;
 			this.userService = userService;
@@ -72,8 +74,7 @@ namespace PasswordManager.Bot.Services {
 					await messageCommand.ExecuteAsync(message, user);
 				} else {
 					try {
-						await bot.Client.SendTextMessageAsync(message.From.Id,
-								text: Localization.GetMessage("UnknownCommand", user.Lang));
+						await HandleUnknownMessageCommandAsync(message, user);
 					} catch { }
 				}
 			} else {
@@ -89,11 +90,11 @@ namespace PasswordManager.Bot.Services {
 					await actionCommand.ExecuteAsync(message, user);
 				} else {
 					//If ActionCommand is unknown - hanlde it as Search
-					if (user.Action != UserAction.Search) {
-						user.Action = UserAction.Search;
-						await userService.UpdateActionAsync(user.Id, UserAction.Search);
+					if (user.Action != default) {
+						user.Action = default;
+						await userService.UpdateActionAsync(user.Id, default);
 					}
-					await commandFactory.GetActionCommand(UserAction.Search)
+					await commandFactory.GetActionCommand(default)
 						.ExecuteAsync(message, user);
 				}
 			}
@@ -127,11 +128,22 @@ namespace PasswordManager.Bot.Services {
 				await callbackQueryCommand.ExecuteAsync(callbackQuery, user);
 			} else {
 				try {
-					await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
-						text: Localization.GetMessage("UnknownCommand", user.Lang),
-						showAlert: true);
+					await HandleUnknownCallbackQueryCommandAsync(callbackQuery, user);
 				} catch { }
 			}
+		}
+
+		protected virtual async Task HandleUnknownMessageCommandAsync(Message message, BotUser user) {
+			await bot.Client.SendTextMessageAsync(message.From.Id,
+				text: Localization.GetMessage("UnknownCommand", user.Lang));
+			//await Task.FromResult(0);
+		}
+
+		protected virtual async Task HandleUnknownCallbackQueryCommandAsync(CallbackQuery callbackQuery, BotUser user) {
+			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+				text: Localization.GetMessage("UnknownCommand", user.Lang),
+				showAlert: true);
+			//await Task.FromResult(0);
 		}
 
 	}
