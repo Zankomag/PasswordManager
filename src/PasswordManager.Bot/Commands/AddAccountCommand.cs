@@ -212,6 +212,9 @@ namespace PasswordManager.Bot.Commands {
 				}
 
 				await HandleNextStage(user, nextAssemblingStage);
+			} else {
+				//handle reply action command as regular action command
+				await (this as IActionCommand).ExecuteAsync(message, user);
 			}
 		}
 	}
