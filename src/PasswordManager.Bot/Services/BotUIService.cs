@@ -70,6 +70,14 @@ namespace PasswordManager.Bot.Services {
 			}
 		}
 
+		public InlineKeyboardMarkup GeneratePasswordKeyboardMarkup(BotUser user,
+			GeneratePasswordCommandCode generatePasswordCommandCode) 
+			=> new InlineKeyboardMarkup(
+				InlineKeyboardButton.WithCallbackData(
+					"🌋 " + Localization.GetMessage("Generate", user.Lang),
+					generatePasswordCommandCode.ToStringCode()));
+		
+
 		//TODO: Expiration settings 
 		//Show PasswordUpdatedDate (Password updated : 75 days ago/today. (17.03.2019))
 		//Show OutdatedTime (It is considered outdated 365 days after it's been updated (in 40 days/today/*NOW*)

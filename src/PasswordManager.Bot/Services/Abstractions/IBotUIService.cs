@@ -1,4 +1,5 @@
-﻿using PasswordManager.Bot.Models;
+﻿using PasswordManager.Bot.Commands.Enums;
+using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,8 @@ namespace PasswordManager.Bot.Services.Abstractions {
 			int? messageToEditId = null,
 			string extraMessage = null,
 			InlineKeyboardButton backButton = null);
+
+		InlineKeyboardMarkup GeneratePasswordKeyboardMarkup(BotUser user,
+			GeneratePasswordCommandCode generatePasswordCommandCode);
 	}
 }
