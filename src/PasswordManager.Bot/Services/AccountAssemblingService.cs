@@ -125,6 +125,7 @@ namespace PasswordManager.Bot.Services {
 						break;
 					case AccountAssemblingStage.AddEncryptionKey:
 						accountAssemblingModel.Password = accountAssemblingModel.Password.Encrypt(property);
+						accountAssemblingModel.Encrypted = true;
 						break;
 					case AccountAssemblingStage.Release:
 						return accountAssemblingModel.AccountAssemblingStage;
