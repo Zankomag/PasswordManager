@@ -72,5 +72,8 @@ namespace PasswordManager.Application.Services {
 			} catch { }
 			return false;
 		}
+
+		public async Task<User> GetUserOutdatedTimeAsync(int userId)
+			=> await workUnit.UserRepository.GetUserOutdatedTimeAsync(userId);
 	}
 }

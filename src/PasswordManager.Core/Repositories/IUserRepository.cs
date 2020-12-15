@@ -15,5 +15,6 @@ namespace PasswordManager.Core.Repositories {
 		void UpdatePasswordPattern(User user);
 		Task<string> GetKeyHint(int userId);
 		void UpdateKeyHint(User user);
+		Task<User> GetUserOutdatedTimeAsync(int userId);
 	}
 }

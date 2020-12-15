@@ -67,5 +67,14 @@ namespace PasswordManager.Infrastructure.Repository {
 			//KeyHint can be null so we dont check it for null equality
 			context.Entry(user).Property(x => x.KeyHint).IsModified = true;
 		}
+
+		public async Task<User> GetUserOutdatedTimeAsync(int userId)
+			=> await GetUser(userId)
+				.Select(x => new User {
+					Id = userId,
+					OutdatedTime = x.OutdatedTime
+				})
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
 	}
 }

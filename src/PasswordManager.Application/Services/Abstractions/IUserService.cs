@@ -20,5 +20,6 @@ namespace PasswordManager.Application.Services.Abstractions {
 		/// Deletes user if he is not admin
 		/// </summary>
 		Task<bool> DeleteUser(int userId);
+		Task<User> GetUserOutdatedTimeAsync(int userId);
 	}
 }
