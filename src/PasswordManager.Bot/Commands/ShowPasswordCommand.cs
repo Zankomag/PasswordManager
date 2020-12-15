@@ -94,11 +94,12 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
+		//In `code block` all ` and \ chars must be escaped
 		private string GetPasswordMessage(string password) 
 			=> new StringBuilder('`')
 			.Append(password
-				.Replace("`", "\\`")
-				.Replace("\\", "\\\\"))
+				.Replace(@"`", @"\`")
+				.Replace(@"\", @"\\"))
 			.Append('`')
 			.ToString();
 
