@@ -64,7 +64,7 @@ namespace PasswordManager.Bot.Services {
 						$"https://{domain}/api/bots/{token}",
 						allowedUpdates: allowedUpdates);
 			} catch (Exception exception) {
-				await SendMessageToAllAdmins("EXception was thrown while setting webhook.\nBot has not started.\nSee logs for more info.");
+				await SendMessageToAllAdmins("Exception was thrown while setting webhook.\nBot has not started.\nSee logs for more info.");
 				//TODO
 				//Log exception
 				throw;
