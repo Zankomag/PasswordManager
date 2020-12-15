@@ -66,6 +66,7 @@ namespace PasswordManager.Bot.Commands {
 						}
 						await accountService.UpdatePasswordAsync(user.Id, accountId.Value,
 							encryptedPassword, true);
+						passwordEncryptionService.FinishEncryptionRequest(user.Id);
 						return;
 					}
 					await ReportWrongReply(user);

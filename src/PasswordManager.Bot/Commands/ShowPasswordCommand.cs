@@ -62,12 +62,12 @@ namespace PasswordManager.Bot.Commands {
 
 		//TODO: Move to BotUIService
 		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser user,
-			bool showShowHintButton, bool showReencryptButton) {
+			bool includeShowHintButton, bool includeReencryptButton) {
 			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>>(); {
 				
 				
 			};
-			if (showShowHintButton) {
+			if (includeShowHintButton) {
 				keyboard.Add(
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
@@ -83,7 +83,7 @@ namespace PasswordManager.Bot.Commands {
 				}
 			);
 			List<InlineKeyboardButton> lowerButtons = new List<InlineKeyboardButton>();
-			if (showReencryptButton) {
+			if (includeReencryptButton) {
 				lowerButtons.Add(InlineKeyboardButton.WithCallbackData(
 					"🔐 " + Localization.GetMessage(account.Encrypted ? "Reencrypt" : "Encrypt", user.Lang),
 					CallbackQueryCommandCode.EncryptPassword.ToStringCode() + account.Id));
@@ -94,12 +94,9 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
-		//In `code block` all ` and \ chars must be escaped
 		private string GetPasswordMessage(string password) 
 			=> new StringBuilder('`')
-			.Append(password
-				.Replace(@"`", @"\`")
-				.Replace(@"\", @"\\"))
+			.Append(password.EscapeCodeBlockMarkdownV2Chars())
 			.Append('`')
 			.ToString();
 
@@ -115,10 +112,11 @@ namespace PasswordManager.Bot.Commands {
 					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, true, false),
 					parseMode: ParseMode.Markdown);
 				}
+				passwordDecryptionService.FinishDecryptionRequest(user.Id);
+				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				await bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
 					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true),
 					parseMode: ParseMode.MarkdownV2);
-				passwordDecryptionService.FinishDecryptionRequest(user.Id);
 			} else {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				await bot.Client.SendTextMessageAsync(message.From.Id,

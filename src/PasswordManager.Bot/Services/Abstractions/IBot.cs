@@ -6,6 +6,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.Bot.Services.Abstractions {
 	// TODO: Add method to send message to BotUser: bot.SendMessage(user)
+	//TODO: inherit from TelegramBotClient and get rid of Client field
 	/// <summary>
 	/// Telegram Bot Service
 	/// </summary>
