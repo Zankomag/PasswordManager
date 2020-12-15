@@ -27,8 +27,7 @@ namespace Passwords {
 			if (containsSpace)
 				charList += ' ';
 			if (containsSpecialChars)
-				// ` characted deleted from list to prevent markdown errors
-				charList += @"~!@#$%^&*()_-+={}[]\|:;<>,.?/";
+				charList += @"~!@#$%`^&*()_-+={}[]\|:;<>,.?/";
 			
 			
 

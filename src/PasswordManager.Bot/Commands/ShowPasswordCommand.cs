@@ -49,7 +49,7 @@ namespace PasswordManager.Bot.Commands {
 					await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						GetPasswordMessage(account.Password),
 						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true),
-						parseMode: ParseMode.Markdown);
+						parseMode: ParseMode.MarkdownV2);
 				} else {
 					passwordDecryptionService.StartDecryptionRequest(user.Id, account);
 					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
@@ -79,7 +79,7 @@ namespace PasswordManager.Bot.Commands {
 					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
 						CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
 					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("Update", user.Lang),
-						UpdateAccountCommandCode.Password.ToStringCode() + account.Id)
+						UpdateAccountCommandCode.Password.ToStringCode(account.Id))
 				}
 			);
 			List<InlineKeyboardButton> lowerButtons = new List<InlineKeyboardButton>();
@@ -95,7 +95,12 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private string GetPasswordMessage(string password) 
-			=> new StringBuilder('`').Append(password).Append('`').ToString();
+			=> new StringBuilder('`')
+			.Append(password
+				.Replace("`", "\\`")
+				.Replace("\\", "\\\\"))
+			.Append('`')
+			.ToString();
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
 			Account account = passwordDecryptionService.GetAccount(user.Id);
@@ -110,7 +115,8 @@ namespace PasswordManager.Bot.Commands {
 					parseMode: ParseMode.Markdown);
 				}
 				await bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
-					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true));
+					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false, true),
+					parseMode: ParseMode.MarkdownV2);
 				passwordDecryptionService.FinishDecryptionRequest(user.Id);
 			} else {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
