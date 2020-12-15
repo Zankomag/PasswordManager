@@ -58,7 +58,7 @@ namespace PasswordManager.Bot.Commands {
 								(char)GeneratePasswordCommandCode.Assembling
 									=> AddAccountCommandCode.AcceptPassword.ToStringCode(),
 								(char)GeneratePasswordCommandCode.Updating
-									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode(),
+									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode() + callbackQuery.Data[2..],
 								_ => throw new InvalidOperationException("Unknown password accepting command")
 							})
 					}
