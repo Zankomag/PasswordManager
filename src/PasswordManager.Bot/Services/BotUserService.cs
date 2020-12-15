@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Services {
 			if ((userId = update.GetUserIdByUpdateType()) == null)
 				return null;
 
-			BotUser botUser = await userService.GetUserWithLangAsync(userId.Value);
+			BotUser botUser = await userService.GetUserActionAsync(userId.Value);
 			if (botUser == null) {
 				//If bot is private, only admins can be treated as new users
 				//In case user is not admin bot doesn't respond with message

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 namespace PasswordManager.Application.Services.Abstractions {
 	public interface IUserService {
 		Task<User> AddUserAsync(int userId, string langCode);
-		/// <returns>User with Id and Lang</returns>
-		Task<User> GetUserWithLangAsync(int userId);
+		///<summary></summary>
+		/// <returns>User with Action and Lang</returns>
+		Task<User> GetUserActionAsync(int userId);
+		///<summary></summary>
 		/// <returns>List of user Ids and theis Accounts Count</returns>
 		Task<IList<User>> GetAllBasicInfoAsync();
 		Task UpdateActionAsync(int userId, UserAction action);

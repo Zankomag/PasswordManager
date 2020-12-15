@@ -4,8 +4,10 @@ using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Core.Repositories {
 	public interface IUserRepository : IRepository<User>{
-		/// <returns>User with Id and Lang</returns>
-		Task<User> GetUserWithLangAsync(int userId);
+		///<summary></summary>
+		/// <returns>User with Action and Lang</returns>
+		Task<User> GetUserActionAsync(int userId);
+		///<summary></summary>
 		/// <returns>List of user Ids and theis Accounts Count</returns>
 		Task<IList<User>> GetAllBasicInfoAsync();
 		void UpdateAction(User user);
