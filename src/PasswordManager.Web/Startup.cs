@@ -43,7 +43,6 @@ namespace PasswordManager.Web {
 			//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
 			AAAA
 			services.AddSingleton<IBot, Bot.Services.Bot>();
-			services.AddSingleton<IBotUIService, BotUIService>();
 			services.AddSingleton<ICommandFactory, CommandFactory>();
 			services.AddSingleton<IAccountUpdatingService, AccountUpdatingService>();
 			services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
@@ -51,6 +50,7 @@ namespace PasswordManager.Web {
 			services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 
 			services.AddScoped<IBotHandler, BotHandler>();
+			services.AddScoped<IBotUIService, BotUIService>();
 			services.AddScoped<IBotUserService, BotUserService>();
 			
 
