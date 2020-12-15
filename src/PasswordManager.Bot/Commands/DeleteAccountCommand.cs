@@ -31,7 +31,7 @@ namespace PasswordManager.Bot.Commands {
 								new InlineKeyboardButton[] {
 									InlineKeyboardButton.WithCallbackData(
 										Localization.GetMessage("ImSure1", user.Lang),
-										DeleteAccountCommandCode.AskForDeletion2.ToStringCode() + accountId)},
+										DeleteAccountCommandCode.AskForDeletion2.ToStringCode(accountId))},
 								new InlineKeyboardButton[] {
 									InlineKeyboardButton.WithCallbackData(
 										"❌ " + Localization.GetMessage("No1", user.Lang),
@@ -49,12 +49,12 @@ namespace PasswordManager.Bot.Commands {
 							new InlineKeyboardButton[][] {
 								new InlineKeyboardButton[] {
 									InlineKeyboardButton.WithCallbackData(
-										Localization.GetMessage("ImSure2", user.Lang),
-										DeleteAccountCommandCode.AskForDeletion2.ToStringCode() + accountId)},
-								new InlineKeyboardButton[] {
-									InlineKeyboardButton.WithCallbackData(
 										"❌ " + Localization.GetMessage("No2", user.Lang),
 										CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
+								new InlineKeyboardButton[] {
+									InlineKeyboardButton.WithCallbackData(
+										Localization.GetMessage("ImSure2", user.Lang),
+										DeleteAccountCommandCode.Delete.ToStringCode(accountId))}
 							});
 
 							await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
