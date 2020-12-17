@@ -1,29 +1,41 @@
 ﻿using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services.Abstractions {
 	public interface IBotUIService {
 		/// <summary>
-		/// Sends account data with buttons
+		/// Shows full account data with buttons
 		/// </summary>
 		/// <param name="messageToEditId">If specified, message will be edited instead of sending new</param>
 		/// <param name="extraMessage">An Extra message to show with account data</param>
-		/// <param name="backButton">If specified, will be attached to the end of button list</param>
+		/// <param name="backButtonCommandCode">If specified, the Back button with this command code
+		/// will be attached to the end of button list</param>
 		/// <returns></returns>
 		Task ShowAccount(BotUser user,
 			Account account,
 			int? messageToEditId = null,
 			string extraMessage = null,
-			InlineKeyboardButton backButton = null);
-
-		InlineKeyboardMarkup GeneratePasswordKeyboardMarkup(BotUser user,
-			GeneratePasswordCommandCode generatePasswordCommandCode);
+			string backButtonCommandCode = null);
+		/// <summary>
+		/// Serializes given account to MarkdownV2 string
+		/// </summary>
+		Task<string> SerializeAccount(BotUser botUser, Account account,
+			bool includeOutdatedTime, string extraMessage = null);
+		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
+			GeneratePasswordCommandCode generatePasswordCommandCode,
+			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
+			long? accountId = null);
+		/// <summary>
+		/// Shows account data with buttons of account updating menu
+		/// </summary>
+		/// <param name="extraMessage">An Extra message to show with account data</param>
+		/// <returns></returns>
+		Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
+			int messageToEditId, string extraMessage);
+		Task SendValidationError(BotUser user, ValidationException validationException);
 	}
 }

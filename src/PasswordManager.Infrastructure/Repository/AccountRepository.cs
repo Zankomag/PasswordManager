@@ -49,7 +49,6 @@ namespace PasswordManager.Infrastructure.Repository {
 					PasswordUpdatedDate = a.PasswordUpdatedDate,
 					UserId = userId
 				})
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 

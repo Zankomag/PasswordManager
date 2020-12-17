@@ -8,75 +8,195 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types.Enums;
+using System.Text;
+using PasswordManager.Application.Services.Abstractions;
+using System.ComponentModel.DataAnnotations;
 
 namespace PasswordManager.Bot.Services {
 	public class BotUIService : IBotUIService {
 		private readonly IBot bot;
+		private readonly IUserService userService;
 
-		public BotUIService(IBot bot) {
+		public BotUIService(IBot bot, IUserService userService) {
 			this.bot = bot;
+			this.userService = userService;
 		}
 
 		//TODO: 
-		//Refactor, get rid of using hardcoded emoji
+		//get rid of using hardcoded emoji
+		//
+		//TODO: Show Expiration settings button here
 		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null,
-			string extraMessage = null, InlineKeyboardButton backButton = null) {
+			string extraMessage = null, string backButtonCommandCode = null) {
 
 			if (account != null) {
-				//TODO: Show Expiration settings button here
-				//TODO: Show password outdated time like
-				//(You should change the password in [PasswordUpdatedDate + UpdatedDate - DateTime.UTC.Now.Date])
-				//TODO: Show login as `login` (monospace that can be copied)
-				//TODO: RECODE THIS SHIT
-				string message = account.AccountName 
-					+ (account.Link == null ? "\n" + account.Link : null)
-					+ (account.Note == null ? "\n" + account.Note : null)
-					+ "\n" + Localization.GetMessage("Login", user.Lang) + ": " + account.Login;
-				//TODO: Change Update account to edit account and delete Update password button from update account page
-				//and add this button here instead
-				var keyboardMarkup = new InlineKeyboardMarkup( new InlineKeyboardButton[][] {
-					new InlineKeyboardButton[] {
+				string message = await SerializeAccount(user, account, true, extraMessage);
+				
+				var keyboard = new List<List<InlineKeyboardButton>> {
+					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
 							"🔑 " + Localization.GetMessage("Password", user.Lang),
 							CallbackQueryCommandCode.ShowPassword.ToStringCode() + account.Id)},
-					new InlineKeyboardButton[] {
+					new List<InlineKeyboardButton> {
+						InlineKeyboardButton.WithCallbackData(
+							"🛡 " + Localization.GetMessage("UpdatePassword", user.Lang),
+							UpdateAccountCommandCode.Password.ToStringCode(account.Id))},
+					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
 							"✏️ " + Localization.GetMessage("UpdateAcc", user.Lang),
-							UpdateAccountCommandCode.SelectUpdateType.ToStringCode() + account.Id) },
-					new InlineKeyboardButton[] {
+							UpdateAccountCommandCode.SelectUpdateType.ToStringCode(account.Id)) },
+					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
 							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
-							DeleteAccountCommandCode.AskForDeletion.ToStringCode() + account.Id) },
-					new InlineKeyboardButton[] {
-						//TODO:
-						//Make sure this works
-						backButton,
-						InlineKeyboardButton.WithCallbackData(
-							"🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
-							CallbackQueryCommandCode.DeleteMessage.ToStringCode())
-					}
-					});
-				if (extraMessage != null) {
-					message = extraMessage + "\n\n" + message;
+							DeleteAccountCommandCode.AskForDeletion.ToStringCode(account.Id)) },
+					};
+
+				var deleteMessageButton = InlineKeyboardButton.WithCallbackData(
+					"🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+					CallbackQueryCommandCode.DeleteMessage.ToStringCode());
+
+				var lastButtonRow = new List<InlineKeyboardButton>();
+
+				if(backButtonCommandCode != null) {
+					lastButtonRow.Add(InlineKeyboardButton.WithCallbackData(
+						"⬅️ " + Localization.GetMessage("Back", user.Lang),
+						backButtonCommandCode));
 				}
+				lastButtonRow.Add(deleteMessageButton);
+
+				keyboard.Add(lastButtonRow);
+
+				var keyboardMarkup = new InlineKeyboardMarkup(keyboard);
 
 				if (messageToEditId != null) {
 					await bot.Client.SendTextMessageAsync(user.Id, message,
-						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
+						replyMarkup: keyboardMarkup, disableWebPagePreview: true,
+						parseMode: ParseMode.Markdown);
 				} else {
 					await bot.Client.EditMessageTextAsync(user.Id, messageToEditId.Value, message,
-						replyMarkup: keyboardMarkup, disableWebPagePreview: true);
+						replyMarkup: keyboardMarkup, disableWebPagePreview: true,
+						parseMode: ParseMode.Markdown);
 				}
 			}
 		}
 
-		public InlineKeyboardMarkup GeneratePasswordKeyboardMarkup(BotUser user,
-			GeneratePasswordCommandCode generatePasswordCommandCode) 
-			=> new InlineKeyboardMarkup(
+		/// <summary>
+		/// Serializes given account to MarkdownV2 string
+		/// </summary>
+		public async Task<string> SerializeAccount(BotUser botUser, Account account,
+			bool includeOutdatedTime, string extraMessage = null) {
+			StringBuilder messageBuilder = extraMessage != null 
+				? new StringBuilder(extraMessage).Append("\n\n")
+				: new StringBuilder();
+
+			if (account.Link != null) {
+				messageBuilder.Append('[')
+					.Append(account.AccountName.EscapeMarkdownV2Chars()).Append("](")
+					.Append(account.Link.EscapeInlineLinkMarkdownV2Chars()).Append(')');
+			} else {
+				messageBuilder.Append(account.AccountName.EscapeMarkdownV2Chars());
+			}
+
+			if (account.Note != null)
+				messageBuilder.Append("\n\n_").Append(account.Note.EscapeMarkdownV2Chars()).Append("_\n");
+
+			messageBuilder.Append('\n')
+				.Append(Localization.GetMessage("Login", botUser.Lang)).Append(": `")
+				.Append(account.Login.EscapeCodeBlockMarkdownV2Chars()).Append('`');
+
+			if (includeOutdatedTime) {
+				TimeSpan? outdatedTime = null;
+				if (account.OutdatedTime == null) {
+					User user = await userService.GetUserOutdatedTimeAsync(botUser.Id);
+					if (user.OutdatedTime != null) {
+						outdatedTime = user.OutdatedTime.Value;
+					}
+				} else {
+					outdatedTime = account.OutdatedTime.Value;
+				}
+				if(outdatedTime != null) {
+					int changePasswordInDays = (account.PasswordUpdatedDate + outdatedTime.Value - DateTime.UtcNow.Date).Days;
+					//TODO: user methods from new localization system and emoji
+					string changePasswordInDaysString = string.Format(Localization.GetMessage("WhenChangePassword", botUser.Lang),
+						changePasswordInDays > 0 
+							? string.Format(Localization.GetMessage("WhenDays", botUser.Lang), outdatedTime)
+							: string.Concat("⚠️ ",
+								changePasswordInDays == 0 
+									? Localization.GetMessage("WhenToday", botUser.Lang)
+									: string.Concat('*', Localization.GetMessage("WhenNow", botUser.Lang), '*'),
+								"⚠️ "));
+
+					messageBuilder.Append("\n\n").Append(changePasswordInDaysString);
+				}
+			}
+
+			return messageBuilder.ToString();	
+		}
+
+		public InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
+			GeneratePasswordCommandCode generatePasswordCommandCode,
+			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
+			long? accountId = null) 
+			=> new InlineKeyboardButton[] {
 				InlineKeyboardButton.WithCallbackData(
 					"🌋 " + Localization.GetMessage("Generate", user.Lang),
-					generatePasswordCommandCode.ToStringCode()));
-		
+					generatePasswordCommandCode.ToStringCode()),
+			InlineKeyboardButton.WithCallbackData(
+					"🛠 " + Localization.GetMessage("AdjustGenerator", user.Lang),
+					setUpPasswordGeneratorCommandCode.ToStringCode() + accountId)};
+
+
+		public async Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
+			int messageToEditId, string extraMessage) {
+			var keyboardMarkup = new InlineKeyboardMarkup(
+				new InlineKeyboardButton[][] {
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📝 " + Localization.GetMessage("AccountName", user.Lang),
+							UpdateAccountCommandCode.AccountName.ToStringCode(account.Id))},
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🔗 " + Localization.GetMessage("Link", user.Lang),
+							UpdateAccountCommandCode.Link.ToStringCode(account.Id)),
+						InlineKeyboardButton.WithCallbackData(
+							"🗒 " + Localization.GetMessage("Note", user.Lang),
+							UpdateAccountCommandCode.Note.ToStringCode(account.Id))},
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"📇 " + Localization.GetMessage("Login", user.Lang),
+							UpdateAccountCommandCode.Login.ToStringCode(account.Id)) },
+					new InlineKeyboardButton[] {
+						InlineKeyboardButton.WithCallbackData(
+							"⬅️ " + Localization.GetMessage("Back", user.Lang),
+							CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id)}
+				});
+
+			extraMessage = await SerializeAccount(user, account, false, extraMessage);
+
+			await bot.Client.EditMessageTextAsync(user.Id, messageToEditId,
+				extraMessage,
+				replyMarkup: keyboardMarkup,
+				disableWebPagePreview: true);
+		}
+
+		public async Task SendValidationError(BotUser user, ValidationException validationException) {
+			//TODO:
+			//Change to good translated message
+			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
+		}
+
+		//new InlineKeyboardButton[] {
+		//	InlineKeyboardButton.WithCallbackData(
+		//		"🗑 " + Localization.GetMessage("DeleteLink", botUser.Lang),
+		//		UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) },
+		//new InlineKeyboardButton[] {
+		//	InlineKeyboardButton.WithCallbackData(
+		//		"🗑 " + Localization.GetMessage("DeleteNote", botUser.Lang),
+		//		UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) },
+
+
+
 
 		//TODO: Expiration settings 
 		//Show PasswordUpdatedDate (Password updated : 75 days ago/today. (17.03.2019))

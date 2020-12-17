@@ -1,12 +1,16 @@
 ﻿using PasswordManager.Bot.Commands.Enums;
 
 namespace PasswordManager.Bot.Services.Enums {
-	public enum AccountUpdatingType {
+	public enum AccountUpdatingStage {
+		None = 0,
+		Release = 1,
 		AccountName = UpdateAccountCommandCode.AccountName,
 		Link = UpdateAccountCommandCode.Link,
 		Note = UpdateAccountCommandCode.Note,
 		Login = UpdateAccountCommandCode.Login,
 		Password = UpdateAccountCommandCode.Password,
-		OutdatedTime = UpdateAccountCommandCode.OutdatedTime
+		EncryptPassword = AccountAssemblingStage.AddEncryptionKey,
+		SkipPasswordEncryption = '@',
+		OutdatedTime = UpdateAccountCommandCode.OutdatedTime,
 	}
 }

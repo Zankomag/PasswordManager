@@ -7,10 +7,11 @@
 	"AddNote": "You can also add a note that contains additional info about account.",
 	"Skip": "Skip",
 	"CantWithoutNewAcc": "Add a new account first.",
-	"AddLogin": "Nice. Choose a login for your account.\n",
-	"AddPassword": "Now you should send or generate a password for your account.\nUse a strong password with upper and lower case, numbers and special characters, you do NOT need to remember this password.\nUse {0} to set up password generator.",
+	"AddLogin": "Nice. Choose a login for your account.",
+	"AddPassword": "Now you should send or generate a password for your account.\nUse a strong password with upper and lower case, numbers and special characters, you do NOT need to remember this password.",
 	"AddEncryptionKey": "If you want to encrypt the password (which you *MUST* do if it's not some junk account), send me the encryption key.",
 	"Generate": "Generate",
+	"AdjustGenerator": "Adjust generator",
 	"Accept": "Accept",
 	"TryAgain": "Try again",
 	"AddAccount": "Okay, a new account. Choose a name for it, for example name of service this account belongs to.\nThat's not login! You will recognize account by its name.\nUse several words (like tags) to help yourself find it in the future.",
@@ -38,8 +39,10 @@
 	"NewAccountName": "new account name",
 	"NewLink": "new link",
 	"NewNote": "new note",
+	"NewLogin": "new login",
 	"NewPassword": "new password",
 	"NewOutdatedTime": "the number of days after which you want the password to be considered expired",
+	"UntrackOutdatedTime": "Don't expire this password",
 	"ChooseWhatUpdate": "What do you want to update?",
 	"Back": "Back",
 	"DeleteLink": "Delete link",
@@ -82,5 +85,6 @@
 	"WhenChangePassword": "You should change the password {0}",
 	"WhenDays": "in {0} days",
 	"WhenToday": "today",
-	"WhenNow": "IMMEDIATELY"
+	"WhenNow": "IMMEDIATELY",
+	"RemoveEncryption": "Remove encryption"
 }

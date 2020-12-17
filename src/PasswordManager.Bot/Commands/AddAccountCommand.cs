@@ -34,19 +34,13 @@ namespace PasswordManager.Bot.Commands {
 				nextAccountAssemblingStage = accountAssemblingService
 					.Create(user.Id, message.Text.GetCommandArgsByNewLine());
 			} catch(ValidationException exception) {
-				await SendValidationError(user, exception);
+				await botUIService.SendValidationError(user, exception);
 			} catch (ArgumentException exception) {
 				//TODO: Log exception
 				throw;
 			}
 
 			await HandleNextStage(user, nextAccountAssemblingStage);
-		}
-
-		private async Task SendValidationError(BotUser user, ValidationException validationException) {
-			//TODO:
-			//Change to good translated message
-			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
 		}
 
 		private async Task HandleNextStage(BotUser user, AccountAssemblingStage nextAccountAssemblingStage) {
@@ -76,7 +70,7 @@ namespace PasswordManager.Bot.Commands {
 					=> ("📝 " + Localization.GetMessage("AddAccount", user.Lang), null),
 				AccountAssemblingStage.AddLink
 					=> ((Func<(string, InlineKeyboardMarkup)>)(() => {
-						string autoLink = accountAssemblingService.GetAccountName(user.Id).AutoLink();
+						string autoLink = accountAssemblingService.GetAccountName(user.Id).AutoDomain();
 						return ("🔗 " + Localization.GetMessage("AddLink", user.Lang),
 						new InlineKeyboardMarkup(
 							new InlineKeyboardButton[][] {
@@ -96,11 +90,10 @@ namespace PasswordManager.Bot.Commands {
 				AccountAssemblingStage.AddLogin
 					=> ("📇 " + Localization.GetMessage("AddLogin", user.Lang), null),
 				AccountAssemblingStage.AddPassword
-					=> ("🔑 " + String.Format(
-						//TODO: user /generator command from command list
-							Localization.GetMessage("AddPassword", user.Lang), "/generator"),
-							botUIService.GeneratePasswordKeyboardMarkup(user,
-								GeneratePasswordCommandCode.Assembling)),
+					=> ("🔑 " + Localization.GetMessage("AddPassword", user.Lang),
+							botUIService.GeneratePasswordKeyboard(user,
+								GeneratePasswordCommandCode.Assembling,
+								SetUpPasswordGeneratorCommandCode.ReturnAssembling)),
 				AccountAssemblingStage.AddEncryptionKey
 					=> ("🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
@@ -148,7 +141,7 @@ namespace PasswordManager.Bot.Commands {
 				AddAccountCommandCode.SkipEncryptionKey 
 					=> (null, (AccountAssemblingStage)AccountAssemblingStageSkip.AddEncryptionKey),
 				AddAccountCommandCode.AutoLink 
-					=> (callbackQuery.Data[2..].BuildLink(), AccountAssemblingStage.AddLink),
+					=> (callbackQuery.Data[2..], AccountAssemblingStage.AddLink),
 				AddAccountCommandCode.AcceptPassword 
 					=> (callbackQuery.Message.Text, AccountAssemblingStage.AddPassword),
 				_ => throw new NotImplementedException()
@@ -163,7 +156,7 @@ namespace PasswordManager.Bot.Commands {
 				await SendNextStageInstruction(user, nextStage,
 					callbackQuery.Message.MessageId);
 			} catch (ValidationException exception) {
-				await SendValidationError(user, exception);
+				await botUIService.SendValidationError(user, exception);
 			} catch (InvalidOperationException) {
 				await ReportAbsenceOfNewAccount(user, callbackQuery.Id);
 			} catch (Exception exception) {
@@ -184,7 +177,7 @@ namespace PasswordManager.Bot.Commands {
 			try {
 				nextAssemblingStage = accountAssemblingService.Assemble(user.Id, message.Text);
 			} catch (ValidationException exception) {
-				await SendValidationError(user, exception);
+				await botUIService.SendValidationError(user, exception);
 			} catch (InvalidOperationException) {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 			}
@@ -206,7 +199,7 @@ namespace PasswordManager.Bot.Commands {
 					nextAssemblingStage = accountAssemblingService
 						.Assemble(user.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
 				} catch (ValidationException exception) {
-					await SendValidationError(user, exception);
+					await botUIService.SendValidationError(user, exception);
 				} catch (InvalidOperationException) {
 					await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				}

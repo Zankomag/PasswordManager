@@ -17,6 +17,7 @@ using Serilog;
 using System.Linq;
 using System.Reflection;
 using PasswordManager.Application;
+using AutoMapper;
 
 namespace PasswordManager.Web {
 
@@ -73,6 +74,7 @@ namespace PasswordManager.Web {
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 			#endregion
 
+			services.AddAutoMapper(typeof(Startup));
 
 			services.AddControllers()
 				.AddNewtonsoftJson(options => {

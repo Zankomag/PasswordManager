@@ -5,6 +5,7 @@ using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Services.Enums;
+using PasswordManager.Bot.Extensions;
 
 namespace PasswordManager.Bot.Services {
 	public class AccountAssemblingService : IAccountAssemblingService {
@@ -16,7 +17,7 @@ namespace PasswordManager.Bot.Services {
 			accountAssemblings = new Dictionary<int, AccountAssemblingModel>();
 		}
 
-		public void Cancel(int userId) => accountAssemblings.Remove(userId);
+		public void Cancel(int userId) => accountAssemblings.Remove(userId); 
 
 		// [0] /add => Ask for AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
 		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
@@ -112,7 +113,7 @@ namespace PasswordManager.Bot.Services {
 						accountAssemblingModel.AccountName = property;
 						break;
 					case AccountAssemblingStage.AddLink:
-						accountAssemblingModel.Link = property;
+						accountAssemblingModel.Link = property.AutoDomain().BuildUrl();
 						break;
 					case AccountAssemblingStage.AddNote:
 						accountAssemblingModel.Note = property;
