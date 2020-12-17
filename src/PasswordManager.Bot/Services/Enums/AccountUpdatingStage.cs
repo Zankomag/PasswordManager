@@ -10,7 +10,7 @@ namespace PasswordManager.Bot.Services.Enums {
 		Login = UpdateAccountCommandCode.Login,
 		Password = UpdateAccountCommandCode.Password,
 		EncryptPassword = AccountAssemblingStage.AddEncryptionKey,
-		SkipPasswordEncryption = '@',
+		RemovePasswordEncryption = '@',
 		OutdatedTime = UpdateAccountCommandCode.OutdatedTime,
 	}
 }

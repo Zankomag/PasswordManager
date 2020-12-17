@@ -64,5 +64,9 @@ namespace PasswordManager.Application.Services {
 			}
 		}
 
+		public async Task UpdateAccountAsync() {
+			if (workUnit.AccountRepository.HasDataChanged)
+				await workUnit.SaveAsync();
+		}
 	}
 }

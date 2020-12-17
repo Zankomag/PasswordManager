@@ -14,6 +14,7 @@ namespace PasswordManager.Bot.Commands.Enums {
 		UntrackOutdatedTime = 't',
 		UseGlobalOutdatedTime = 'g',
 		RemoveEncryption = 'D',
-		AcceptPassword = 'U'
+		AcceptPassword = 'U',
+		SkipPasswordEncryption = 'S'
 	}
 }

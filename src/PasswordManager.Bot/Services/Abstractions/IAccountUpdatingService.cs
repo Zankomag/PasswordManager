@@ -28,6 +28,13 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		AccountUpdatingStage GetNextUpdatingStage(int userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None,
 			long? accountId = null);
+		/// <summary></summary>
+		/// <returns>Id of updating account and next updating stage or null and <see cref="AccountUpdatingStage.None"/>
+		/// if there is no updating request</returns>
+		/// <exception cref="ValidationException"></exception>
+		/// <exception cref="InvalidOperationException"></exception>
+		(long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(int userId, string property,
+			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None);
 		AccountUpdatingStage SkipNextUpdatingStage(int userId, long accountId,
 			AccountUpdatingStage accountUpdatingStageToSkip);
 		/// <summary></summary>

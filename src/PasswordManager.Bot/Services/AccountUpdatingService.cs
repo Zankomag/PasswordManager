@@ -24,6 +24,16 @@ namespace PasswordManager.Bot.Services {
 
 		public void FinishUpdatingRequest(int userId) => updatingAccounts.Remove(userId);
 
+		public (long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(int userId, string property,
+			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None) {
+
+			AccountUpdatingStage nextUpdatingStage = GetNextUpdatingStage(userId, property,
+				expectedAccountUpdatingStage);
+			long? accountId = null;
+			if (nextUpdatingStage != AccountUpdatingStage.None)
+				accountId = updatingAccounts[userId].Account.Id;
+			return (accountId, nextUpdatingStage);
+		}
 
 		public AccountUpdatingStage GetNextUpdatingStage(int userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None, long? accountId = null) {
@@ -71,7 +81,7 @@ namespace PasswordManager.Bot.Services {
 								accountUpdatingModel.Account.Password = accountAssemblingModel.Password;
 								accountUpdatingModel.Account.Encrypted = true;
 								return (accountUpdatingModel.AccountUpdatingStage = AccountUpdatingStage.Release);
-							case AccountUpdatingStage.SkipPasswordEncryption:
+							case AccountUpdatingStage.RemovePasswordEncryption:
 								accountAssemblingModel.Password = property;
 								accountUpdatingModel.Account.Password = accountAssemblingModel.Password;
 								accountUpdatingModel.Account.PasswordUpdatedDate = DateTime.UtcNow;
@@ -110,5 +120,6 @@ namespace PasswordManager.Bot.Services {
 			}
 			return null;
 		}
+
 	}
 }

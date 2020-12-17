@@ -17,5 +17,6 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<bool> DeleteAccountAsync(int userId, long accountId);
 		Task<bool> AddAccountAsync(int userId, Account account);
 		Task UpdatePasswordAsync(int userId, long accountId, string password, bool encrypted);
+		Task UpdateAccountAsync();
 	}
 }

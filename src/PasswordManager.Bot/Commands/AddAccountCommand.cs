@@ -186,7 +186,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
-			//This command allows to bypass pressing "Accept password" button and than entering encryption key
+			//This command allows to bypass pressing "Accept password" button and then entering encryption key
 			//by sending encryption key right in reply to suggested password message
 			if (message.ReplyToMessage.ReplyMarkup != null
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
