@@ -113,10 +113,12 @@ namespace PasswordManager.Bot.Services {
 			return AccountUpdatingStage.None;
 		}
 
-		public Account GetAccount(int userId) {
+		public Account ReleaseAccount(int userId) {
 			if (updatingAccounts.TryGetValue(userId, out AccountUpdatingModel accountUpdatingModel)) {
-				if (accountUpdatingModel.AccountUpdatingStage == AccountUpdatingStage.Release)
+				if (accountUpdatingModel.AccountUpdatingStage == AccountUpdatingStage.Release) {
+					FinishUpdatingRequest(userId);
 					return accountUpdatingModel.Account;
+				}
 			}
 			return null;
 		}

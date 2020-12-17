@@ -37,8 +37,7 @@ namespace PasswordManager.Bot.Commands {
 			long? accountId = null, int? messageToEditId = null) {
 
 			if (nextAccountUpdatingStage == AccountUpdatingStage.Release) {
-				Account updatingAccount = accountUpdatingService.GetAccount(user.Id);
-				accountUpdatingService.FinishUpdatingRequest(user.Id);
+				Account updatingAccount = accountUpdatingService.ReleaseAccount(user.Id);
 				Account account = await accountService.GetFullAsync(user.Id, updatingAccount.Id);
 				if ((account != null) && ((accountId == null) || (accountId == account.Id))) {
 					mapper.Map(updatingAccount, account);

@@ -38,8 +38,8 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		AccountUpdatingStage SkipNextUpdatingStage(int userId, long accountId,
 			AccountUpdatingStage accountUpdatingStageToSkip);
 		/// <summary></summary>
-		/// <returns>Account with new property or <see langword="null"/> if there is no updating request
+		/// <returns>Account with new property and finished updating request or <see langword="null"/> if there is no updating request
 		/// or it's not to release ready yet</returns>
-		Account GetAccount(int userId);
+		Account ReleaseAccount(int userId);
 	}
 }
