@@ -65,12 +65,88 @@ namespace PasswordManager.Bot.Commands {
 
 		//TODO:
 		//use emoji from new system
-		//
-		//TODO:
-		//instead of sending new message with invintation bot have
-		//to edit message with selection to message with invintation
-		//WITH "BACK" button that returns to selection message
-		//and after users sends new data - bot have to delete only one message
+		async Task UpdateAccountData(BotUser user, Account account, UpdateAccountCommandCode updateAccountCommandCode,
+			CallbackQuery callbackQuery, long accountId) {
+			var backButton = InlineKeyboardButton.WithCallbackData(
+				"⬅️ " + Localization.GetMessage("Back", user.Lang),
+				UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId));
+
+			if (account != null) {
+				(string message, InlineKeyboardMarkup replyMarkup)
+					= updateAccountCommandCode switch {
+						UpdateAccountCommandCode.AccountName => ("📝 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewAccountName", user.Lang)),
+							new InlineKeyboardMarkup(backButton)),
+						UpdateAccountCommandCode.Link => ("🔗 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewLink", user.Lang)),
+							new InlineKeyboardMarkup(
+								new InlineKeyboardButton[]{
+									backButton,
+									InlineKeyboardButton.WithCallbackData(
+										"🗑 " + Localization.GetMessage("DeleteLink", user.Lang),
+										UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) })),
+						UpdateAccountCommandCode.Note => ("🗒 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewNote", user.Lang)),
+							new InlineKeyboardButton[]{
+									backButton,
+									InlineKeyboardButton.WithCallbackData(
+										"🗑 " + Localization.GetMessage("DeleteNote", user.Lang),
+										UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) }),
+						UpdateAccountCommandCode.Login => ("📇 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewLogin", user.Lang)),
+							new InlineKeyboardMarkup(backButton)),
+						UpdateAccountCommandCode.Password => ("🔑 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewPassword", user.Lang)),
+							new InlineKeyboardMarkup(
+								new InlineKeyboardButton[][] {
+									new InlineKeyboardButton[]{ backButton},
+									botUIService.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
+										SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId) })),
+						UpdateAccountCommandCode.OutdatedTime => ("🕜 " + string.Format(
+								Localization.GetMessage("UpdateAccData", user.Lang),
+								Localization.GetMessage("NewOutdatedTime", user.Lang)),
+							new InlineKeyboardMarkup(backButton)),
+						_ => throw new InvalidOperationException()
+					};
+				message = await botUIService.SerializeAccount(user, account, false, message);
+				await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					message, replyMarkup: replyMarkup);
+				accountUpdatingService.StartUpdatingRequest(user.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
+				await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
+			}
+		}
+
+		async Task DeleteAccountData(BotUser user, UpdateAccountCommandCode updateAccountCommandCode,
+			CallbackQuery callbackQuery, long accountId) {
+			AccountUpdatingStage accountUpdatingStage = updateAccountCommandCode switch {
+				UpdateAccountCommandCode.DeleteLink => AccountUpdatingStage.Link,
+				UpdateAccountCommandCode.DeleteNote => AccountUpdatingStage.Note,
+				_ => throw new InvalidOperationException()
+			};
+			await UpdateAccountData(user, null, accountUpdatingStage, accountId, callbackQuery, false);
+		}
+
+		async Task UpdateAccountData(BotUser user, string property, AccountUpdatingStage accountUpdatingStage,
+			long accountId, CallbackQuery callbackQuery, bool startUpdatingRequest, Account account = null) {
+			try {
+				if(startUpdatingRequest) {
+					if (account != null) 
+						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.OutdatedTime);
+					else throw new InvalidOperationException("Account cannot be null when starting updating request");
+				}
+				AccountUpdatingStage nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, property,
+					accountUpdatingStage, accountId);
+				await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
+			} catch (ValidationException exception) {
+				await botUIService.SendValidationError(user, exception);
+			}
+		}
+
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			UpdateAccountCommandCode updateAccountCommandCode;
@@ -95,170 +171,38 @@ namespace PasswordManager.Bot.Commands {
 							Localization.GetMessage("ChooseWhatUpdate", user.Lang));
 					}
 					break;
-				case UpdateAccountCommandCode.AccountName:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"📝 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewAccountName", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
-								"⬅️ " + Localization.GetMessage("Back", user.Lang),
-								UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId))));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.AccountName);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
-					break;
-				case UpdateAccountCommandCode.Link:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"🔗 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewLink", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(
-								new InlineKeyboardButton[]{
-									InlineKeyboardButton.WithCallbackData(
-										"⬅️ " + Localization.GetMessage("Back", user.Lang),
-										UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId)),
-									InlineKeyboardButton.WithCallbackData(
-										"🗑 " + Localization.GetMessage("DeleteLink", user.Lang),
-										UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) }));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.Link);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
-					break;
-				case UpdateAccountCommandCode.Note:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"🗒 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewNote", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(
-								new InlineKeyboardButton[]{
-									InlineKeyboardButton.WithCallbackData(
-										"⬅️ " + Localization.GetMessage("Back", user.Lang),
-										UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId)),
-									InlineKeyboardButton.WithCallbackData(
-										"🗑 " + Localization.GetMessage("DeleteNote", user.Lang),
-										UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) }));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.Note);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
-					break;
-				case UpdateAccountCommandCode.Login:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"📇 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewLogin", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(
-								new InlineKeyboardButton[]{
-									InlineKeyboardButton.WithCallbackData(
-										"⬅️ " + Localization.GetMessage("Back", user.Lang),
-										UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId))}));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.Login);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
-					break;
 				case UpdateAccountCommandCode.Password:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"🔑 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewPassword", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(
-								new InlineKeyboardButton[][] {
-									new InlineKeyboardButton[]{
-										InlineKeyboardButton.WithCallbackData(
-											"⬅️ " + Localization.GetMessage("Back", user.Lang),
-											UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId)) },
-									botUIService.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
-										SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId)}));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.Password);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
-					break;
-				case UpdateAccountCommandCode.DeleteLink:
-					try {
-						nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, null,
-							AccountUpdatingStage.Link, accountId);
-						await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-					} catch (ValidationException exception) {
-						await botUIService.SendValidationError(user, exception);
-					}
-					break;
-				case UpdateAccountCommandCode.DeleteNote:
-					try {
-						nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, null,
-							AccountUpdatingStage.Note, accountId);
-						await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-					} catch (ValidationException exception) {
-						await botUIService.SendValidationError(user, exception);
-					}
-					break;
+				case UpdateAccountCommandCode.AccountName:
+				case UpdateAccountCommandCode.Link:
+				case UpdateAccountCommandCode.Note:
+				case UpdateAccountCommandCode.Login:
 				case UpdateAccountCommandCode.OutdatedTime:
-					if (account != null) {
-						string message = await botUIService.SerializeAccount(user, account, false,
-						"🕜 " + string.Format(Localization.GetMessage("UpdateAccData", user.Lang),
-							Localization.GetMessage("NewOutdatedTime", user.Lang)));
-						await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId, message,
-							replyMarkup: new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
-								"⬅️ " + Localization.GetMessage("Back", user.Lang),
-								UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId))));
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.OutdatedTime);
-						await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
-					}
+					await UpdateAccountData(user, account, updateAccountCommandCode, callbackQuery, accountId);
 					break;
 				case UpdateAccountCommandCode.UntrackOutdatedTime:
-					if (account != null) {
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.OutdatedTime);
-						try {
-							nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, "0",
-								AccountUpdatingStage.OutdatedTime, accountId);
-							await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-						} catch (ValidationException exception) {
-							await botUIService.SendValidationError(user, exception);
-						}
-					}
+					await UpdateAccountData(user, "0",
+						AccountUpdatingStage.OutdatedTime, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.UseGlobalOutdatedTime:
-					if (account != null) {
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.OutdatedTime);
-						try {
-							nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, null,
-								AccountUpdatingStage.OutdatedTime, accountId);
-							await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-						} catch (ValidationException exception) {
-							await botUIService.SendValidationError(user, exception);
-						}
-					}
+					await UpdateAccountData(user, null,
+						AccountUpdatingStage.OutdatedTime, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.RemoveEncryption:
-					if (account != null) {
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.RemovePasswordEncryption);
-						try {
-							nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, callbackQuery.Message.Text,
-								AccountUpdatingStage.RemovePasswordEncryption, accountId);
-							await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-						} catch (ValidationException exception) {
-							await botUIService.SendValidationError(user, exception);
-						}
-					}
+					await UpdateAccountData(user, callbackQuery.Message.Text,
+						AccountUpdatingStage.RemovePasswordEncryption, accountId, callbackQuery, true, account);
+					break;
+				case UpdateAccountCommandCode.AcceptPassword:
+					await UpdateAccountData(user, callbackQuery.Message.Text,
+						AccountUpdatingStage.Password, accountId, callbackQuery, true, account);
+					break;
+				case UpdateAccountCommandCode.DeleteLink:
+				case UpdateAccountCommandCode.DeleteNote:
+					await DeleteAccountData(user, updateAccountCommandCode, callbackQuery, accountId);
 					break;
 				case UpdateAccountCommandCode.SkipPasswordEncryption:
 					nextUpdatingStage = accountUpdatingService.SkipNextUpdatingStage(user.Id, accountId,
 						AccountUpdatingStage.EncryptPassword);
 					await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-					break;
-				case UpdateAccountCommandCode.AcceptPassword:
-					if (account != null) {
-						try {
-							nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id,
-								callbackQuery.Message.Text, AccountUpdatingStage.Password, accountId);
-							await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
-						} catch (ValidationException exception) {
-							await botUIService.SendValidationError(user, exception);
-						}
-					}
 					break;
 			}
 		}
