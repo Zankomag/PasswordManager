@@ -15,7 +15,7 @@ namespace PasswordManager.Bot.Commands {
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-			string accountId = callbackQuery.Data.Substring(1);
+			string accountId = callbackQuery.Data[1..];
 
 			await .ShowAccountById(
 				callbackQuery.From.Id,

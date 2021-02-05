@@ -65,7 +65,6 @@ namespace PasswordManager.Bot.Services {
 					accountAssemblingModel.AccountAssemblingStage = AccountAssemblingStage.Release;
 					break;
 				default:
-				case 6:
 					accountAssemblingModel.Link = args[1];
 					accountAssemblingModel.Note = args[2];
 					accountAssemblingModel.Login = args[3];

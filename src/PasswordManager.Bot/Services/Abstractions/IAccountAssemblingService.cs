@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <param name="args">inline Arguments of account to assemble</param>
 		/// <returns>Next AssemblingState</returns>
 		/// <exception cref="System.ComponentModel.DataAnnotations.ValidationException"></exception>
-		AccountAssemblingStage Create(int userId, string[] args);
+		AccountAssemblingStage Create(int userId, string[] args = null);
 		/// <summary>
 		/// Adds property of Current AssemblingStage to AccountAssemblingModel
 		/// if current Assemling Stage equals to expected and accepts property.
