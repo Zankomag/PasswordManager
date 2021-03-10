@@ -32,7 +32,8 @@ namespace PasswordManager.Bot.Services {
 
 			if (account != null) {
 				string message = await SerializeAccount(user, account, true, extraMessage);
-				
+
+				//TODO: use methods from new localization system and emoji
 				var keyboard = new List<List<InlineKeyboardButton>> {
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
@@ -99,10 +100,9 @@ namespace PasswordManager.Bot.Services {
 			}
 
 			if (account.Note != null)
-				messageBuilder.Append("\n\n_").Append(account.Note.EscapeMarkdownV2Chars()).Append("_\n");
+				messageBuilder.Append("\n\n_").Append(account.Note.EscapeMarkdownV2Chars()).AppendLine("_\n");
 
-			messageBuilder.Append('\n')
-				.Append(Localization.GetMessage("Login", botUser.Lang)).Append(": `")
+			messageBuilder.Append(Localization.GetMessage("Login", botUser.Lang)).Append(": `")
 				.Append(account.Login.EscapeCodeBlockMarkdownV2Chars()).Append('`');
 
 			if (includeOutdatedTime) {
@@ -117,7 +117,7 @@ namespace PasswordManager.Bot.Services {
 				}
 				if(outdatedTime != null) {
 					int changePasswordInDays = (account.PasswordUpdatedDate + outdatedTime.Value - DateTime.UtcNow.Date).Days;
-					//TODO: user methods from new localization system and emoji
+					//TODO: use methods from new localization system and emoji
 					string changePasswordInDaysString = string.Format(Localization.GetMessage("WhenChangePassword", botUser.Lang),
 						changePasswordInDays > 0 
 							? string.Format(Localization.GetMessage("WhenDays", botUser.Lang), outdatedTime)
