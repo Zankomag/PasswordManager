@@ -90,6 +90,7 @@ namespace PasswordManager.Bot.Extensions {
 
 		///<summary></summary>
 		/// <param name="deleteAccountCommandCode"></param>
+		/// /// <param name="accountId">Id of account to update</param>
 		/// <returns><see cref="CallbackQueryCommandCode.DeleteAccount"/> + deleteAccountCommandCode</returns>
 		public static string ToStringCode(this DeleteAccountCommandCode deleteAccountCommandCode, long accountId)
 			=> GetStringCode(CallbackQueryCommandCode.DeleteAccount, (char)deleteAccountCommandCode, accountId);
@@ -115,7 +116,7 @@ namespace PasswordManager.Bot.Extensions {
 			.Append(param.ToString())
 			.ToString();
 
-		/// <returns>null if there is no command in message</returns>
+		///returns null if there is no command in message
 		public static string GetTextCommand(this string messageText) {
 			//TODO:
 			//remove '/' from returned message when using new commands without /

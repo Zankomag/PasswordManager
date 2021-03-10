@@ -7,7 +7,8 @@ namespace PasswordManager.Web.Controllers
     [Route("api/bots")]
     [ApiController]
     public class BotUpdateController : ControllerBase {
-
+		//TODO Move Bot Controller to Bot project!
+		//Create helper class that maps controller from other assembly
 		private readonly IBotHandler botHandler;
 		private readonly IBot bot;
 
