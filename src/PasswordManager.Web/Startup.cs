@@ -14,12 +14,12 @@ using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Services;
 using PasswordManager.Core.Repositories;
 using PasswordManager.Infrastructure.Data;
-using PasswordManager.Infrastructure.Repository;
 using Serilog;
 using System.Linq;
 using System.Reflection;
 using PasswordManager.Application;
 using AutoMapper;
+using PasswordManager.Infrastructure.Repositories;
 
 namespace PasswordManager.Web {
 

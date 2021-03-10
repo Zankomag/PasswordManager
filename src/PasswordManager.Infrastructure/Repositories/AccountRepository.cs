@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
-using PasswordManager.Infrastructure.Repository;
 
 namespace PasswordManager.Infrastructure.Repositories {
 	public class AccountRepository : Repository<Account>, IAccountRepository {
