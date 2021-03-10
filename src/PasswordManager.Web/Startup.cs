@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,8 +58,8 @@ namespace PasswordManager.Web {
 			
 
 			//Add all commands using reflection
-			var botCommands = Assembly.GetAssembly(typeof(IBotCommand))
-				.GetExportedTypes()
+			IEnumerable<Type> botCommands = Assembly.GetAssembly(typeof(IBotCommand))
+				?.GetExportedTypes()
 				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
 			//Because IEnumerable doesn't have ForEach()
 			foreach (var commandType in botCommands) {
@@ -104,6 +106,7 @@ namespace PasswordManager.Web {
 
 			app.UseAuthentication();
 			app.UseAuthorization();
+
 
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();

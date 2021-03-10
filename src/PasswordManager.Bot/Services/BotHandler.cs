@@ -118,7 +118,7 @@ namespace PasswordManager.Bot.Services {
 			CallbackQueryCommandCode callbackCommandCode;
 			try {
 				callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
-			} catch (Exception exeption) {
+			} catch (Exception exception) {
 				//TODO: Log Exception
 				throw;
 			}

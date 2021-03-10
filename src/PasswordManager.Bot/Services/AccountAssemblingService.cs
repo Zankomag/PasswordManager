@@ -79,21 +79,21 @@ namespace PasswordManager.Bot.Services {
 		}
 
 		public Account Release(int userId) {
-			if (accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
-				if(accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
-					accountAssemblings.Remove(userId);
-					return new Account {
-						AccountName = accountAssemblingModel.AccountName,
-						UserId = accountAssemblingModel.UserId,
-						Link = accountAssemblingModel.Link,
-						Note = accountAssemblingModel.Note,
-						Login = accountAssemblingModel.Login,
-						Password = accountAssemblingModel.Password,
-						Encrypted = accountAssemblingModel.Encrypted,
-						OutdatedTime = new TimeSpan(0, 0, 0),
-						PasswordUpdatedDate = DateTime.UtcNow.Date,
-					};
-				}
+			if (this.accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel) 
+			    && accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
+
+				this.accountAssemblings.Remove(userId);
+				return new Account {
+					AccountName = accountAssemblingModel.AccountName,
+					UserId = accountAssemblingModel.UserId,
+					Link = accountAssemblingModel.Link,
+					Note = accountAssemblingModel.Note,
+					Login = accountAssemblingModel.Login,
+					Password = accountAssemblingModel.Password,
+					Encrypted = accountAssemblingModel.Encrypted,
+					OutdatedTime = new TimeSpan(0, 0, 0),
+					PasswordUpdatedDate = DateTime.UtcNow.Date,
+				};
 			}
 			return null;
 		}
