@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using PasswordManager.Core.Repositories;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using PasswordManager.Core.Repositories;
 
-namespace PasswordManager.Infrastructure.Repository {
+namespace PasswordManager.Infrastructure.Repositories {
 	public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new() {
 
 		protected DbContext context;

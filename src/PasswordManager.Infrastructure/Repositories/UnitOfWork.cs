@@ -2,8 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using PasswordManager.Core.Repositories;
 using PasswordManager.Infrastructure.Data;
+using PasswordManager.Infrastructure.Repository;
 
-namespace PasswordManager.Infrastructure.Repository {
+namespace PasswordManager.Infrastructure.Repositories {
 	public class UnitOfWork : IUnitOfWork {
 
 		private DbContext context;
