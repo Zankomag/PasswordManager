@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace PasswordManager.Bot.Commands {
 	public class CommandFactory : ICommandFactory {
+		//We use Type instead of ICommand objects because we initialize commands using IServiceProvider
 		private Dictionary<string, Type> messageCommands;
 		private Dictionary<CallbackQueryCommandCode, Type> callbackQueryCommands;
 		private Dictionary<UserAction, Type> actionCommands;
@@ -46,6 +47,7 @@ namespace PasswordManager.Bot.Commands {
 			//All message commands MUST be in lower case
 			messageCommands = new Dictionary<string, Type>();
 
+			//TODO add manually to dictionary
 			Add<IMessageCommand, HelpCommand>("/help");
 			Add<IMessageCommand, HelpCommand>("/start");
 			Add<IMessageCommand, SelectLanguageCommand>("/language");
@@ -92,24 +94,6 @@ namespace PasswordManager.Bot.Commands {
 			Add<ICallbackQueryCommand, ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/>(CallbackQueryCommandCode.ShowEncryptionKeyHint);
 			Add<ICallbackQueryCommand, UpdateUserSettingsCommand>(CallbackQueryCommandCode.UpdateUserSettings);
 			Add<ICallbackQueryCommand, EncryptPasswordCommand>(CallbackQueryCommandCode.EncryptPassword);
-		}
-
-		private void Add<TCommandType, TCommand>(object commandKey) 
-			where TCommandType : IBotCommand 
-			where TCommand : class, TCommandType {
-			if (!typeof(TCommand).IsAbstract) {
-				(typeof(TCommandType) switch {
-					IMessageCommand => (Action)(() => { 
-						messageCommands.Add((string)commandKey, typeof(TCommandType)); }),
-					IReplyActionCommand => (Action)(() => { 
-						replyActionCommands.Add((UserAction)commandKey, typeof(TCommandType)); }),
-					IActionCommand => (Action)(() => { 
-						actionCommands.Add((UserAction)commandKey, typeof(TCommandType)); }),
-					ICallbackQueryCommand => (Action)(() => { 
-						callbackQueryCommands.Add((CallbackQueryCommandCode)commandKey, typeof(TCommandType)); }),
-					_ => throw new NotImplementedException()
-				})();
-			}
 		}
 
 		public ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode) {
