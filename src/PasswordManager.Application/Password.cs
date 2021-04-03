@@ -33,6 +33,7 @@ namespace Passwords {
 
 			if (charList.Length == 0) throw new ArgumentNullException("No option selected");
 
+			//TODO use RNGCryptoServiceProvider instead
 			Random random = new Random();
 			string pwd = "";
 

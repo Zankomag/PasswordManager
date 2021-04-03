@@ -42,6 +42,11 @@ namespace PasswordManager.Web {
 			});
 
 			#region Telegram Bot
+			//
+			//TODO move all this DI in infrastructure layer or corresponding layer and call injection medods from infrastructure
+			//but here only one infrastructure method
+			//
+
 			//TODO:
 			//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
 			AAAA
