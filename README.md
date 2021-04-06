@@ -1,6 +1,8 @@
 # Password Manager Bot
 Asp NET Core bot that helps you to manage your accounts.
 
+!Working build: https://github.com/Zankomag/PasswordManager/tree/3ae4161bd7a14c2ed2a3c7ac546bc9cfb8cbfeb4!
+
 ## How to deploy on Linux server
 There must be installed dotnet core, nginx and SSL certificate on your web-server to use webhook.
 Do not forget to update SSL certificate in time!
