@@ -3,6 +3,9 @@ using System;
 
 namespace PasswordManager.Core.Entities {
 	public class Account {
+		public const int MaxPasswordLength = 8096;
+		
+		
 		public long Id { get; set; }
 		public int UserId { get; set; }
 		[Required] public DateTime PasswordUpdatedDate { get; set; }
@@ -10,7 +13,7 @@ namespace PasswordManager.Core.Entities {
 		[Required] [StringLength(60)] public string AccountName { get; set; }
 		[StringLength(70)] public string Link { get; set; }
 		[Required] [StringLength(40)] public string Login { get; set; }
-		[Required] [StringLength(8096)] public string Password { get; set; }
+		[Required] [StringLength(MaxPasswordLength)] public string Password { get; set; }
 		[StringLength(1024)] public string Note { get; set; }
 		/// <summary>
 		/// Indicates whether password is encrypted
