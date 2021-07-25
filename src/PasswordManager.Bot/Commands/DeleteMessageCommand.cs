@@ -10,7 +10,7 @@ namespace PasswordManager.Bot.Commands {
 		public DeleteMessageCommand(IBot bot) : base(bot) { }
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) 
-			=> await bot.TryDeleteMessageAsync(
+			=> await Bot.TryDeleteMessageAsync(
 				callbackQuery.Message.Chat.Id,
 				callbackQuery.Message.MessageId);
 		

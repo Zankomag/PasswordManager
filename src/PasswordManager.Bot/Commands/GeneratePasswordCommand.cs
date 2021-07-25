@@ -33,7 +33,7 @@ namespace PasswordManager.Bot.Commands {
 				password = user.GenPattern.GeneratePasswordByPattern();
 			} catch (ArgumentException ex) {
 				.SetUserPasswordPattern(user);
-				await bot.Client.SendTextMessageAsync(
+				await Bot.Client.SendTextMessageAsync(
 					callbackQuery.From.Id,
 					ex.Message + "\n" + Localization.GetMessage("DefaultPattern", user.Lang));
 				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);

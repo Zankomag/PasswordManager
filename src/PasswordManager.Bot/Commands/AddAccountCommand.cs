@@ -103,12 +103,12 @@ namespace PasswordManager.Bot.Commands {
 			};
 
 			if (messageToEditId == null) {
-				await bot.Client
+				await Bot.Client
 					.SendTextMessageAsync(user.Id, message,
 						replyMarkup: replyMarkup,
 						parseMode: ParseMode.Markdown);
 			} else {
-				await bot.Client.EditMessageTextAsync(
+				await Bot.Client.EditMessageTextAsync(
 					user.Id, messageToEditId.Value, message,
 					replyMarkup: replyMarkup,
 					parseMode: ParseMode.Markdown);
@@ -117,7 +117,7 @@ namespace PasswordManager.Bot.Commands {
 
 		//Moved from password manager
 		private async Task ReportExceededLength(BotUser user, int maxAccountDataLength, string accountDataType) {
-			await bot.Client.SendTextMessageAsync(user.Id,
+			await Bot.Client.SendTextMessageAsync(user.Id,
 				String.Format(Localization.GetMessage("MaxLength", user.Lang),
 					Localization.GetMessage(accountDataType, user.Lang),
 						maxAccountDataLength));
@@ -168,7 +168,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		private async Task ReportAbsenceOfNewAccount(BotUser user, string callbackQueryId)
-			=> await bot.Client.AnswerCallbackQueryAsync(callbackQueryId,
+			=> await Bot.Client.AnswerCallbackQueryAsync(callbackQueryId,
 				text: Localization.GetMessage("CantWithoutNewAcc", user.Lang), showAlert: true);
 		
 

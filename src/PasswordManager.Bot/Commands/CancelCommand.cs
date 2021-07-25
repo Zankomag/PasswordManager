@@ -62,11 +62,11 @@ namespace PasswordManager.Bot.Commands {
 				}
 
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await bot.Client.SendTextMessageAsync(message.From.Id,
+				await Bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 			else {
-				await bot.Client.SendTextMessageAsync(message.From.Id,
+				await Bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("NoCancel", user.Lang));
 			}
 		}

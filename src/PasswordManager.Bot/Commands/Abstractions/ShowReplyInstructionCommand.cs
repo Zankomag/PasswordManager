@@ -32,7 +32,7 @@ namespace PasswordManager.Bot.Commands.Abstractions {
 		// 2: Using reflection: (More comlpex solution) (https://stackoverflow.com/a/12044000/11101834)
 
 		public async virtual Task ExecuteAsync(Message message, BotUser user)
-			=> await bot.Client.SendTextMessageAsync(user.Id,
+			=> await Bot.Client.SendTextMessageAsync(user.Id,
 				Localization.GetMessage("SendMessageInReply", user.Lang));
 	}
 }

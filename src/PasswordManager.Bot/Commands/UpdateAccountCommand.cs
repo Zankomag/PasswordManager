@@ -49,7 +49,7 @@ namespace PasswordManager.Bot.Commands {
 				//TODO: Move next section to SendTextStage instruction method and add there this instruction and all from
 				//callback query method
 			} else if (nextAccountUpdatingStage == AccountUpdatingStage.EncryptPassword && accountId.HasValue) {
-				await bot.Client.SendTextMessageAsync(user.Id,
+				await Bot.Client.SendTextMessageAsync(user.Id,
 					"🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
 					replyMarkup: new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
 						"⏩ " + Localization.GetMessage("Skip", user.Lang),
@@ -58,7 +58,7 @@ namespace PasswordManager.Bot.Commands {
 				accountUpdatingService.FinishUpdatingRequest(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				//TODO: make method in botUISrevice that sends or edits message with "Cancel" message
-				await bot.Client.SendTextMessageAsync(user.Id,
+				await Bot.Client.SendTextMessageAsync(user.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 		}
@@ -114,7 +114,7 @@ namespace PasswordManager.Bot.Commands {
 						_ => throw new InvalidOperationException()
 					};
 				message = await botUIService.SerializeAccount(user, account, false, message);
-				await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+				await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 					message, replyMarkup: replyMarkup);
 				accountUpdatingService.StartUpdatingRequest(user.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
 				await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
@@ -148,7 +148,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			UpdateAccountCommandCode updateAccountCommandCode;
 			string accoundIdString;
 			long accountId;

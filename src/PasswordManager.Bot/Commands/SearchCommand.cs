@@ -33,9 +33,9 @@ namespace PasswordManager.Bot.Commands {
 				await .ShowPage(callbackQuery.From.Id, accountName, page,
 					.GetPageCount(accountCount),
 					user.Lang, callbackQuery.Message.MessageId);
-				await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+				await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			} else {
-				await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+				await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 					Localization.GetMessage("SearchAgain", user.Lang), showAlert: true);
 				await BotHandler.TryDeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
@@ -65,7 +65,7 @@ namespace PasswordManager.Bot.Commands {
 
 			List<Account> accounts;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
 							"limit @maxAccsByPage offset @Offset",
@@ -78,7 +78,7 @@ namespace PasswordManager.Bot.Commands {
 						.ToList();
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
 							"limit @maxAccsByPage offset @Offset",
@@ -112,11 +112,11 @@ namespace PasswordManager.Bot.Commands {
 			}
 
 			if (messageToEditId == 0) {
-				await bot.Client.SendTextMessageAsync(userId, message,
+				await Bot.Client.SendTextMessageAsync(userId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			} else {
-				await bot.Client.EditMessageTextAsync(userId, messageToEditId, message,
+				await Bot.Client.EditMessageTextAsync(userId, messageToEditId, message,
 						replyMarkup: new InlineKeyboardMarkup(keyboard),
 						disableWebPagePreview: true);
 			}
@@ -126,7 +126,7 @@ namespace PasswordManager.Bot.Commands {
 		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 			List<Account> accounts;
 			if (accountName != null) {
-				using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
 						new {
@@ -135,7 +135,7 @@ namespace PasswordManager.Bot.Commands {
 						}).ToList();
 				}
 			} else {
-				using (IDbConnection conn = new SQLiteConnection(bot.connString)) {
+				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
 						new { userId })
@@ -145,7 +145,7 @@ namespace PasswordManager.Bot.Commands {
 
 			string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
 
-			await bot.Client.SendTextMessageAsync(userId, message,
+			await Bot.Client.SendTextMessageAsync(userId, message,
 					replyMarkup: new InlineKeyboardMarkup(keyboard),
 					disableWebPagePreview: true);
 		}
@@ -186,7 +186,7 @@ namespace PasswordManager.Bot.Commands {
 			if (accountCount == 1) {
 				await ShowAccountByName(chatId, accountName, langCode);
 			} else if (accountCount == 0) {
-				await bot.Client.SendTextMessageAsync(chatId,
+				await Bot.Client.SendTextMessageAsync(chatId,
 					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
 			} else if (accountCount <= maxAccsByPage) {
 				await ShowSinglePage(chatId, accountName, langCode);

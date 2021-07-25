@@ -34,7 +34,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 			passwordEncryptionService.StartEncryptionRequest(user.Id, accountId);
 			await userService.UpdateActionAsync(user.Id, UserAction.EncryptPassword);
-			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
 				Localization.GetMessage("EncryptInstruction", user.Lang),
 				showAlert: true);
 		}
@@ -73,7 +73,7 @@ namespace PasswordManager.Bot.Commands {
 					return;
 				}
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await bot.Client.SendTextMessageAsync(message.From.Id,
+				await Bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 				return;
 			}
@@ -81,11 +81,11 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) 
-			=> await bot.Client.SendTextMessageAsync(user.Id,
+			=> await Bot.Client.SendTextMessageAsync(user.Id,
 				Localization.GetMessage("SendKeyInReplyToPasswordMessage", user.Lang));
 
 		private async Task ReportWrongReply(BotUser user) {
-			await bot.Client.SendTextMessageAsync(user.Id,
+			await Bot.Client.SendTextMessageAsync(user.Id,
 						Localization.GetMessage("NotPasswordMessageReply", user.Lang));
 		}
 

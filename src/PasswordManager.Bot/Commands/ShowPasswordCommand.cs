@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Commands {
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			//TODO:
 			//Delete answering callbackquery when messages will be edited instead of sending
-			await bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
+			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			long accountId;
 			try {
 				accountId = Convert.ToInt64(callbackQuery.Data[1..]);
@@ -46,14 +46,14 @@ namespace PasswordManager.Bot.Commands {
 			Account account = await accountService.GetPasswordAsync(user.Id, accountId);
 			if (account != null) {
 				if (!account.Encrypted) {
-					await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						GetPasswordMessage(account.Password),
 						replyMarkup: GetPasswordKeyboard(account, user),
 						parseMode: ParseMode.MarkdownV2);
 				} else {
 					passwordDecryptionService.StartDecryptionRequest(user.Id, account);
 					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
-					await bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 						"🔑 " + Localization.GetMessage("EnterDecryptionKey", user.Lang),
 						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false));
 				}
@@ -136,19 +136,19 @@ namespace PasswordManager.Bot.Commands {
 				try {
 					decryptedPassword = account.Password.Decrypt(message.Text);
 				} catch {
-					await bot.Client.SendTextMessageAsync(user.Id,
+					await Bot.Client.SendTextMessageAsync(user.Id,
 					Localization.GetMessage("WrongKey", user.Lang),
 					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, true),
 					parseMode: ParseMode.Markdown);
 				}
 				passwordDecryptionService.FinishDecryptionRequest(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
+				await Bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
 					replyMarkup: GetPasswordKeyboard(account, user),
 					parseMode: ParseMode.MarkdownV2);
 			} else {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await bot.Client.SendTextMessageAsync(message.From.Id,
+				await Bot.Client.SendTextMessageAsync(message.From.Id,
 					Localization.GetMessage("Cancel", user.Lang));
 			}
 		}

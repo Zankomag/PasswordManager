@@ -20,7 +20,7 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			if(bot.IsAdmin(user)) {
+			if(Bot.IsAdmin(user)) {
 				try {
 					IList<User> users = await userService.GetAllBasicInfoAsync();
 					string response = string.Empty;
@@ -30,11 +30,11 @@ namespace PasswordManager.Bot.Commands {
 					}
 					//TODO:
 					//fix @UPwdBot, get bot nickname from bot and save in in bot class
-					await bot.Client.SendTextMessageAsync(user.Id, "All @UPwdBot users:\nUser: Number of accounts\n" + response,
+					await Bot.Client.SendTextMessageAsync(user.Id, "All @UPwdBot users:\nUser: Number of accounts\n" + response,
 						Telegram.Bot.Types.Enums.ParseMode.Markdown);
 				}
 				catch(Exception ex) {
-					await bot.Client.SendTextMessageAsync(user.Id, "Error occured:\n\n" + ex.ToString());
+					await Bot.Client.SendTextMessageAsync(user.Id, "Error occured:\n\n" + ex.ToString());
 					//TODO: Log Exception
 				}
 			}

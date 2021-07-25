@@ -38,7 +38,7 @@ namespace PasswordManager.Bot.Commands {
 										CallbackQueryCommandCode.ShowAccount.ToStringCode() + accountId) },
 							});
 
-							await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+							await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 									callbackQuery.Message.MessageId,
 									Localization.GetMessage("SureDeleteAcc1", user.Lang) + "\n\n" + callbackQuery.Message.Text,
 									replyMarkup: keyboardMarkup,
@@ -57,7 +57,7 @@ namespace PasswordManager.Bot.Commands {
 										DeleteAccountCommandCode.Delete.ToStringCode(accountId))}
 							});
 
-							await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+							await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 									callbackQuery.Message.MessageId,
 									Localization.GetMessage("SureDeleteAcc2", user.Lang) + "\n\n" + callbackQuery.Message.Text,
 									replyMarkup: keyboardMarkup,
@@ -65,11 +65,11 @@ namespace PasswordManager.Bot.Commands {
 						}),
 						(char)DeleteAccountCommandCode.Delete => (Func<Task>)(async () => {
 							if (await accountService.DeleteAccountAsync(user.Id, accountId)) {
-								await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+								await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 									callbackQuery.Message.MessageId,
 									"✅ " + Localization.GetMessage("AccountDeleted", user.Lang));
 							} else {
-								await bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
+								await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 									callbackQuery.Message.MessageId,
 									Localization.GetMessage("ErrorTryAgainLater", user.Lang));
 							}

@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Commands {
 		//This command allows admin manually add users to bot
 		//Bot don't need this command if it has free registration
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			if (bot.IsAdmin(user)) {
+			if (Bot.IsAdmin(user)) {
 				int spaceIndex;
 				if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 					try {
@@ -27,12 +27,12 @@ namespace PasswordManager.Bot.Commands {
 						await userService.AddUserAsync(newUserId, Localization.DefaultLanguageCode);
 					}
 					catch {
-						await bot.Client.SendTextMessageAsync(user.Id, "Invalid user id");
+						await Bot.Client.SendTextMessageAsync(user.Id, "Invalid user id");
 						return;
 					}
-					await bot.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
+					await Bot.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
 				}
-				await bot.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
+				await Bot.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
 			}
 		}
 	}
