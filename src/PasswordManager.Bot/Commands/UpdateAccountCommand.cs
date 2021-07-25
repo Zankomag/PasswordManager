@@ -18,16 +18,16 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace PasswordManager.Bot.Commands {
 	public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IActionCommand, IReplyActionCommand {
 		private readonly IAccountService accountService;
-		private readonly IBotUIService botUIService;
+		private readonly IBotUIService botUiService;
 		private readonly IAccountUpdatingService accountUpdatingService;
 		private readonly IUserService userService;
 		private readonly IMapper mapper;
 
 		public UpdateAccountCommand(IBot bot, IAccountService accountService,
-			IBotUIService botUIService, IAccountUpdatingService accountUpdatingService,
+			IBotUIService botUiService, IAccountUpdatingService accountUpdatingService,
 			IUserService userService, IMapper mapper) : base(bot) {
 			this.accountService = accountService;
-			this.botUIService = botUIService;
+			this.botUiService = botUiService;
 			this.accountUpdatingService = accountUpdatingService;
 			this.userService = userService;
 			this.mapper = mapper;
@@ -42,7 +42,7 @@ namespace PasswordManager.Bot.Commands {
 				if ((account != null) && ((accountId == null) || (accountId == account.Id))) {
 					mapper.Map(updatingAccount, account);
 					await accountService.UpdateAccountAsync();
-					await botUIService.ShowAccount(user, account, messageToEditId,
+					await botUiService.ShowAccount(user, account, messageToEditId,
 						Localization.GetMessage("AccountUpdated", user.Lang));
 				}
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
@@ -105,7 +105,7 @@ namespace PasswordManager.Bot.Commands {
 							new InlineKeyboardMarkup(
 								new InlineKeyboardButton[][] {
 									new InlineKeyboardButton[]{ backButton},
-									botUIService.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
+									botUiService.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
 										SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId) })),
 						UpdateAccountCommandCode.OutdatedTime => ("🕜 " + string.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
@@ -113,7 +113,7 @@ namespace PasswordManager.Bot.Commands {
 							new InlineKeyboardMarkup(backButton)),
 						_ => throw new InvalidOperationException()
 					};
-				message = await botUIService.SerializeAccount(user, account, false, message);
+				message = await botUiService.SerializeAccount(user, account, false, message);
 				await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
 					message, replyMarkup: replyMarkup);
 				accountUpdatingService.StartUpdatingRequest(user.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
@@ -143,7 +143,7 @@ namespace PasswordManager.Bot.Commands {
 					accountUpdatingStage, accountId);
 				await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
 			} catch (ValidationException exception) {
-				await botUIService.SendValidationError(user, exception);
+				await botUiService.SendValidationError(user, exception);
 			}
 		}
 
@@ -167,7 +167,7 @@ namespace PasswordManager.Bot.Commands {
 			switch (updateAccountCommandCode) {
 				case UpdateAccountCommandCode.SelectUpdateType:
 					if (account != null) {
-						await botUIService.ShowAccountUpdatingMenuAsync(user, account, callbackQuery.Message.MessageId,
+						await botUiService.ShowAccountUpdatingMenuAsync(user, account, callbackQuery.Message.MessageId,
 							Localization.GetMessage("ChooseWhatUpdate", user.Lang));
 					}
 					break;
@@ -213,7 +213,7 @@ namespace PasswordManager.Bot.Commands {
 			try {
 				(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(user.Id, message.Text);
 			} catch (ValidationException exception) {
-				await botUIService.SendValidationError(user, exception);
+				await botUiService.SendValidationError(user, exception);
 			} catch (InvalidOperationException) {
 				accountUpdatingService.FinishUpdatingRequest(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
@@ -237,7 +237,7 @@ namespace PasswordManager.Bot.Commands {
 					(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(
 						user.Id, message.Text, AccountUpdatingStage.EncryptPassword);
 				} catch (ValidationException exception) {
-					await botUIService.SendValidationError(user, exception);
+					await botUiService.SendValidationError(user, exception);
 				} catch (InvalidOperationException) {
 					await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				}
