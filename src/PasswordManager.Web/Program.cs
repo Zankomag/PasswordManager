@@ -6,6 +6,7 @@ using Serilog;
 namespace PasswordManager.Web {
 	public class Program {
 		public static void Main(string[] args) {
+			//TODO use appsettings.ENV.json too
 			var config = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
 				.Build();
