@@ -16,10 +16,10 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <summary>
 		/// Indicates whether bot is accessible to everyone 
 		/// 
-		/// <para>If bot is public, he will registed every new user. 
+		/// <para>If bot is public, he will register every new user. 
 		/// If bot is private new users registration should be restricted.
 		/// For example, new users can be registered manually by admins
-		/// or new user must enter registration code he recieved somewhere else.</para>
+		/// or new user must enter registration code he received somewhere else.</para>
 		/// 
 		/// <para>If bot is considered as private, it's up to you to decide how he will 
 		/// handle requests from unregistered users. He can just ignore them pretending he is dead, 

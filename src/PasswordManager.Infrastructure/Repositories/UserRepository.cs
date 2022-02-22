@@ -27,7 +27,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 			//	.ToListAsync();
 			//
 			//TODO: 
-			//If this call doesn't work or is not optimazed 
+			//If this call doesn't work or is not optimized 
 			//then try call above
 			//If it is too not optimized
 			//then use Tuple

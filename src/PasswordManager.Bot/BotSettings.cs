@@ -7,6 +7,7 @@ namespace PasswordManager.Bot {
 	public class BotSettings {
 		public string Token { get; set; }
 		public int[] AdminIds { get; set; }
+		//TODO WARNING: this setting would be better set manually each time it's required, because on serverless setWebhook can be called per each request
 		/// <summary>
 		/// Domain which Telegram will send webhook requests to
 		/// </summary>

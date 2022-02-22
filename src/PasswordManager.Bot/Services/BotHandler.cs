@@ -54,6 +54,7 @@ namespace PasswordManager.Bot.Services {
 			=> await botUserService.GetUser(update);
 
 
+		//TODO for all message handlers: when logging exception include user id too in logger
 		protected virtual async Task HandleMessageAsync(Message message, BotUser user) {
 			if(message == null) {
 				ArgumentNullException exception = new ArgumentNullException(nameof(message));

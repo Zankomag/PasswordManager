@@ -43,7 +43,7 @@ namespace PasswordManager.Bot.Commands {
 			string callbackData = null;
 			if (message.ReplyToMessage.ReplyMarkup != null
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
-					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
+					.Any(x => x.Any(y => !String.IsNullOrEmpty(y.CallbackData)
 						&& (callbackData = y.CallbackData)[0] == (char)CallbackQueryCommandCode.EncryptPassword))) {
 
 				long passwordAccountId;

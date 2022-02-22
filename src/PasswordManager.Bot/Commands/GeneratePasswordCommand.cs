@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -12,6 +13,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
+using PasswordManager.Bot.Services;
 using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Commands {
@@ -49,8 +51,8 @@ namespace PasswordManager.Bot.Commands {
 
 
 			var inlineKeyBoard = new InlineKeyboardMarkup(
-				new InlineKeyboardButton[][] {
-					new InlineKeyboardButton[] {
+				new[] {
+					new[] {
 						InlineKeyboardButton.WithCallbackData("🌋 " + Localization.GetMessage("TryAgain", user.Lang),
 							callbackQuery.Data),
 						InlineKeyboardButton.WithCallbackData("✅ " + Localization.GetMessage("Accept", user.Lang),
@@ -59,7 +61,7 @@ namespace PasswordManager.Bot.Commands {
 									=> AddAccountCommandCode.AcceptPassword.ToStringCode(),
 								(char)GeneratePasswordCommandCode.Updating
 									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode() + callbackQuery.Data[2..],
-								_ => throw new InvalidOperationException("Unknown password accepting command")
+								_ => throw new InvalidEnumArgumentException($"Unknown password accepting command: {callbackQuery.Data[1]}")
 							})
 					}
 				});

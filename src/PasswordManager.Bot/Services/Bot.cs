@@ -113,7 +113,9 @@ namespace PasswordManager.Bot.Services {
 			} catch {
 				try {
 					await Client.EditMessageTextAsync(chatId, messageId, "🗑");
-				} catch { }
+				} catch {
+					// ignored
+				}
 			}
 		}
 
