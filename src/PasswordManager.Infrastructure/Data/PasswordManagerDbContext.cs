@@ -5,13 +5,14 @@ using System;
 namespace PasswordManager.Infrastructure.Data {
 	public class PasswordManagerDbContext : DbContext {
 
-		public PasswordManagerDbContext() : base() { }
+		public PasswordManagerDbContext() { }
 
 		public PasswordManagerDbContext(DbContextOptions options) : base(options) { }
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Account> Accounts { get; set; }
 
+		//todo remove this
 		//protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 		//	optionsBuilder.UseSqlite("Data Source=DB\\pwd.db");
 		//}
@@ -24,6 +25,9 @@ namespace PasswordManager.Infrastructure.Data {
 			//Set default value for 6 month
 			modelBuilder.Entity<User>().Property(u => u.OutdatedTime)
 				.HasDefaultValue(new TimeSpan(days: 365, 0, 0, 0));
+
+			modelBuilder.Entity<User>()
+				.Property(e => e.GenPattern).HasColumnName("GenPattern");
 		}
 	}
 }

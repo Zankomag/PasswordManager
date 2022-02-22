@@ -14,6 +14,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 		private IAccountRepository accountRepository;
 		public IAccountRepository AccountRepository {
 			get {
+				//todo test solution that resharper suggests
 				if (accountRepository == null)
 					accountRepository = new AccountRepository(context);
 				return accountRepository;

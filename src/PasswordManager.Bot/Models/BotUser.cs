@@ -2,7 +2,12 @@
 
 namespace PasswordManager.Bot.Models {
 	public class BotUser {
-		public int Id { get; set; }
+		
+		/// <summary>
+		/// This is the same Id as <see cref="User"/>.<see cref="User.Id"/>
+		/// </summary>
+		public int Id { get; init; }
+		
 		/// <summary>
 		/// Language code
 		/// </summary>

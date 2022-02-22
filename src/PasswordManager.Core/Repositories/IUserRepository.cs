@@ -15,11 +15,19 @@ namespace PasswordManager.Core.Repositories {
 		Task<IList<User>> GetAllBasicInfoAsync();
 
 		void UpdateAction(User user);
+		
 		void UpdateLanguage(User user);
-		void UpdatePasswordPattern(User user);
+		
+		void UpdatePasswordGeneratorPattern(User user);
+		
 		Task<string> GetKeyHint(int userId);
+
+		Task<string> GetPasswordGeneratorPattern(int userId);
+		
 		void UpdateKeyHint(User user);
+		
 		Task<User> GetUserOutdatedTimeAsync(int userId);
+		
 
 	}
 

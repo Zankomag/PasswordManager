@@ -48,7 +48,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 				throw new ArgumentException("user.Lang cannot be null", nameof(user));
 			context.Entry(user).Property(x => x.Lang).IsModified = true;
 		}
-		public void UpdatePasswordPattern(User user) {
+		public void UpdatePasswordGeneratorPattern(User user) {
 			if (user == null)
 				throw new ArgumentNullException(nameof(user));
 			if (user.GenPattern == null)
@@ -59,6 +59,11 @@ namespace PasswordManager.Infrastructure.Repositories {
 		public async Task<string> GetKeyHint(int userId)
 			=> await GetUser(userId)
 				.Select(x => x.KeyHint)
+				.FirstOrDefaultAsync();
+		
+		public async Task<string> GetPasswordGeneratorPattern(int userId)
+			=> await GetUser(userId)
+				.Select(x => x.GenPattern)
 				.FirstOrDefaultAsync();
 
 		public void UpdateKeyHint(User user) {

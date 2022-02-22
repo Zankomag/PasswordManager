@@ -48,16 +48,24 @@ namespace PasswordManager.Application.Services {
 		public async Task<string> GetKeyHint(int userId)
 			=> await workUnit.UserRepository.GetKeyHint(userId);
 
+		public async Task<string> GetPasswordGeneratorPattern(int userId) 
+			=> await workUnit.UserRepository.GetPasswordGeneratorPattern(userId);
+
 		public async Task UpdateLanguage(int userId, string langCode) {
-			if (langCode == null)
-				throw new ArgumentNullException(nameof(langCode));
+			if (langCode == null) throw new ArgumentNullException(nameof(langCode));
 			workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Lang = langCode });
 			await workUnit.SaveAsync();
 		}
 
 		public async Task UpdateKeyHint(int userId, string keyHint) {
-			//keyHint can be null so we dont check it for null equality
+			// keyHint can be null so we dont check it for null equality
 			workUnit.UserRepository.UpdateKeyHint(new User { Id = userId, KeyHint = keyHint });
+			await workUnit.SaveAsync();
+		}
+
+		public async Task UpdatePasswordGeneratorPattern(int userId, string passwordGeneratorPattern) {
+			if(passwordGeneratorPattern is null) throw new ArgumentNullException(nameof(passwordGeneratorPattern));
+			workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, GenPattern = passwordGeneratorPattern });
 			await workUnit.SaveAsync();
 		}
 
@@ -69,7 +77,9 @@ namespace PasswordManager.Application.Services {
 						return true;
 					}
 				}
-			} catch { }
+			} catch {
+				// TODO log exception
+			}
 			return false;
 		}
 
