@@ -14,14 +14,17 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Commands {
 
 	public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
 		private readonly IUserService userService;
+		private readonly IBotUi botUi;
 
-		public SetUpPasswordGeneratorCommand(IBot bot, IUserService userService) : base(bot) {
+		public SetUpPasswordGeneratorCommand(IBot bot, IUserService userService, IBotUi botUi) : base(bot) {
 			this.userService = userService;
+			this.botUi = botUi;
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
@@ -59,43 +62,14 @@ namespace PasswordManager.Bot.Commands {
 			await Bot.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.Markdown);
 		}
 
-		string GetMessageText(ref User user, string messageText) {
+		private async Task<string> GetMessageText(User user) {
 			string password = null;
 			try {
-				string oldPassword = messageText.Split('\n').Last();
 				password = user.GenPattern.GeneratePasswordByPattern();
-				//TODO:
-				//WTF????? DELETE ALL THIS SHIT
-				if (oldPassword == password)
-				{
-					//TODO:
-					//WTF?????
-					int attempts = 4;
-					while (attempts > 0)
-					{
-						attempts--;
-						password = user.GenPattern.GeneratePasswordByPattern();
-						
-						if (oldPassword != password)
-							break;
-					}
-					//TODO:
-					//WTF?????
-					if (oldPassword == password)
-					{
-						.SetUserPasswordPattern(user, Password.DefaultPasswordGeneratorPattern);
-						password = user.GenPattern.GeneratePasswordByPattern();
-						if(oldPassword != password)
-						{
-							password = DateTime.UtcNow.Ticks.ToString();
-						}
-					}
-				}
 			}
 			catch (ArgumentException) {
-				.SetUserPasswordPattern(user);
-				password = Password.GeneratePasswordByPattern(Password.DefaultPasswordGeneratorPattern);
-				user.GenPattern = Password.DefaultPasswordGeneratorPattern;
+				await SetPasswordPatternToDefault(user);
+				password = Password.DefaultPasswordGeneratorPattern.GeneratePasswordByPattern();
 			}
 			return "🛠 " + string.Format(Localization.GetMessage("SetUpPassword", user.Lang),
 				"\n\n`" + password + "`");
@@ -236,6 +210,14 @@ namespace PasswordManager.Bot.Commands {
 
 		}
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) => _AERROR_ throw new NotImplementedException();
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
+			
+		}
+
+		private async Task SetPasswordPatternToDefault(BotUser botUser) {
+			await userService.UpdatePasswordGeneratorPattern(botUser.Id, Password.DefaultPasswordGeneratorPattern);
+			await Bot.Client.SendTextMessageAsync(botUser.Id, Localization.GetMessage("PasswordGeneratorPatternToDefault", botUser.Lang));
+		}
+
 	}
 }

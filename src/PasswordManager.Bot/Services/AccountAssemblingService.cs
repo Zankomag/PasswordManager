@@ -78,6 +78,7 @@ namespace PasswordManager.Bot.Services {
 			return accountAssemblingModel.AccountAssemblingStage;
 		}
 
+		//todo check if validation works, also we need to validate properties one by one on the assembling stage
 		public Account Release(long userId) {
 			if (this.accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel) 
 			    && accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
