@@ -19,10 +19,12 @@ namespace PasswordManager.Application.Encryption {
 		/// </summary>
 		private const int keySize = 256;
 
+		
+		//TODO move to appsettings and change to 100000+ (not exactly 100000)
 		/// <summary>
 		///     This constant determines the number of iterations for the password bytes generation function.
 		/// </summary>
-		private const int derivationIterations = 40000; //TODO change to 100000+ (not exactly 100000)
+		private const int derivationIterations = 40000;
 
 		/// <summary>
 		///     Returns AES encrypted string

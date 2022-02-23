@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services.Abstractions {
-	public interface IBotUIService {
+	public interface IBotUIService { //todo rename to BotUi
 		/// <summary>
 		/// Shows full account data with buttons
 		/// </summary>
@@ -29,13 +29,17 @@ namespace PasswordManager.Bot.Services.Abstractions {
 			GeneratePasswordCommandCode generatePasswordCommandCode,
 			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
 			long? accountId = null);
+
 		/// <summary>
 		/// Shows account data with buttons of account updating menu
 		/// </summary>
+		/// <param name="messageToEditId"></param>
 		/// <param name="extraMessage">An Extra message to show with account data</param>
 		/// <returns></returns>
 		Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
 			int messageToEditId, string extraMessage);
 		Task SendValidationError(BotUser user, ValidationException validationException);
+		string GetPasswordMessage(string password);
+
 	}
 }

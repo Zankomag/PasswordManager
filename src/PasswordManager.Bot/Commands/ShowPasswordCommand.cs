@@ -20,16 +20,18 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountService accountService;
 		private readonly IPasswordDecryptionService passwordDecryptionService;
 		private readonly IUserService userService;
+		private readonly IBotUIService botUi;
 
 		public ShowPasswordCommand(IBot bot,
 			IAccountService accountService,
 			IPasswordDecryptionService passwordDecryptionService,
-			IUserService userService)
+			IUserService userService, IBotUIService botUi)
 			: base(bot) {
 
 			this.accountService = accountService;
 			this.passwordDecryptionService = passwordDecryptionService;
 			this.userService = userService;
+			this.botUi = botUi;
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
@@ -47,7 +49,7 @@ namespace PasswordManager.Bot.Commands {
 			if (account != null) {
 				if (!account.Encrypted) {
 					await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
-						GetPasswordMessage(account.Password),
+						botUi.GetPasswordMessage(account.Password),
 						replyMarkup: GetPasswordKeyboard(account, user),
 						parseMode: ParseMode.MarkdownV2);
 				} else {
@@ -123,12 +125,6 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
-		private string GetPasswordMessage(string password) 
-			=> new StringBuilder('`')
-			.Append(password.EscapeCodeBlockMarkdownV2Chars())
-			.Append('`')
-			.ToString();
-
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
 			Account account = passwordDecryptionService.GetAccount(user.Id);
 			if (account != null) {
@@ -143,7 +139,7 @@ namespace PasswordManager.Bot.Commands {
 				}
 				passwordDecryptionService.FinishDecryptionRequest(user.Id);
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await Bot.Client.SendTextMessageAsync(user.Id, GetPasswordMessage(decryptedPassword),
+				await Bot.Client.SendTextMessageAsync(user.Id, botUi.GetPasswordMessage(decryptedPassword),
 					replyMarkup: GetPasswordKeyboard(account, user),
 					parseMode: ParseMode.MarkdownV2);
 			} else {

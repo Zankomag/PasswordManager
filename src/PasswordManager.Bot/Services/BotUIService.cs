@@ -186,6 +186,12 @@ namespace PasswordManager.Bot.Services {
 			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
 		}
 
+		public string GetPasswordMessage(string password)
+			=> new StringBuilder("`")
+				.Append(password.EscapeCodeBlockMarkdownV2Chars())
+				.Append('`')
+				.ToString();
+
 		//new InlineKeyboardButton[] {
 		//	InlineKeyboardButton.WithCallbackData(
 		//		"🗑 " + Localization.GetMessage("DeleteLink", botUser.Lang),

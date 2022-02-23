@@ -20,11 +20,13 @@ namespace PasswordManager.Bot.Commands {
 	public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 		private readonly IUserService userService;
+		private readonly IBotUIService botUi;
 
-		public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService) : base(bot) {
+		public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService, IBotUIService botUi) : base(bot) {
 
 			this.accountService = accountService;
 			this.userService = userService;
+			this.botUi = botUi;
 		}
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			string password;
@@ -45,7 +47,7 @@ namespace PasswordManager.Bot.Commands {
 
 			password = password.Trim();
 
-
+			//todo move to ui service
 			var inlineKeyBoard = new InlineKeyboardMarkup(
 				new[] {
 					new[] {
@@ -56,18 +58,20 @@ namespace PasswordManager.Bot.Commands {
 								(char)GeneratePasswordCommandCode.Assembling
 									=> AddAccountCommandCode.AcceptPassword.ToStringCode(),
 								(char)GeneratePasswordCommandCode.Updating
-									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode() + callbackQuery.Data[2..],
+									=> UpdateAccountCommandCode.AcceptPassword.ToStringCode(callbackQuery.Data[2..]),
 								_ => throw new InvalidEnumArgumentException($"Unknown password accepting command: {callbackQuery.Data[1]}")
 							})
 					}
 				});
 
-			await BotHandler.Bot.EditMessageTextAsync(
+			string passwordMessage = botUi.GetPasswordMessage(password);
+			
+			await Bot.Client.EditMessageTextAsync(
 				callbackQuery.From.Id,
 				callbackQuery.Message.MessageId,
-				"`" + password + "`",
+				passwordMessage,
 				replyMarkup: inlineKeyBoard,
-				parseMode: ParseMode.Markdown);
+				parseMode: ParseMode.MarkdownV2);
 			
 		}
 

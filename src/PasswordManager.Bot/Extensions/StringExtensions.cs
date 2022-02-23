@@ -78,8 +78,15 @@ namespace PasswordManager.Bot.Extensions {
 		///<summary></summary>
 		/// <param name="updateAccountCommandCode"></param>
 		/// <param name="accountId">Id of account to update</param>
-		/// <returns><see cref="CallbackQueryCommandCode.UpdateAccount"/> + updateAccountCommandCode</returns>
+		/// <returns><see cref="CallbackQueryCommandCode.UpdateAccount"/> + updateAccountCommandCode + accountId</returns>
 		public static string ToStringCode(this UpdateAccountCommandCode updateAccountCommandCode, long accountId)
+			=> GetStringCode(CallbackQueryCommandCode.UpdateAccount, (char)updateAccountCommandCode, accountId);
+
+		///<summary></summary>
+		/// <param name="updateAccountCommandCode"></param>
+		/// <param name="accountId">Id of account to update</param>
+		/// <returns><see cref="CallbackQueryCommandCode.UpdateAccount"/> + updateAccountCommandCode + accountId</returns>
+		public static string ToStringCode(this UpdateAccountCommandCode updateAccountCommandCode, string accountId)
 			=> GetStringCode(CallbackQueryCommandCode.UpdateAccount, (char)updateAccountCommandCode, accountId);
 
 		///<summary></summary>
