@@ -21,7 +21,7 @@ namespace PasswordManager.Application.Services {
 			var user = new User {
 				Id = userId,
 				Lang = langCode,
-				GenPattern = Password.DefaultPasswordGeneratorPattern,
+				PasswordGeneratorPattern = Password.DefaultPasswordGeneratorPattern,
 				Action = UserAction.Search
 			};
 			await workUnit.UserRepository.AddAsync(user);
@@ -65,7 +65,7 @@ namespace PasswordManager.Application.Services {
 
 		public async Task UpdatePasswordGeneratorPattern(long userId, string passwordGeneratorPattern) {
 			if(passwordGeneratorPattern is null) throw new ArgumentNullException(nameof(passwordGeneratorPattern));
-			workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, GenPattern = passwordGeneratorPattern });
+			workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, PasswordGeneratorPattern = passwordGeneratorPattern });
 			await workUnit.SaveAsync();
 		}
 

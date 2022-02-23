@@ -75,7 +75,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 			if (account == null)
 				throw new ArgumentNullException(nameof(account));
 			if (account.Password == null)
-				throw new ArgumentException("user.GenPattern cannot be null", nameof(account));
+				throw new ArgumentException("user.PasswordGeneratorPattern cannot be null", nameof(account));
 			context.Entry(account).Property(x => x.Password).IsModified = true;
 			context.Entry(account).Property(x => x.Encrypted).IsModified = true;
 		}

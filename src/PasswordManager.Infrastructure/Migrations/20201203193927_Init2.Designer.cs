@@ -64,7 +64,7 @@ namespace PasswordManager.Infrastructure.Migrations
                     b.Property<int>("Action")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("GenPattern")
+                    b.Property<string>("PasswordGeneratorPattern")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -35,12 +35,11 @@ namespace PasswordManager.Core.Entities {
 		///     Language code
 		/// </summary>
 		[Required] public string Lang { get; set; }
-
-		// TODO rename property to PasswordGeneratorPattern, but make mapping in entity framework 
+		
 		/// <summary>
 		///     Generator pattern
 		/// </summary>
-		[Required] public string GenPattern { get; set; }
+		[Required] public string PasswordGeneratorPattern { get; set; }
 
 		[Required] public UserAction Action { get; set; }
 

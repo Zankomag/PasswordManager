@@ -27,7 +27,7 @@ namespace PasswordManager.Infrastructure.Data {
 				.HasDefaultValue(new TimeSpan(days: 365, 0, 0, 0));
 
 			modelBuilder.Entity<User>()
-				.Property(e => e.GenPattern).HasColumnName("GenPattern");
+				.Property(e => e.PasswordGeneratorPattern).HasColumnName("PasswordGeneratorPattern");
 		}
 	}
 }

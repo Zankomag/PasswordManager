@@ -51,9 +51,9 @@ namespace PasswordManager.Infrastructure.Repositories {
 		public void UpdatePasswordGeneratorPattern(User user) {
 			if (user == null)
 				throw new ArgumentNullException(nameof(user));
-			if (user.GenPattern == null)
-				throw new ArgumentException("user.GenPattern cannot be null", nameof(user));
-			context.Entry(user).Property(x => x.GenPattern).IsModified = true;
+			if (user.PasswordGeneratorPattern == null)
+				throw new ArgumentException("user.PasswordGeneratorPattern cannot be null", nameof(user));
+			context.Entry(user).Property(x => x.PasswordGeneratorPattern).IsModified = true;
 		}
 
 		public async Task<string> GetKeyHint(long userId)
@@ -63,7 +63,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 		
 		public async Task<string> GetPasswordGeneratorPattern(long userId)
 			=> await GetUser(userId)
-				.Select(x => x.GenPattern)
+				.Select(x => x.PasswordGeneratorPattern)
 				.FirstOrDefaultAsync();
 
 		public void UpdateKeyHint(User user) {

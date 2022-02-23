@@ -65,7 +65,7 @@ namespace PasswordManager.Bot.Commands {
 		private async Task<string> GetMessageText(User user) {
 			string password = null;
 			try {
-				password = user.GenPattern.GeneratePasswordByPattern();
+				password = user.PasswordGeneratorPattern.GeneratePasswordByPattern();
 			}
 			catch (ArgumentException) {
 				await SetPasswordPatternToDefault(user);
@@ -76,14 +76,14 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		InlineKeyboardMarkup GetGeneratorSettingsKeyboard(User user) {
-			if (user.GenPattern == null || user.GenPattern.Length < 7)
+			if (user.PasswordGeneratorPattern == null || user.PasswordGeneratorPattern.Length < 7)
 				throw new ArgumentException("Generator pattern must contain all  6 params and length");
-			bool containsLowerChars = user.GenPattern[0] != '0',
-				containsUpperChars = user.GenPattern[1] != '0',
-				containsDigits = user.GenPattern[2] != '0',
-				containsSpecialChars = user.GenPattern[3] != '0',
-				firstCharIsLetter = user.GenPattern[4] != '0',
-				containsSpace = user.GenPattern[5] != '0';
+			bool containsLowerChars = user.PasswordGeneratorPattern[0] != '0',
+				containsUpperChars = user.PasswordGeneratorPattern[1] != '0',
+				containsDigits = user.PasswordGeneratorPattern[2] != '0',
+				containsSpecialChars = user.PasswordGeneratorPattern[3] != '0',
+				firstCharIsLetter = user.PasswordGeneratorPattern[4] != '0',
+				containsSpace = user.PasswordGeneratorPattern[5] != '0';
 
 
 			return new InlineKeyboardMarkup(
@@ -135,7 +135,7 @@ namespace PasswordManager.Bot.Commands {
 						),
 						InlineKeyboardButton.WithCallbackData(
 							"⛓️ " +
-							Localization.GetMessage("Length", user.Lang) + " " + user.GenPattern.Substring(6),
+							Localization.GetMessage("Length", user.Lang) + " " + user.PasswordGeneratorPattern.Substring(6),
 							SetUpPasswordGeneratorCommandCode.Length.ToStringCode()
 						)
 					},
