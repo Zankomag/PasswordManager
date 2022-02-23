@@ -191,6 +191,81 @@ namespace PasswordManager.Bot.Services {
 				.Append(password.EscapeCodeBlockMarkdownV2Chars())
 				.Append('`')
 				.ToString();
+		
+		public InlineKeyboardMarkup GetPasswordGeneratorSettingsKeyboard(BotUser botUser, string passwordGeneratorPattern) {
+			//todo get all this data from PasswordGenerator library in future :)
+			if (passwordGeneratorPattern == null || passwordGeneratorPattern.Length < 7)
+				throw new ArgumentException("Generator pattern must contain all  6 params and length");
+			bool containsLowerChars = passwordGeneratorPattern[0] != '0',
+				containsUpperChars = passwordGeneratorPattern[1] != '0',
+				containsDigits = passwordGeneratorPattern[2] != '0',
+				containsSpecialChars = passwordGeneratorPattern[3] != '0',
+				firstCharIsLetter = passwordGeneratorPattern[4] != '0',
+				containsSpace = passwordGeneratorPattern[5] != '0';
+
+
+			return new InlineKeyboardMarkup(
+				new[] {
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							containsLowerChars.ToEmojiString(true) +
+							Localization.GetMessage("LowerChars", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.ContainsLowerChars.ToStringCode() +
+							containsLowerChars.ToReverseZeroOneString()
+						)
+					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							containsUpperChars.ToEmojiString(true) +
+							Localization.GetMessage("UpperChars", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.ContainsUpperChars.ToStringCode() +
+							containsUpperChars.ToReverseZeroOneString()
+						)
+					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							containsDigits.ToEmojiString(true) +
+							Localization.GetMessage("Digits", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.ContainsDigits.ToStringCode() +
+							containsDigits.ToReverseZeroOneString()
+						),
+						InlineKeyboardButton.WithCallbackData(
+							containsSpace.ToEmojiString(true) +
+							Localization.GetMessage("Spaces", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.ContainsSpace.ToStringCode() +
+							containsSpace.ToReverseZeroOneString()
+						)
+					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							firstCharIsLetter.ToEmojiString(true) +
+							Localization.GetMessage("FirstChar", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.FirstCharIsLetter.ToStringCode() +
+							firstCharIsLetter.ToReverseZeroOneString()
+						)
+					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							containsSpecialChars.ToEmojiString(true) +
+							Localization.GetMessage("SpecialChars", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.ContainsSpecialChars.ToStringCode() +
+							containsSpecialChars.ToReverseZeroOneString()
+						),
+						InlineKeyboardButton.WithCallbackData(
+							"⛓️ " +
+							Localization.GetMessage("Length", botUser.Lang) + " " + botUser.PasswordGeneratorPattern.Substring(6),
+							SetUpPasswordGeneratorCommandCode.Length.ToStringCode()
+						)
+					},
+					new[] {
+						InlineKeyboardButton.WithCallbackData(
+							"🌋 " + Localization.GetMessage("Generate", botUser.Lang),
+							SetUpPasswordGeneratorCommandCode.Generate.ToStringCode()
+						)
+					}
+				}
+			);
+		}
 
 		//new InlineKeyboardButton[] {
 		//	InlineKeyboardButton.WithCallbackData(

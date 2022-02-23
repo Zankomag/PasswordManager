@@ -44,6 +44,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 			int messageToEditId, string extraMessage);
 		Task SendValidationError(BotUser user, ValidationException validationException);
 		string GetPasswordMessage(string password);
+		InlineKeyboardMarkup GetPasswordGeneratorSettingsKeyboard(BotUser botUser, string passwordGeneratorPattern);
 
 	}
 }
