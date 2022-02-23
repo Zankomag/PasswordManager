@@ -20,12 +20,12 @@ namespace PasswordManager.Bot.Commands {
 		private readonly IAccountService accountService;
 		private readonly IPasswordDecryptionService passwordDecryptionService;
 		private readonly IUserService userService;
-		private readonly IBotUIService botUi;
+		private readonly IBotUi botUi;
 
 		public ShowPasswordCommand(IBot bot,
 			IAccountService accountService,
 			IPasswordDecryptionService passwordDecryptionService,
-			IUserService userService, IBotUIService botUi)
+			IUserService userService, IBotUi botUi)
 			: base(bot) {
 
 			this.accountService = accountService;
@@ -62,7 +62,7 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//TODO: Move to BotUIService
+		//TODO: Move to BotUi
 		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser user,
 			bool includeShowHintButton) {
 			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>>();
@@ -87,7 +87,7 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
-		//TODO: Move to BotUIService
+		//TODO: Move to BotUi
 		private InlineKeyboardMarkup GetPasswordKeyboard(Account account, BotUser user) {
 			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>> {
 				new List<InlineKeyboardButton> {

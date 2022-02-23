@@ -58,7 +58,7 @@ namespace PasswordManager.Web {
 			services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 
 			services.AddScoped<IBotHandler, BotHandler>();
-			services.AddScoped<IBotUIService, BotUIService>();
+			services.AddScoped<IBotUi, BotUi>();
 			services.AddScoped<IBotUserService, BotUserService>();
 			
 

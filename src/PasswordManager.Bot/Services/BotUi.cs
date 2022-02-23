@@ -14,11 +14,11 @@ using PasswordManager.Application.Services.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
 namespace PasswordManager.Bot.Services {
-	public class BotUIService : IBotUIService {
+	public class BotUi : IBotUi {
 		private readonly IBot bot;
 		private readonly IUserService userService;
 
-		public BotUIService(IBot bot, IUserService userService) {
+		public BotUi(IBot bot, IUserService userService) {
 			this.bot = bot;
 			this.userService = userService;
 		}

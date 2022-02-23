@@ -20,9 +20,9 @@ namespace PasswordManager.Bot.Commands {
 	public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
 		private readonly IUserService userService;
-		private readonly IBotUIService botUi;
+		private readonly IBotUi botUi;
 
-		public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService, IBotUIService botUi) : base(bot) {
+		public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService, IBotUi botUi) : base(bot) {
 
 			this.accountService = accountService;
 			this.userService = userService;

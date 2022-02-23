@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services.Abstractions {
-	public interface IBotUIService { //todo rename to BotUi
+	public interface IBotUi {
 		/// <summary>
 		/// Shows full account data with buttons
 		/// </summary>
+		/// <param name="account"></param>
 		/// <param name="messageToEditId">If specified, message will be edited instead of sending new</param>
 		/// <param name="extraMessage">An Extra message to show with account data</param>
 		/// <param name="backButtonCommandCode">If specified, the Back button with this command code
 		/// will be attached to the end of button list</param>
+		/// <param name="user"></param>
 		/// <returns></returns>
 		Task ShowAccount(BotUser user,
 			Account account,
@@ -33,6 +35,8 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <summary>
 		/// Shows account data with buttons of account updating menu
 		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="account"></param>
 		/// <param name="messageToEditId"></param>
 		/// <param name="extraMessage">An Extra message to show with account data</param>
 		/// <returns></returns>
