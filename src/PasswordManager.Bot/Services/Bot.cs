@@ -21,7 +21,8 @@ namespace PasswordManager.Bot.Services {
 
 		//TODO:
 		//Add feature to edit admins at runtime
-		private int[] admins;
+		//todo get rid of such implementation, use from other projects
+		private long[] admins;
 
 		private readonly string token;
 
@@ -79,7 +80,7 @@ namespace PasswordManager.Bot.Services {
 			await SendMessageToAllAdmins(message);
 		}
 
-		private async Task<bool> SendMessageToAdmin(int adminId, string message, ParseMode parseMode) {
+		private async Task<bool> SendMessageToAdmin(long adminId, string message, ParseMode parseMode) {
 			try {
 				await Client.SendTextMessageAsync(adminId, message, parseMode);
 			} catch {
@@ -119,7 +120,7 @@ namespace PasswordManager.Bot.Services {
 			}
 		}
 
-		public bool IsAdmin(int botUserId) => admins.Contains(botUserId);
+		public bool IsAdmin(long botUserId) => admins.Contains(botUserId);
 
 		public bool IsAdmin(BotUser botUser) => IsAdmin(botUser.Id);
 

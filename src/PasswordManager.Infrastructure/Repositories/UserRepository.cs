@@ -7,12 +7,12 @@ using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
 
 namespace PasswordManager.Infrastructure.Repositories {
-	public class UserRepository : Repository<User>, IUserRepository {
+	public class UserRepository : Repository<User, long>, IUserRepository {
 		public UserRepository(DbContext context) : base(context) { }
 
-		private IQueryable<User> GetUser(int id) => dbSet.Where(x => x.Id == id);
+		private IQueryable<User> GetUser(long id) => dbSet.Where(x => x.Id == id);
 
-		public async Task<User> GetUserActionAsync(int userId)
+		public async Task<User> GetUserActionAsync(long userId)
 			=> await GetUser(userId)
 				.Select(x => new User { 
 					Id = userId,
@@ -56,12 +56,12 @@ namespace PasswordManager.Infrastructure.Repositories {
 			context.Entry(user).Property(x => x.GenPattern).IsModified = true;
 		}
 
-		public async Task<string> GetKeyHint(int userId)
+		public async Task<string> GetKeyHint(long userId)
 			=> await GetUser(userId)
 				.Select(x => x.KeyHint)
 				.FirstOrDefaultAsync();
 		
-		public async Task<string> GetPasswordGeneratorPattern(int userId)
+		public async Task<string> GetPasswordGeneratorPattern(long userId)
 			=> await GetUser(userId)
 				.Select(x => x.GenPattern)
 				.FirstOrDefaultAsync();
@@ -73,7 +73,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 			context.Entry(user).Property(x => x.KeyHint).IsModified = true;
 		}
 
-		public async Task<User> GetUserOutdatedTimeAsync(int userId)
+		public async Task<User> GetUserOutdatedTimeAsync(long userId)
 			=> await GetUser(userId)
 				.Select(x => new User {
 					Id = userId,

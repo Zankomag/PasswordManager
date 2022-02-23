@@ -7,19 +7,19 @@ using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
 
 namespace PasswordManager.Infrastructure.Repositories {
-	public class AccountRepository : Repository<Account>, IAccountRepository {
+	public class AccountRepository : Repository<Account, long>, IAccountRepository {
 		public AccountRepository(DbContext context) : base(context) { }
 
-		private IQueryable<Account> GetByUser(int userId) => dbSet.Where(x => x.UserId == userId);
+		private IQueryable<Account> GetByUser(long userId) => dbSet.Where(x => x.UserId == userId);
 
-		public async Task<int> GetCountAsync(int userId, string accountName = null) {
+		public async Task<int> GetCountAsync(long userId, string accountName = null) {
 			var query = GetByUser(userId);
 			if (accountName != null)
 				query = query.Where(x => x.AccountName.Contains(accountName));
 			return await query.AsNoTracking().CountAsync();
 		}
 
-		public async Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null) {
+		public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null) {
 			var query = GetByUser(userId);
 			if (accountName != null)
 				query = query.Where(x => x.AccountName.Contains(accountName));
@@ -35,7 +35,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 				.Take(pageSize)
 				.ToListAsync();
 		}
-		public async Task<Account> GetFullAsync(int userId, long accountId) {
+		public async Task<Account> GetFullAsync(long userId, long accountId) {
 			return await GetByUser(userId)
 				.Where(x => x.Id == accountId)
 				.Select(a => new Account() {
@@ -52,7 +52,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 				.FirstOrDefaultAsync();
 		}
 
-		public async Task<Account> GetPasswordAsync(int userId, long accountId) 
+		public async Task<Account> GetPasswordAsync(long userId, long accountId) 
 			=> await GetByUser(userId)
 				.Where(x => x.Id == accountId)
 				.Select(a => new Account() {
@@ -64,7 +64,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 				.FirstOrDefaultAsync();
 		
 
-		public async Task<bool> DeleteAccountAsync(int userId, long accountId) {
+		public async Task<bool> DeleteAccountAsync(long userId, long accountId) {
 			var account = await dbSet
 				.Where(x => x.Id == accountId && x.UserId == userId)
 				.FirstOrDefaultAsync();

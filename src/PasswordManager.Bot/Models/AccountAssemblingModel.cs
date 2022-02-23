@@ -9,7 +9,7 @@ namespace PasswordManager.Bot.Models {
 	public class AccountAssemblingModel {
 		public long Id { get; set; }
 
-		public int UserId { get; set; }
+		public long UserId { get; set; }
 
 		private string accountName;
 		public string AccountName { get => accountName;

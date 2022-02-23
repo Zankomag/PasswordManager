@@ -36,7 +36,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// </summary>
 		public Task TryDeleteMessageAsync(ChatId chatId, int messageId);
 
-		bool IsAdmin(int botUserId);
+		bool IsAdmin(long botUserId);
 		bool IsAdmin(BotUser botUser);
 	}
 }

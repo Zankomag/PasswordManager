@@ -17,7 +17,7 @@ namespace PasswordManager.Application.Services {
 			this.applicationService = applicationService;
 		}
 
-		public async Task<User> AddUserAsync(int userId, string langCode) {
+		public async Task<User> AddUserAsync(long userId, string langCode) {
 			var user = new User {
 				Id = userId,
 				Lang = langCode,
@@ -28,7 +28,7 @@ namespace PasswordManager.Application.Services {
 			await workUnit.SaveAsync();
 			return user;
 		}
-		public async Task<User> GetUserActionAsync(int userId) 
+		public async Task<User> GetUserActionAsync(long userId) 
 			=> await workUnit.UserRepository.GetUserActionAsync(userId);
 
 		public async Task<IList<User>> GetAllBasicInfoAsync()
@@ -42,36 +42,36 @@ namespace PasswordManager.Application.Services {
 			await workUnit.SaveAsync();
 		}
 
-		public async Task UpdateActionAsync(int userId, UserAction action) 
+		public async Task UpdateActionAsync(long userId, UserAction action) 
 			=> await UpdateActionAsync(new User { Id = userId, Action = action });
 
-		public async Task<string> GetKeyHint(int userId)
+		public async Task<string> GetKeyHint(long userId)
 			=> await workUnit.UserRepository.GetKeyHint(userId);
 
-		public async Task<string> GetPasswordGeneratorPattern(int userId) 
+		public async Task<string> GetPasswordGeneratorPattern(long userId) 
 			=> await workUnit.UserRepository.GetPasswordGeneratorPattern(userId);
 
-		public async Task UpdateLanguage(int userId, string langCode) {
+		public async Task UpdateLanguage(long userId, string langCode) {
 			if (langCode == null) throw new ArgumentNullException(nameof(langCode));
 			workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Lang = langCode });
 			await workUnit.SaveAsync();
 		}
 
-		public async Task UpdateKeyHint(int userId, string keyHint) {
+		public async Task UpdateKeyHint(long userId, string keyHint) {
 			// keyHint can be null so we dont check it for null equality
 			workUnit.UserRepository.UpdateKeyHint(new User { Id = userId, KeyHint = keyHint });
 			await workUnit.SaveAsync();
 		}
 
-		public async Task UpdatePasswordGeneratorPattern(int userId, string passwordGeneratorPattern) {
+		public async Task UpdatePasswordGeneratorPattern(long userId, string passwordGeneratorPattern) {
 			if(passwordGeneratorPattern is null) throw new ArgumentNullException(nameof(passwordGeneratorPattern));
 			workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, GenPattern = passwordGeneratorPattern });
 			await workUnit.SaveAsync();
 		}
 
-		public async Task<bool> DeleteUser(int userId) {
+		public async Task<bool> DeleteUser(long userId) {
 			try {
-				if (!applicationService.Admins.Contains(userId)) {
+				if (!applicationService.AdminIds.Contains(userId)) {
 					if (workUnit.UserRepository.Delete(new User { Id = userId })) {
 						await workUnit.SaveAsync();
 						return true;
@@ -83,7 +83,7 @@ namespace PasswordManager.Application.Services {
 			return false;
 		}
 
-		public async Task<User> GetUserOutdatedTimeAsync(int userId)
+		public async Task<User> GetUserOutdatedTimeAsync(long userId)
 			=> await workUnit.UserRepository.GetUserOutdatedTimeAsync(userId);
 	}
 }

@@ -4,6 +4,6 @@ namespace PasswordManager.Application.Services.Abstractions {
 		/// <summary>
 		/// List of Admin Ids
 		/// </summary>
-		int[] Admins { get; }
+		long[] AdminIds { get; }
 	}
 }

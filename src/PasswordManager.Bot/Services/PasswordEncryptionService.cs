@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace PasswordManager.Bot.Services {
 	public class PasswordEncryptionService : IPasswordEncryptionService {
-		private readonly Dictionary<int, long> accountIds;
+		private readonly Dictionary<long, long> accountIds;
 
 		public PasswordEncryptionService() {
-			accountIds = new Dictionary<int, long>();
+			accountIds = new Dictionary<long, long>();
 		}
 
-		public void StartEncryptionRequest(int userId, long accountId)
+		public void StartEncryptionRequest(long userId, long accountId)
 			=> accountIds[userId] = accountId;
 
-		public void FinishEncryptionRequest(int userId)
+		public void FinishEncryptionRequest(long userId)
 			=> accountIds.Remove(userId);
 
-		public long? GetAccountId(int userId) {
+		public long? GetAccountId(long userId) {
 			if (accountIds.TryGetValue(userId, out long accountId))
 				return accountId;
 			return null;

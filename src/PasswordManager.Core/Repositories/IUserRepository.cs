@@ -4,11 +4,11 @@ using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Core.Repositories {
 
-	public interface IUserRepository : IRepository<User> {
+	public interface IUserRepository : IRepository<User, long> {
 
 		/// <summary></summary>
 		/// <returns>User with Action and Lang</returns>
-		Task<User> GetUserActionAsync(int userId);
+		Task<User> GetUserActionAsync(long userId);
 
 		/// <summary></summary>
 		/// <returns>List of user Ids and theirs Accounts Count</returns>
@@ -20,13 +20,13 @@ namespace PasswordManager.Core.Repositories {
 		
 		void UpdatePasswordGeneratorPattern(User user);
 		
-		Task<string> GetKeyHint(int userId);
+		Task<string> GetKeyHint(long userId);
 
-		Task<string> GetPasswordGeneratorPattern(int userId);
+		Task<string> GetPasswordGeneratorPattern(long userId);
 		
 		void UpdateKeyHint(User user);
 		
-		Task<User> GetUserOutdatedTimeAsync(int userId);
+		Task<User> GetUserOutdatedTimeAsync(long userId);
 		
 
 	}

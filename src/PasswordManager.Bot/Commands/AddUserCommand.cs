@@ -31,6 +31,7 @@ namespace PasswordManager.Bot.Commands {
 						return;
 					}
 					await Bot.Client.SendTextMessageAsync(user.Id, "New user has been added successfully\n/userlist");
+					return;
 				}
 				await Bot.Client.SendTextMessageAsync(user.Id, "Use /adduser <user id>");
 			}

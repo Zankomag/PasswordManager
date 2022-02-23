@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Options;
 
 namespace PasswordManager.Application.Services {
+	//TODO i thing we need to get rid of this and just use options as in other pfojects
 	public class ApplicationService : IApplicationService {
-		public int[] Admins { get; }
+		public long[] AdminIds { get; }
 
 		public ApplicationService(IOptions<ApplicationSettings> appSettingsConfig) {
 			ApplicationSettings appSettings = appSettingsConfig.Value;
-			Admins = appSettings.AdminIds;
+			AdminIds = appSettings.AdminIds;
 		}
 	}
 }

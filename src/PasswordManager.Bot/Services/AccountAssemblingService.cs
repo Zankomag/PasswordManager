@@ -11,13 +11,13 @@ namespace PasswordManager.Bot.Services {
 	public class AccountAssemblingService : IAccountAssemblingService {
 		//Assembling Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AccountAssemblingModel> accountAssemblings;
+		private readonly Dictionary<long, AccountAssemblingModel> accountAssemblings;
 
 		public AccountAssemblingService() {
-			accountAssemblings = new Dictionary<int, AccountAssemblingModel>();
+			accountAssemblings = new Dictionary<long, AccountAssemblingModel>();
 		}
 
-		public void Cancel(int userId) => accountAssemblings.Remove(userId); 
+		public void Cancel(long userId) => accountAssemblings.Remove(userId); 
 
 		// [0] /add => Ask for AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
 		// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Services {
 		// [4] /add AccountName \n Login \n Password \n EncryptionKey
 		// [5] /add AccountName \n Link \n Login \n Password \n EncryptionKey
 		// [6] /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
-		public AccountAssemblingStage Create(int userId, string[] args = null) {
+		public AccountAssemblingStage Create(long userId, string[] args = null) {
 			var accountAssemblingModel = new AccountAssemblingModel() {
 				AccountAssemblingStage = AccountAssemblingStage.AddAccountName,
 				UserId = userId,
@@ -78,7 +78,7 @@ namespace PasswordManager.Bot.Services {
 			return accountAssemblingModel.AccountAssemblingStage;
 		}
 
-		public Account Release(int userId) {
+		public Account Release(long userId) {
 			if (this.accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel) 
 			    && accountAssemblingModel.AccountAssemblingStage == AccountAssemblingStage.Release) {
 
@@ -98,7 +98,7 @@ namespace PasswordManager.Bot.Services {
 			return null;
 		}
 
-		public AccountAssemblingStage Assemble(int userId, string property,
+		public AccountAssemblingStage Assemble(long userId, string property,
 			AccountAssemblingStage expectedAccountAssemblingStage = AccountAssemblingStage.None) {
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -138,7 +138,7 @@ namespace PasswordManager.Bot.Services {
 				"AccountAssembling doesn't exist. Use Create(int userId, string[] args) to start inline assembling");
 		}
 
-		public AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip) {
+		public AccountAssemblingStage SkipStage(long userId, AccountAssemblingStageSkip accountAssemblingStageSkip) {
 			if (!accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel))
 				throw new InvalidOperationException("AccountAssembling doesn't exist.");
 			if(accountAssemblingModel.AccountAssemblingStage == (AccountAssemblingStage)accountAssemblingStageSkip)
@@ -146,7 +146,7 @@ namespace PasswordManager.Bot.Services {
 			throw new InvalidOperationException("AccountAssembling is on other stage.");
 		}
 
-		public string GetAccountName(int userId) {
+		public string GetAccountName(long userId) {
 			if (accountAssemblings.TryGetValue(userId, out AccountAssemblingModel accountAssemblingModel)) {
 				if (accountAssemblingModel.AccountName != null)
 					return accountAssemblingModel.AccountName;

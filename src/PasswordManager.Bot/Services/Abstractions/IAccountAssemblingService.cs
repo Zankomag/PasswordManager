@@ -11,21 +11,25 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <summary>
 		/// Deletes assembling account of user
 		/// </summary>
-		void Cancel(int userId);
+		void Cancel(long userId);
 		/// <returns>Assembled Account or null if there is no corresponding assembling account or it's not completely assembled</returns>
-		Account Release(int userId);
+		Account Release(long userId);
+
 		/// <summary>
 		/// Creates new AssemblingAccoun even if there already is one
 		/// </summary>
+		/// <param name="userId"></param>
 		/// <param name="args">inline Arguments of account to assemble</param>
 		/// <returns>Next AssemblingState</returns>
 		/// <exception cref="System.ComponentModel.DataAnnotations.ValidationException"></exception>
-		AccountAssemblingStage Create(int userId, string[] args = null);
+		AccountAssemblingStage Create(long userId, string[] args = null);
+
 		/// <summary>
 		/// Adds property of Current AssemblingStage to AccountAssemblingModel
 		/// if current Assemling Stage equals to expected and accepts property.
 		/// Otherwise throws exception
 		/// </summary>
+		/// <param name="userId"></param>
 		/// <param name="property">value of property to add to assembling</param>
 		/// <param name="expectedAccountAssemblingStage">excpected assembling stage. 
 		/// If expceted stage is unknown use <see cref="AccountAssemblingStage.None"/></param>
@@ -33,14 +37,14 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <exception cref="System.InvalidOperationException"></exception>
 		/// <exception cref="System.ArgumentNullException"></exception>
 		/// <exception cref="System.ComponentModel.DataAnnotations.ValidationException"></exception>
-		AccountAssemblingStage Assemble(int userId, string property,
+		AccountAssemblingStage Assemble(long userId, string property,
 			AccountAssemblingStage expectedAccountAssemblingStage = AccountAssemblingStage.None);
 		/// <summary>
 		/// Skips AccountAssemblingStage
 		/// </summary>
 		/// <returns>Next AssemblingStage</returns>
-		AccountAssemblingStage SkipStage(int userId, AccountAssemblingStageSkip accountAssemblingStageSkip);
-		string GetAccountName(int userId);
+		AccountAssemblingStage SkipStage(long userId, AccountAssemblingStageSkip accountAssemblingStageSkip);
+		string GetAccountName(long userId);
 
 	}
 }

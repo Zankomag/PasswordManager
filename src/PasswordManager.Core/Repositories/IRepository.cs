@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Repositories {
 
-	public interface IRepository<TEntity> where TEntity : class, new() {
+	public interface IRepository<TEntity, in TKey> where TEntity : class, new() {
 		Task<IEnumerable<TEntity>> GetAsync(
 			Expression<Func<TEntity, bool>> filter = null,
 			Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
 			string includeProperties = null,
 			bool asNoTracking = true);
 
-		Task<TEntity> GetByIdAsync(int id);
+		Task<TEntity> GetByIdAsync(TKey id);
 
 		IQueryable<TEntity> GetWithRawSql(string query,
 			params object[] parameters);

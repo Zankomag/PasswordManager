@@ -6,7 +6,7 @@ namespace PasswordManager.Bot.Models {
 		/// <summary>
 		/// This is the same Id as <see cref="User"/>.<see cref="User.Id"/>
 		/// </summary>
-		public int Id { get; init; }
+		public long Id { get; init; }
 		
 		/// <summary>
 		/// Language code

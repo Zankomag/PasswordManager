@@ -20,6 +20,7 @@ namespace PasswordManager.Application.Tests {
 		[InlineData("MY STRING")]
 		[InlineData("Js0/=6<6bf<%}!Lg_=XOIf$7b+iSbX9b|L.#%8uuI\n<BA !%~O0aNY45Q:?aYP5RJ;=O$~")]
 		[InlineData("Js0/=6<6bf<%}!Lg_=XOIf$7b+iSbX9b|L.#%8uuI\\n<BA!%~O0aNY45Q:?aYP5RJ;=O$~")]
+		[InlineData("lsdfjroipfjipo4k5p34mklvmx09tk34-0fsdpo,3-kr-0wklsxcpvkmdflkwe-r40-trdgofdkmglwk-0r32k,copsdjkvoperikf-03ekfdpgkdfg-3kfpdogkvdcvjmslfkpdofkepotir093rtjdfvmxc,vmsdpkf3ekrosdkf;ls,cvlpskcposdkf-03ktprekhg;flb,df,g-p=r3ltk3-rt0ekpfkspdfmcw-dfk3-0krpeogkfpdobkdfo-gkvc,wf,3-0erfke-ogjkfdpbmcv;lksdfklpdsofkdgbjfdoigjroekfgpodjfkodjvsdpofkpobjfdobkfjpogksdpofkdpovkjdfpobkpofkpsdghjre09gfjer90fgk-fkgpevkpvkspodckmspdovkm-fkj3-fkwe-fksdpvkospdf")]
 		[InlineData(emojiString)]
 		public void Encrypt_DecryptedString_ShouldEqualToSourceString(string source) {
 			string key = "my suped duper secret key";

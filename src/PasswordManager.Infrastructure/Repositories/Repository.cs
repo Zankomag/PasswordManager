@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using PasswordManager.Core.Repositories;
 
 namespace PasswordManager.Infrastructure.Repositories {
-	public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new() {
+	public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, new() {
 
 		protected DbContext context;
 		protected DbSet<TEntity> dbSet;
@@ -58,7 +58,7 @@ namespace PasswordManager.Infrastructure.Repositories {
 			return await Get(filter, orderBy, includeProperties, asNoTracking).ToListAsync();
 		}
 
-		public virtual async Task<TEntity> GetByIdAsync(int id) {
+		public virtual async Task<TEntity> GetByIdAsync(TKey id) {
 			return await dbSet.FindAsync(id);
 		}
 

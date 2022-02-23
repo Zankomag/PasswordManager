@@ -29,7 +29,7 @@ namespace Passwords {
 				charList += @"~!@#$%`^&*()_-+={}[]\|:;<>,.?/";
 			
 			
-
+			//todo in password generator library add custom PasswordGeneratorException for all exception cases
 			if (charList.Length == 0) throw new ArgumentException("charList is empty: no generation options selected");
 
 			//TODO use RNGCryptoServiceProvider instead

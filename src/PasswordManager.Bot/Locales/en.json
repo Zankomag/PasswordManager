@@ -55,7 +55,7 @@
 	"No2": "Nah",
 	"AccountDeleted": "Account has been deleted successfully!",
 	"UpdateAccData": "Send me {0} for this account.",
-	"DefaultPattern": "Pattern has been set to default.",
+	"PasswordGeneratorPatternToDefault": "Error occured during generation password. Password generation pattern has been set to default.",
 	"LinkDeleted": "Link has been deleted.",
 	"NoteDeleted": "Note has been deleted.",
 	"AccountUpdated": "Account has been updated.",

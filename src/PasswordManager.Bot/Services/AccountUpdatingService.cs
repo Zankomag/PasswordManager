@@ -12,19 +12,19 @@ namespace PasswordManager.Bot.Services {
 	public class AccountUpdatingService : IAccountUpdatingService {
 		//Updating Accounts data is stored in memory
 		//because storing it in database doesn't worth it
-		private readonly Dictionary<int, AccountUpdatingModel> updatingAccounts;
+		private readonly Dictionary<long, AccountUpdatingModel> updatingAccounts;
 
 		public AccountUpdatingService() {
-			updatingAccounts = new Dictionary<int, AccountUpdatingModel>();
+			updatingAccounts = new Dictionary<long, AccountUpdatingModel>();
 		}
 
-		public void StartUpdatingRequest(int userId, Account account, AccountUpdatingStage accountUpdatingType)
+		public void StartUpdatingRequest(long userId, Account account, AccountUpdatingStage accountUpdatingType)
 			=> updatingAccounts[userId] = new AccountUpdatingModel(accountUpdatingType, account);
 
 
-		public void FinishUpdatingRequest(int userId) => updatingAccounts.Remove(userId);
+		public void FinishUpdatingRequest(long userId) => updatingAccounts.Remove(userId);
 
-		public (long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(int userId, string property,
+		public (long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(long userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None) {
 
 			AccountUpdatingStage nextUpdatingStage = GetNextUpdatingStage(userId, property,
@@ -35,7 +35,7 @@ namespace PasswordManager.Bot.Services {
 			return (accountId, nextUpdatingStage);
 		}
 
-		public AccountUpdatingStage GetNextUpdatingStage(int userId, string property,
+		public AccountUpdatingStage GetNextUpdatingStage(long userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None, long? accountId = null) {
 			if (updatingAccounts.TryGetValue(userId, out AccountUpdatingModel accountUpdatingModel)) {
 				if ((accountId == null) || (accountId.Value == accountUpdatingModel.Account.Id
@@ -98,7 +98,7 @@ namespace PasswordManager.Bot.Services {
 			return AccountUpdatingStage.None;
 		}
 
-		public AccountUpdatingStage SkipNextUpdatingStage(int userId, long accountId,
+		public AccountUpdatingStage SkipNextUpdatingStage(long userId, long accountId,
 			AccountUpdatingStage accountUpdatingStageToSkip) {
 			if (updatingAccounts.TryGetValue(userId, out AccountUpdatingModel accountUpdatingModel)) {
 				if (accountId == accountUpdatingModel.Account.Id
@@ -113,7 +113,7 @@ namespace PasswordManager.Bot.Services {
 			return AccountUpdatingStage.None;
 		}
 
-		public Account ReleaseAccount(int userId) {
+		public Account ReleaseAccount(long userId) {
 			if (updatingAccounts.TryGetValue(userId, out AccountUpdatingModel accountUpdatingModel)) {
 				if (accountUpdatingModel.AccountUpdatingStage == AccountUpdatingStage.Release) {
 					FinishUpdatingRequest(userId);

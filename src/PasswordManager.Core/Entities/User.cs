@@ -29,14 +29,14 @@ namespace PasswordManager.Core.Entities {
 
 	public class User {
 
-		public int Id { get; set; }
+		public long Id { get; set; }
 
 		/// <summary>
 		///     Language code
 		/// </summary>
 		[Required] public string Lang { get; set; }
 
-		// TODO rename property to PasswordGeneratorPattern, but make mapping in entity framawork 
+		// TODO rename property to PasswordGeneratorPattern, but make mapping in entity framework 
 		/// <summary>
 		///     Generator pattern
 		/// </summary>

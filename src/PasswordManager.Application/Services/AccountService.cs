@@ -14,19 +14,19 @@ namespace PasswordManager.Application.Services {
 			this.workUnit = workUnit;
 		}
 
-		public async Task<IEnumerable<Account>> GetByNameAsync(int userId, int page, int pageSize, string accountName = null)
+		public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null)
 			=> await workUnit.AccountRepository.GetByNameAsync(userId, page, pageSize, accountName);
 
-		public async Task<int> GetCountAsync(int userId, string accountName = null)
+		public async Task<int> GetCountAsync(long userId, string accountName = null)
 			=> await workUnit.AccountRepository.GetCountAsync(userId, accountName);
 
-		public async Task<Account> GetFullAsync(int userId, long accountId)
+		public async Task<Account> GetFullAsync(long userId, long accountId)
 			=> await workUnit.AccountRepository.GetFullAsync(userId, accountId);
 
-		public async Task<Account> GetPasswordAsync(int userId, long accountId)
+		public async Task<Account> GetPasswordAsync(long userId, long accountId)
 			=> await workUnit.AccountRepository.GetPasswordAsync(userId, accountId);
 
-		public async Task<bool> DeleteAccountAsync(int userId, long accountId) {
+		public async Task<bool> DeleteAccountAsync(long userId, long accountId) {
 			if(await workUnit.AccountRepository.DeleteAccountAsync(userId, accountId)) {
 				try {
 					await workUnit.SaveAsync();
@@ -36,7 +36,7 @@ namespace PasswordManager.Application.Services {
 			return false;
 		}
 
-		public async Task<bool> AddAccountAsync(int userId, Account account) {
+		public async Task<bool> AddAccountAsync(long userId, Account account) {
 			if (userId != account.UserId) {
 				//TODO: Log exception
 				throw new ArgumentException("account.UserId doesn't match userId");
@@ -51,7 +51,7 @@ namespace PasswordManager.Application.Services {
 			}
 		}
 
-		public async Task UpdatePasswordAsync(int userId, long accountId, string password, bool encrypted) {
+		public async Task UpdatePasswordAsync(long userId, long accountId, string password, bool encrypted) {
 			if (password == null)
 				throw new ArgumentNullException(nameof(password));
 

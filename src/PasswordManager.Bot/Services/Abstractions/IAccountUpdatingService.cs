@@ -13,11 +13,11 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// Saves updating type and account of user to return it later.
 		/// If updating request exists, it overrides with new
 		/// </summary>
-		void StartUpdatingRequest(int userId, Account account, AccountUpdatingStage accountUpdatingType);
+		void StartUpdatingRequest(long userId, Account account, AccountUpdatingStage accountUpdatingType);
 		/// <summary>
 		/// Releases held data
 		/// </summary>
-		void FinishUpdatingRequest(int userId);
+		void FinishUpdatingRequest(long userId);
 		/// <summary></summary>
 		/// <returns>Next updating stage or <see cref="AccountUpdatingStage.None"/>
 		/// if there is no updating request
@@ -25,7 +25,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// or updating account stage doesn't match expected</returns>
 		/// <exception cref="ValidationException"></exception>
 		/// <exception cref="InvalidOperationException"></exception>
-		AccountUpdatingStage GetNextUpdatingStage(int userId, string property,
+		AccountUpdatingStage GetNextUpdatingStage(long userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None,
 			long? accountId = null);
 		/// <summary></summary>
@@ -33,13 +33,13 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// if there is no updating request</returns>
 		/// <exception cref="ValidationException"></exception>
 		/// <exception cref="InvalidOperationException"></exception>
-		(long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(int userId, string property,
+		(long? accountId, AccountUpdatingStage) GetNextUpdatingStageAndAccountId(long userId, string property,
 			AccountUpdatingStage expectedAccountUpdatingStage = AccountUpdatingStage.None);
-		AccountUpdatingStage SkipNextUpdatingStage(int userId, long accountId,
+		AccountUpdatingStage SkipNextUpdatingStage(long userId, long accountId,
 			AccountUpdatingStage accountUpdatingStageToSkip);
 		/// <summary></summary>
 		/// <returns>Account with new property and finished updating request or <see langword="null"/> if there is no updating request
 		/// or it's not to release ready yet</returns>
-		Account ReleaseAccount(int userId);
+		Account ReleaseAccount(long userId);
 	}
 }

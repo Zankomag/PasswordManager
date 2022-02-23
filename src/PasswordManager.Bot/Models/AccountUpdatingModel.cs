@@ -3,8 +3,8 @@ using PasswordManager.Core.Entities;
 
 namespace PasswordManager.Bot.Models {
 	public class AccountUpdatingModel {
-		public AccountUpdatingStage AccountUpdatingStage;
-		public Account Account;
+		public AccountUpdatingStage AccountUpdatingStage { get; set; }
+		public Account Account { get; set; }
 
 		public AccountUpdatingModel(AccountUpdatingStage accountUpdatingStage, Account account) {
 			AccountUpdatingStage = accountUpdatingStage;
