@@ -253,7 +253,7 @@ namespace PasswordManager.Bot.Services {
 						),
 						InlineKeyboardButton.WithCallbackData(
 							"⛓️ " +
-							Localization.GetMessage("Length", botUser.Lang) + " " + botUser.PasswordGeneratorPattern.Substring(6),
+							Localization.GetMessage("Length", botUser.Lang) + " " + passwordGeneratorPattern[6..],
 							SetUpPasswordGeneratorCommandCode.Length.ToStringCode()
 						)
 					},
