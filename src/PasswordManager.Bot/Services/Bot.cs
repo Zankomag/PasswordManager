@@ -55,7 +55,8 @@ namespace PasswordManager.Bot.Services {
 				UpdateType.Message,
 				UpdateType.CallbackQuery
 			};
-			SetWebhook(botSettings.Domain, allowedUpdates).GetAwaiter().GetResult();
+			//TODO: find another solution to set webhook, for example flag in appsettings
+			//SetWebhook(botSettings.Domain, allowedUpdates).GetAwaiter().GetResult();
 			ReportStart().GetAwaiter().GetResult();
 		}
 
