@@ -38,7 +38,7 @@ namespace PasswordManager.Bot.Commands {
 
 			if (nextAccountUpdatingStage == AccountUpdatingStage.Release) {
 				Account updatingAccount = accountUpdatingService.ReleaseAccount(user.Id);
-				Account account = await accountService.GetFullAsync(user.Id, updatingAccount.Id);
+				Account account = await accountService.GetAccountAsync(user.Id, updatingAccount.Id);
 				if ((account != null) && ((accountId == null) || (accountId == account.Id))) {
 					mapper.Map(updatingAccount, account);
 					await accountService.UpdateAccountAsync();
@@ -150,18 +150,18 @@ namespace PasswordManager.Bot.Commands {
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			UpdateAccountCommandCode updateAccountCommandCode;
-			string accoundIdString;
 			long accountId;
 			try {
 				updateAccountCommandCode = (UpdateAccountCommandCode)callbackQuery.Data[1];
-				accoundIdString = callbackQuery.Data[2..];
-				accountId = Convert.ToInt64(accoundIdString);
+				string accountIdString = callbackQuery.Data[2..];
+				//todo make via TryParse as in ShowAccountCommand
+				accountId = Convert.ToInt64(accountIdString);
 			} catch (Exception exeption) {
 				//TODO: Log Exception
 				throw;
 			}
 
-			Account account = await accountService.GetFullAsync(user.Id, accountId);
+			Account account = await accountService.GetAccountAsync(user.Id, accountId);
 			AccountUpdatingStage nextUpdatingStage = AccountUpdatingStage.None;
 
 			switch (updateAccountCommandCode) {
