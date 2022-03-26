@@ -70,7 +70,7 @@ namespace PasswordManager.Bot.Services {
 
 				var keyboardMarkup = new InlineKeyboardMarkup(keyboard);
 
-				if (messageToEditId != null) {
+				if (messageToEditId == null) {
 					await bot.Client.SendTextMessageAsync(user.Id, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true,
 						parseMode: ParseMode.Markdown);
