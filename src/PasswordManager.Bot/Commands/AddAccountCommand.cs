@@ -34,7 +34,7 @@ namespace PasswordManager.Bot.Commands {
 				nextAccountAssemblingStage = accountAssemblingService
 					.Create(user.Id, message.Text.GetCommandArgsByNewLine());
 			} catch(ValidationException exception) {
-				await botUi.SendValidationError(user, exception);
+				await botUi.SendValidationErrorAsync(user, exception);
 			} catch (ArgumentException exception) {
 				//TODO: Log exception
 				throw;
@@ -48,7 +48,7 @@ namespace PasswordManager.Bot.Commands {
 				var account = accountAssemblingService.Release(user.Id);
 				if (await accountService.AddAccountAsync(account)) {
 					//TODO: use emoji by key
-					await botUi.ShowAccount(user, account,
+					await botUi.ShowAccountAsync(user, account,
 						extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", user.Lang),
 							account.AccountName));
 				}
@@ -156,7 +156,7 @@ namespace PasswordManager.Bot.Commands {
 				await SendNextStageInstruction(user, nextStage,
 					callbackQuery.Message.MessageId);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationError(user, exception);
+				await botUi.SendValidationErrorAsync(user, exception);
 			} catch (InvalidOperationException) {
 				await ReportAbsenceOfNewAccount(user, callbackQuery.Id);
 			} catch (Exception exception) {
@@ -177,7 +177,7 @@ namespace PasswordManager.Bot.Commands {
 			try {
 				nextAssemblingStage = accountAssemblingService.Assemble(user.Id, message.Text);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationError(user, exception);
+				await botUi.SendValidationErrorAsync(user, exception);
 			} catch (InvalidOperationException) {
 				await userService.UpdateActionAsync(user.Id, UserAction.Search);
 			}
@@ -199,7 +199,7 @@ namespace PasswordManager.Bot.Commands {
 					nextAssemblingStage = accountAssemblingService
 						.Assemble(user.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
 				} catch (ValidationException exception) {
-					await botUi.SendValidationError(user, exception);
+					await botUi.SendValidationErrorAsync(user, exception);
 				} catch (InvalidOperationException) {
 					await userService.UpdateActionAsync(user.Id, UserAction.Search);
 				}

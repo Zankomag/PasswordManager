@@ -17,7 +17,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// will be attached to the end of button list</param>
 		/// <param name="user"></param>
 		/// <returns></returns>
-		Task ShowAccount(BotUser user,
+		Task ShowAccountAsync(BotUser user,
 			Account account,
 			int? messageToEditId = null,
 			string extraMessage = null,
@@ -26,7 +26,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <summary>
 		/// Serializes given account to MarkdownV2 string
 		/// </summary>
-		Task<string> SerializeAccount(BotUser botUser, Account account,
+		Task<string> SerializeAccountAsync(BotUser botUser, Account account,
 			bool includeOutdatedTime, string extraMessage = null);
 		
 		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
@@ -45,7 +45,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
 			int messageToEditId, string extraMessage);
 		
-		Task SendValidationError(BotUser user, ValidationException validationException);
+		Task SendValidationErrorAsync(BotUser user, ValidationException validationException);
 		
 		string GetPasswordMessage(string password);
 		

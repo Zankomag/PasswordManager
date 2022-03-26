@@ -31,11 +31,11 @@ namespace PasswordManager.Bot.Services {
 		//get rid of using hardcoded emoji
 		//
 		//TODO: Show Expiration settings button here
-		public async Task ShowAccount(BotUser user, Account account, int? messageToEditId = null,
+		public async Task ShowAccountAsync(BotUser user, Account account, int? messageToEditId = null,
 			string extraMessage = null, string backButtonCommandCode = null) {
 
 			if (account != null) {
-				string message = await SerializeAccount(user, account, true, extraMessage);
+				string message = await SerializeAccountAsync(user, account, true, extraMessage);
 
 				//TODO: use methods from new localization system and emoji
 				var keyboard = new List<List<InlineKeyboardButton>> {
@@ -89,7 +89,7 @@ namespace PasswordManager.Bot.Services {
 		/// <summary>
 		/// Serializes given account to MarkdownV2 string
 		/// </summary>
-		public async Task<string> SerializeAccount(BotUser botUser, Account account,
+		public async Task<string> SerializeAccountAsync(BotUser botUser, Account account,
 			bool includeOutdatedTime, string extraMessage = null) {
 			StringBuilder messageBuilder = extraMessage != null 
 				? new StringBuilder(extraMessage).Append("\n\n")
@@ -176,7 +176,7 @@ namespace PasswordManager.Bot.Services {
 							CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id)}
 				});
 
-			extraMessage = await SerializeAccount(user, account, false, extraMessage);
+			extraMessage = await SerializeAccountAsync(user, account, false, extraMessage);
 
 			await bot.Client.EditMessageTextAsync(user.Id, messageToEditId,
 				extraMessage,
@@ -184,7 +184,7 @@ namespace PasswordManager.Bot.Services {
 				disableWebPagePreview: true);
 		}
 
-		public async Task SendValidationError(BotUser user, ValidationException validationException) {
+		public async Task SendValidationErrorAsync(BotUser user, ValidationException validationException) {
 			//TODO:
 			//Change to good translated message
 			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
