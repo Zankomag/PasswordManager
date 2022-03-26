@@ -31,41 +31,41 @@ namespace PasswordManager.Bot.Services {
 		//get rid of using hardcoded emoji
 		//
 		//TODO: Show Expiration settings button here
-		public async Task ShowAccountAsync(BotUser user, Account account, int? messageToEditId = null,
+		public async Task ShowAccountAsync(BotUser botUser, Account account, int? messageToEditId = null,
 			string extraMessage = null, string backButtonCommandCode = null) {
 
 			if (account != null) {
-				string message = await SerializeAccountAsync(user, account, true, extraMessage);
+				string message = await SerializeAccountAsync(botUser, account, true, extraMessage);
 
 				//TODO: use methods from new localization system and emoji
 				var keyboard = new List<List<InlineKeyboardButton>> {
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
-							"🔑 " + Localization.GetMessage("Password", user.Lang),
+							"🔑 " + Localization.GetMessage("Password", botUser.Lang),
 							CallbackQueryCommandCode.ShowPassword.ToStringCode() + account.Id)},
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
-							"🛡 " + Localization.GetMessage("UpdatePassword", user.Lang),
+							"🛡 " + Localization.GetMessage("UpdatePassword", botUser.Lang),
 							UpdateAccountCommandCode.Password.ToStringCode(account.Id))},
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
-							"✏️ " + Localization.GetMessage("UpdateAcc", user.Lang),
+							"✏️ " + Localization.GetMessage("UpdateAcc", botUser.Lang),
 							UpdateAccountCommandCode.SelectUpdateType.ToStringCode(account.Id)) },
 					new List<InlineKeyboardButton> {
 						InlineKeyboardButton.WithCallbackData(
-							"🗑 " + Localization.GetMessage("DeleteAcc", user.Lang),
+							"🗑 " + Localization.GetMessage("DeleteAcc", botUser.Lang),
 							DeleteAccountCommandCode.AskForDeletion.ToStringCode(account.Id)) },
 					};
 
 				var deleteMessageButton = InlineKeyboardButton.WithCallbackData(
-					"🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+					"🗑 " + Localization.GetMessage("DeleteMsg", botUser.Lang),
 					CallbackQueryCommandCode.DeleteMessage.ToStringCode());
 
 				var lastButtonRow = new List<InlineKeyboardButton>();
 
 				if(backButtonCommandCode != null) {
 					lastButtonRow.Add(InlineKeyboardButton.WithCallbackData(
-						"⬅️ " + Localization.GetMessage("Back", user.Lang),
+						"⬅️ " + Localization.GetMessage("Back", botUser.Lang),
 						backButtonCommandCode));
 				}
 				lastButtonRow.Add(deleteMessageButton);
@@ -75,11 +75,11 @@ namespace PasswordManager.Bot.Services {
 				var keyboardMarkup = new InlineKeyboardMarkup(keyboard);
 
 				if (messageToEditId == null) {
-					await bot.Client.SendTextMessageAsync(user.Id, message,
+					await bot.Client.SendTextMessageAsync(botUser.Id, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true,
 						parseMode: ParseMode.Markdown);
 				} else {
-					await bot.Client.EditMessageTextAsync(user.Id, messageToEditId.Value, message,
+					await bot.Client.EditMessageTextAsync(botUser.Id, messageToEditId.Value, message,
 						replyMarkup: keyboardMarkup, disableWebPagePreview: true,
 						parseMode: ParseMode.Markdown);
 				}
@@ -138,56 +138,56 @@ namespace PasswordManager.Bot.Services {
 			return messageBuilder.ToString();	
 		}
 
-		public InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
+		public InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser botUser,
 			GeneratePasswordCommandCode generatePasswordCommandCode,
 			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
 			long? accountId = null) 
 			=> new InlineKeyboardButton[] {
 				InlineKeyboardButton.WithCallbackData(
-					"🌋 " + Localization.GetMessage("Generate", user.Lang),
+					"🌋 " + Localization.GetMessage("Generate", botUser.Lang),
 					generatePasswordCommandCode.ToStringCode()),
 			InlineKeyboardButton.WithCallbackData(
-					"🛠 " + Localization.GetMessage("AdjustGenerator", user.Lang),
+					"🛠 " + Localization.GetMessage("AdjustGenerator", botUser.Lang),
 					setUpPasswordGeneratorCommandCode.ToStringCode() + accountId)};
 
 
-		public async Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
+		public async Task ShowAccountUpdatingMenuAsync(BotUser botUser, Account account,
 			int messageToEditId, string extraMessage) {
 			var keyboardMarkup = new InlineKeyboardMarkup(
 				new InlineKeyboardButton[][] {
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-							"📝 " + Localization.GetMessage("AccountName", user.Lang),
+							"📝 " + Localization.GetMessage("AccountName", botUser.Lang),
 							UpdateAccountCommandCode.AccountName.ToStringCode(account.Id))},
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-							"🔗 " + Localization.GetMessage("Link", user.Lang),
+							"🔗 " + Localization.GetMessage("Link", botUser.Lang),
 							UpdateAccountCommandCode.Link.ToStringCode(account.Id)),
 						InlineKeyboardButton.WithCallbackData(
-							"🗒 " + Localization.GetMessage("Note", user.Lang),
+							"🗒 " + Localization.GetMessage("Note", botUser.Lang),
 							UpdateAccountCommandCode.Note.ToStringCode(account.Id))},
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-							"📇 " + Localization.GetMessage("Login", user.Lang),
+							"📇 " + Localization.GetMessage("Login", botUser.Lang),
 							UpdateAccountCommandCode.Login.ToStringCode(account.Id)) },
 					new InlineKeyboardButton[] {
 						InlineKeyboardButton.WithCallbackData(
-							"⬅️ " + Localization.GetMessage("Back", user.Lang),
+							"⬅️ " + Localization.GetMessage("Back", botUser.Lang),
 							CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id)}
 				});
 
-			extraMessage = await SerializeAccountAsync(user, account, false, extraMessage);
+			extraMessage = await SerializeAccountAsync(botUser, account, false, extraMessage);
 
-			await bot.Client.EditMessageTextAsync(user.Id, messageToEditId,
+			await bot.Client.EditMessageTextAsync(botUser.Id, messageToEditId,
 				extraMessage,
 				replyMarkup: keyboardMarkup,
 				disableWebPagePreview: true);
 		}
 
-		public async Task SendValidationErrorAsync(BotUser user, ValidationException validationException) {
+		public async Task SendValidationErrorAsync(BotUser botUser, ValidationException validationException) {
 			//TODO:
 			//Change to good translated message
-			await bot.Client.SendTextMessageAsync(user.Id, validationException.Message);
+			await bot.Client.SendTextMessageAsync(botUser.Id, validationException.Message);
 		}
 
 		public string GetPasswordMessage(string password)

@@ -42,18 +42,18 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(buttons);
 		}
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			await Bot.Client.SendTextMessageAsync(user.Id,
-				Localization.GetMessage("ChooseLang", user.Lang),
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
+			await Bot.Client.SendTextMessageAsync(botUser.Id,
+				Localization.GetMessage("ChooseLang", botUser.Lang),
 				replyMarkup: GetLanguagesKeyboard());
 		}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			//If user pressed on "Change lang" button in settings, bot shows invitation to select language
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
+			//If botUser pressed on "Change lang" button in settings, bot shows invitation to select language
 			if (callbackQuery.Data[1] == (char)SelectLanguageCommandCode.SelectLanguage){
-				await Bot.Client.EditMessageTextAsync(user.Id,
+				await Bot.Client.EditMessageTextAsync(botUser.Id,
 					callbackQuery.Message.MessageId,
-					Localization.GetMessage("ChooseLang", user.Lang),
+					Localization.GetMessage("ChooseLang", botUser.Lang),
 					replyMarkup: GetLanguagesKeyboard());
 				return;
 			}
@@ -61,14 +61,14 @@ namespace PasswordManager.Bot.Commands {
 			string langCode = callbackQuery.Data[1..];
 			if (!Localization.ContainsLanguage(langCode))
 				langCode = Localization.DefaultLanguageCode;
-			user.Lang = langCode;
-			await userService.UpdateLanguage(user.Id, langCode);
+			botUser.Lang = langCode;
+			await userService.UpdateLanguage(botUser.Id, langCode);
 
 			//TODO:
 			//Create public static method in HelpCommand that returns help message
 			await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
-				Localization.GetMessage("LangIsSet", user.Lang) + "\n\n" +
-				String.Format(Localization.GetMessage("Help", user.Lang),
+				Localization.GetMessage("LangIsSet", botUser.Lang) + "\n\n" +
+				String.Format(Localization.GetMessage("Help", botUser.Lang),
 				"/add", "/all", "/generator", "/language", "/cancel", "/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);
 		}
 	}

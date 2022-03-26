@@ -24,7 +24,7 @@ namespace PasswordManager.Bot.Commands {
 			this.passwordEncryptionService = passwordEncryptionService;
 		}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			long accountId;
 			try {
 				accountId = Convert.ToInt64(callbackQuery.Data[1..]);
@@ -32,14 +32,14 @@ namespace PasswordManager.Bot.Commands {
 				//TODO: Log exception
 				throw;
 			}
-			passwordEncryptionService.StartEncryptionRequest(user.Id, accountId);
-			await userService.UpdateActionAsync(user.Id, UserAction.EncryptPassword);
+			passwordEncryptionService.StartEncryptionRequest(botUser.Id, accountId);
+			await userService.UpdateActionAsync(botUser.Id, UserAction.EncryptPassword);
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
-				Localization.GetMessage("EncryptInstruction", user.Lang),
+				Localization.GetMessage("EncryptInstruction", botUser.Lang),
 				showAlert: true);
 		}
 
-		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 			string callbackData = null;
 			if (message.ReplyToMessage.ReplyMarkup != null
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
@@ -53,7 +53,7 @@ namespace PasswordManager.Bot.Commands {
 					//TODO: Log exception
 					throw;
 				}
-				long? accountId = passwordEncryptionService.GetAccountId(user.Id);
+				long? accountId = passwordEncryptionService.GetAccountId(botUser.Id);
 				if (accountId != null && message.ReplyToMessage.Text != null) {
 					if (accountId == passwordAccountId) {
 						string encryptedPassword;
@@ -64,29 +64,29 @@ namespace PasswordManager.Bot.Commands {
 							//TODO; Log Exception
 							throw;
 						}
-						await accountService.UpdatePasswordAsync(user.Id, accountId.Value,
+						await accountService.UpdatePasswordAsync(botUser.Id, accountId.Value,
 							encryptedPassword, true);
-						passwordEncryptionService.FinishEncryptionRequest(user.Id);
+						passwordEncryptionService.FinishEncryptionRequest(botUser.Id);
 						return;
 					}
-					await ReportWrongReply(user);
+					await ReportWrongReply(botUser);
 					return;
 				}
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				await Bot.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("Cancel", user.Lang));
+					Localization.GetMessage("Cancel", botUser.Lang));
 				return;
 			}
-			await ReportWrongReply(user);
+			await ReportWrongReply(botUser);
 		}
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) 
-			=> await Bot.Client.SendTextMessageAsync(user.Id,
-				Localization.GetMessage("SendKeyInReplyToPasswordMessage", user.Lang));
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) 
+			=> await Bot.Client.SendTextMessageAsync(botUser.Id,
+				Localization.GetMessage("SendKeyInReplyToPasswordMessage", botUser.Lang));
 
-		private async Task ReportWrongReply(BotUser user) {
-			await Bot.Client.SendTextMessageAsync(user.Id,
-						Localization.GetMessage("NotPasswordMessageReply", user.Lang));
+		private async Task ReportWrongReply(BotUser botUser) {
+			await Bot.Client.SendTextMessageAsync(botUser.Id,
+						Localization.GetMessage("NotPasswordMessageReply", botUser.Lang));
 		}
 
 	}

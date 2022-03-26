@@ -35,20 +35,20 @@ namespace PasswordManager.Bot.Commands {
 		//PasswordManager.Bot.Services.UserActionService.ResetUserAction(user.Id) so
 		//if there is attempt to override action this service checks whether there is unfinished action
 		//and clears its data
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			if (user.Action != UserAction.Search) {
-				switch (user.Action) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
+			if (botUser.Action != UserAction.Search) {
+				switch (botUser.Action) {
 					case UserAction.AssembleAccount:
-						accountAssemblingService.Cancel(user.Id);
+						accountAssemblingService.Cancel(botUser.Id);
 						break;
 					case UserAction.UpdateAccount:
-						accountUpdatingService.FinishUpdatingRequest(user.Id);
+						accountUpdatingService.FinishUpdatingRequest(botUser.Id);
 						break;
 					case UserAction.EnterDecryptionKey:
-						passwordDecryptionService.FinishDecryptionRequest(user.Id);
+						passwordDecryptionService.FinishDecryptionRequest(botUser.Id);
 						break;
 					case UserAction.EncryptPassword:
-						passwordEncryptionService.FinishEncryptionRequest(user.Id);
+						passwordEncryptionService.FinishEncryptionRequest(botUser.Id);
 						break;
 						//TODO:
 						//Clear UserSettingsUpdatingservice request here
@@ -61,13 +61,13 @@ namespace PasswordManager.Bot.Commands {
 						//as updating action to search alredy cancels action
 				}
 
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				await Bot.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("Cancel", user.Lang));
+					Localization.GetMessage("Cancel", botUser.Lang));
 			}
 			else {
 				await Bot.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("NoCancel", user.Lang));
+					Localization.GetMessage("NoCancel", botUser.Lang));
 			}
 		}
 	}

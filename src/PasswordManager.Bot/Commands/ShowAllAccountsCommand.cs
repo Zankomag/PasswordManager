@@ -13,8 +13,8 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
-			await .SearchAccounts(message.From.Id, user.Lang);
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
+			await .SearchAccounts(message.From.Id, botUser.Lang);
 		}
 
 	}

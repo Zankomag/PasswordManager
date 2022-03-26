@@ -34,7 +34,7 @@ namespace PasswordManager.Bot.Commands {
 			this.botUi = botUi;
 		}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			//TODO:
 			//Delete answering callbackquery when messages will be edited instead of sending
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
@@ -45,67 +45,67 @@ namespace PasswordManager.Bot.Commands {
 				//TODO: Log exception
 				throw;
 			}
-			Account account = await accountService.GetPasswordAsync(user.Id, accountId);
+			Account account = await accountService.GetPasswordAsync(botUser.Id, accountId);
 			if (account != null) {
 				if (!account.Encrypted) {
-					await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+					await Bot.Client.EditMessageTextAsync(botUser.Id, callbackQuery.Message.MessageId,
 						botUi.GetPasswordMessage(account.Password),
-						replyMarkup: GetPasswordKeyboard(account, user),
+						replyMarkup: GetPasswordKeyboard(account, botUser),
 						parseMode: ParseMode.MarkdownV2);
 				} else {
-					passwordDecryptionService.StartDecryptionRequest(user.Id, account);
-					await userService.UpdateActionAsync(user.Id, UserAction.EnterDecryptionKey);
-					await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
-						"🔑 " + Localization.GetMessage("EnterDecryptionKey", user.Lang),
-						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, false));
+					passwordDecryptionService.StartDecryptionRequest(botUser.Id, account);
+					await userService.UpdateActionAsync(botUser.Id, UserAction.EnterDecryptionKey);
+					await Bot.Client.EditMessageTextAsync(botUser.Id, callbackQuery.Message.MessageId,
+						"🔑 " + Localization.GetMessage("EnterDecryptionKey", botUser.Lang),
+						replyMarkup: GetDecryptionKeyInvitationKeyboard(account, botUser, false));
 				}
 			}
 		}
 
 		//TODO: Move to BotUi
-		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser user,
+		private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser botUser,
 			bool includeShowHintButton) {
 			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>>();
 			if (includeShowHintButton) {
 				keyboard.Add(
 					new List<InlineKeyboardButton> {
-						InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", user.Lang),
+						InlineKeyboardButton.WithCallbackData("💡 " + Localization.GetMessage("ShowHint", botUser.Lang),
 							CallbackQueryCommandCode.ShowEncryptionKeyHint.ToStringCode())
 					});
 			}
 			keyboard.Add(
 				new List<InlineKeyboardButton> {
-					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
+					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", botUser.Lang),
 						CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
-					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("UpdatePassword", user.Lang),
+					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("UpdatePassword", botUser.Lang),
 						UpdateAccountCommandCode.Password.ToStringCode(account.Id))
 				});
 			keyboard.Add(new List<InlineKeyboardButton> {
-				InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+				InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", botUser.Lang),
 					CallbackQueryCommandCode.DeleteMessage.ToStringCode())
 				});
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
 		//TODO: Move to BotUi
-		private InlineKeyboardMarkup GetPasswordKeyboard(Account account, BotUser user) {
+		private InlineKeyboardMarkup GetPasswordKeyboard(Account account, BotUser botUser) {
 			List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>> {
 				new List<InlineKeyboardButton> {
-					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", user.Lang),
+					InlineKeyboardButton.WithCallbackData("⬅️ " + Localization.GetMessage("Back", botUser.Lang),
 						CallbackQueryCommandCode.ShowAccount.ToStringCode() + account.Id),
-					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("UpdatePassword", user.Lang),
+					InlineKeyboardButton.WithCallbackData("🛡 " + Localization.GetMessage("UpdatePassword", botUser.Lang),
 						UpdateAccountCommandCode.Password.ToStringCode(account.Id))
 				}
 			};
 			
 			var reencryptButton = InlineKeyboardButton.WithCallbackData(
-				"🔐 " + Localization.GetMessage(account.Encrypted ? "Reencrypt" : "Encrypt", user.Lang),
+				"🔐 " + Localization.GetMessage(account.Encrypted ? "Reencrypt" : "Encrypt", botUser.Lang),
 				CallbackQueryCommandCode.EncryptPassword.ToStringCode() + account.Id);
-			var deleteMessageButton = InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", user.Lang),
+			var deleteMessageButton = InlineKeyboardButton.WithCallbackData("🗑 " + Localization.GetMessage("DeleteMsg", botUser.Lang),
 						CallbackQueryCommandCode.DeleteMessage.ToStringCode());
 			if (account.Encrypted) {
 				var removeEncryptionButton = InlineKeyboardButton.WithCallbackData(
-				"🔓 " + Localization.GetMessage("RemoveEncryption", user.Lang),
+				"🔓 " + Localization.GetMessage("RemoveEncryption", botUser.Lang),
 				UpdateAccountCommandCode.RemoveEncryption.ToStringCode(account.Id));
 
 				keyboard.Add(new List<InlineKeyboardButton> {
@@ -125,27 +125,27 @@ namespace PasswordManager.Bot.Commands {
 			return new InlineKeyboardMarkup(keyboard);
 		}
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
-			Account account = passwordDecryptionService.GetAccount(user.Id);
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
+			Account account = passwordDecryptionService.GetAccount(botUser.Id);
 			if (account != null) {
 				string decryptedPassword = null;
 				try {
 					decryptedPassword = account.Password.Decrypt(message.Text);
 				} catch {
-					await Bot.Client.SendTextMessageAsync(user.Id,
-					Localization.GetMessage("WrongKey", user.Lang),
-					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, user, true),
+					await Bot.Client.SendTextMessageAsync(botUser.Id,
+					Localization.GetMessage("WrongKey", botUser.Lang),
+					replyMarkup: GetDecryptionKeyInvitationKeyboard(account, botUser, true),
 					parseMode: ParseMode.Markdown);
 				}
-				passwordDecryptionService.FinishDecryptionRequest(user.Id);
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
-				await Bot.Client.SendTextMessageAsync(user.Id, botUi.GetPasswordMessage(decryptedPassword),
-					replyMarkup: GetPasswordKeyboard(account, user),
+				passwordDecryptionService.FinishDecryptionRequest(botUser.Id);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
+				await Bot.Client.SendTextMessageAsync(botUser.Id, botUi.GetPasswordMessage(decryptedPassword),
+					replyMarkup: GetPasswordKeyboard(account, botUser),
 					parseMode: ParseMode.MarkdownV2);
 			} else {
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				await Bot.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("Cancel", user.Lang));
+					Localization.GetMessage("Cancel", botUser.Lang));
 			}
 		}
 	}

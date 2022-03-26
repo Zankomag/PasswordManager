@@ -20,11 +20,11 @@ namespace PasswordManager.Bot.Commands {
 			this.accountService = accountService;
 		}
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
-			await .SearchAccounts(message.From.Id, user.Lang, message.Text);
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
+			await .SearchAccounts(message.From.Id, botUser.Lang, message.Text);
 		}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			int page = Convert.ToInt32(callbackQuery.Data.Substring(1, callbackQuery.Data.IndexOf('.')-1));
 			string accountName = callbackQuery.Data.Length != (callbackQuery.Data.IndexOf('.') + 1) ?
 				callbackQuery.Data.Substring(callbackQuery.Data.IndexOf('.') + 1) : null;
@@ -32,11 +32,11 @@ namespace PasswordManager.Bot.Commands {
 			if(accountCount != 0) {
 				await .ShowPage(callbackQuery.From.Id, accountName, page,
 					.GetPageCount(accountCount),
-					user.Lang, callbackQuery.Message.MessageId);
+					botUser.Lang, callbackQuery.Message.MessageId);
 				await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			} else {
 				await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
-					Localization.GetMessage("SearchAgain", user.Lang), showAlert: true);
+					Localization.GetMessage("SearchAgain", botUser.Lang), showAlert: true);
 				await BotHandler.TryDeleteMessageAsync(
 					callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
 			}

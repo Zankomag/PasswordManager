@@ -16,17 +16,17 @@ namespace PasswordManager.Bot.Commands {
 			this.botUi = botUi;
 		}
 
-		//todo rename all BotUser params to botUser
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		//todo rename all BotUser params to botUser as here
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			string accountIdString = callbackQuery.Data[1..];
 			//TODO create custom Exception instead of default one. Also check other cases
 			if(!Int64.TryParse(accountIdString, out long accountId))
 				throw new Exception($"Unable to parse accountId to Int64: {accountIdString}");
 
-			var account = await accountService.GetAccountAsync(user.Id, accountId);
+			var account = await accountService.GetAccountAsync(botUser.Id, accountId);
 			//todo add backButtonCommandCode
-			await botUi.ShowAccountAsync(user, account, callbackQuery.Message.MessageId);
+			await botUi.ShowAccountAsync(botUser, account, callbackQuery.Message.MessageId);
 		}
 
 	}

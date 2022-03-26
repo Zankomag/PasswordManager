@@ -28,35 +28,35 @@ namespace PasswordManager.Bot.Commands {
 			=> (this.accountService, this.userService, this.accountAssemblingService, this.botUi)
 				= (	 accountService,	  userService,		accountAssemblingService,	   botUi);
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
 			AccountAssemblingStage nextAccountAssemblingStage = AccountAssemblingStage.None;
 			try {
 				nextAccountAssemblingStage = accountAssemblingService
-					.Create(user.Id, message.Text.GetCommandArgsByNewLine());
+					.Create(botUser.Id, message.Text.GetCommandArgsByNewLine());
 			} catch(ValidationException exception) {
-				await botUi.SendValidationErrorAsync(user, exception);
+				await botUi.SendValidationErrorAsync(botUser, exception);
 			} catch (ArgumentException exception) {
 				//TODO: Log exception
 				throw;
 			}
 
-			await HandleNextStage(user, nextAccountAssemblingStage);
+			await HandleNextStage(botUser, nextAccountAssemblingStage);
 		}
 
-		private async Task HandleNextStage(BotUser user, AccountAssemblingStage nextAccountAssemblingStage) {
+		private async Task HandleNextStage(BotUser botUser, AccountAssemblingStage nextAccountAssemblingStage) {
 			if (nextAccountAssemblingStage == AccountAssemblingStage.Release) {
-				var account = accountAssemblingService.Release(user.Id);
+				var account = accountAssemblingService.Release(botUser.Id);
 				if (await accountService.AddAccountAsync(account)) {
 					//TODO: use emoji by key
-					await botUi.ShowAccountAsync(user, account,
-						extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", user.Lang),
+					await botUi.ShowAccountAsync(botUser, account,
+						extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", botUser.Lang),
 							account.AccountName));
 				}
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 			} else {
-				if (user.Action != UserAction.AssembleAccount)
-					await userService.UpdateActionAsync(user.Id, UserAction.AssembleAccount);
-				await SendNextStageInstruction(user, nextAccountAssemblingStage);
+				if (botUser.Action != UserAction.AssembleAccount)
+					await userService.UpdateActionAsync(botUser.Id, UserAction.AssembleAccount);
+				await SendNextStageInstruction(botUser, nextAccountAssemblingStage);
 			}
 		}
 
@@ -64,14 +64,14 @@ namespace PasswordManager.Bot.Commands {
 		//Use emoji from new emoji system
 		//and use new localization sysrtem where there are methods with parameters
 		//and get buttons from UI bot service
-		private async Task SendNextStageInstruction(BotUser user, AccountAssemblingStage nextAccountAssemblingStage, int? messageToEditId = null) {
+		private async Task SendNextStageInstruction(BotUser botUser, AccountAssemblingStage nextAccountAssemblingStage, int? messageToEditId = null) {
 			(string message, InlineKeyboardMarkup replyMarkup) = nextAccountAssemblingStage switch {
 				AccountAssemblingStage.AddAccountName
-					=> ("📝 " + Localization.GetMessage("AddAccount", user.Lang), null),
+					=> ("📝 " + Localization.GetMessage("AddAccount", botUser.Lang), null),
 				AccountAssemblingStage.AddLink
 					=> ((Func<(string, InlineKeyboardMarkup)>)(() => {
-						string autoLink = accountAssemblingService.GetAccountName(user.Id).AutoDomain();
-						return ("🔗 " + Localization.GetMessage("AddLink", user.Lang),
+						string autoLink = accountAssemblingService.GetAccountName(botUser.Id).AutoDomain();
+						return ("🔗 " + Localization.GetMessage("AddLink", botUser.Lang),
 						new InlineKeyboardMarkup(
 							new InlineKeyboardButton[][] {
 								new InlineKeyboardButton[] {
@@ -80,51 +80,51 @@ namespace PasswordManager.Bot.Commands {
 										AddAccountCommandCode.AutoLink.ToStringCode() + autoLink)},
 								new InlineKeyboardButton[] {
 									InlineKeyboardButton.WithCallbackData(
-										"⏩ " + Localization.GetMessage("Skip",user.Lang),
+										"⏩ " + Localization.GetMessage("Skip",botUser.Lang),
 										AddAccountCommandCode.SkipLink.ToStringCode())}})); }))(),
 				AccountAssemblingStage.AddNote
-					=> ("🗒 " + Localization.GetMessage("AddNote", user.Lang),
+					=> ("🗒 " + Localization.GetMessage("AddNote", botUser.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
-							"⏩ " + Localization.GetMessage("Skip", user.Lang),
+							"⏩ " + Localization.GetMessage("Skip", botUser.Lang),
 							AddAccountCommandCode.SkipNote.ToStringCode()))),
 				AccountAssemblingStage.AddLogin
-					=> ("📇 " + Localization.GetMessage("AddLogin", user.Lang), null),
+					=> ("📇 " + Localization.GetMessage("AddLogin", botUser.Lang), null),
 				AccountAssemblingStage.AddPassword
-					=> ("🔑 " + Localization.GetMessage("AddPassword", user.Lang),
-							botUi.GeneratePasswordKeyboard(user,
+					=> ("🔑 " + Localization.GetMessage("AddPassword", botUser.Lang),
+							botUi.GeneratePasswordKeyboard(botUser,
 								GeneratePasswordCommandCode.Assembling,
 								SetUpPasswordGeneratorCommandCode.ReturnAssembling)),
 				AccountAssemblingStage.AddEncryptionKey
-					=> ("🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
+					=> ("🔐 " + Localization.GetMessage("AddEncryptionKey", botUser.Lang),
 						new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
-							"⏩ " + Localization.GetMessage("Skip", user.Lang),
+							"⏩ " + Localization.GetMessage("Skip", botUser.Lang),
 							AddAccountCommandCode.SkipEncryptionKey.ToStringCode()))),
 				_ => throw new ArgumentException("Unexcpected AccountAssemblingStage")
 			};
 
 			if (messageToEditId == null) {
 				await Bot.Client
-					.SendTextMessageAsync(user.Id, message,
+					.SendTextMessageAsync(botUser.Id, message,
 						replyMarkup: replyMarkup,
 						parseMode: ParseMode.Markdown);
 			} else {
 				await Bot.Client.EditMessageTextAsync(
-					user.Id, messageToEditId.Value, message,
+					botUser.Id, messageToEditId.Value, message,
 					replyMarkup: replyMarkup,
 					parseMode: ParseMode.Markdown);
 			}
 		}
 
 		//Moved from password manager
-		private async Task ReportExceededLength(BotUser user, int maxAccountDataLength, string accountDataType) {
-			await Bot.Client.SendTextMessageAsync(user.Id,
-				String.Format(Localization.GetMessage("MaxLength", user.Lang),
-					Localization.GetMessage(accountDataType, user.Lang),
+		private async Task ReportExceededLength(BotUser botUser, int maxAccountDataLength, string accountDataType) {
+			await Bot.Client.SendTextMessageAsync(botUser.Id,
+				String.Format(Localization.GetMessage("MaxLength", botUser.Lang),
+					Localization.GetMessage(accountDataType, botUser.Lang),
 						maxAccountDataLength));
 		}
 
 		//TODO: Refactor
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			AddAccountCommandCode addAccountCommandCode;
 			try {
 				addAccountCommandCode = (AddAccountCommandCode)callbackQuery.Data[1];
@@ -149,16 +149,16 @@ namespace PasswordManager.Bot.Commands {
 
 			try {
 				AccountAssemblingStage nextStage = propertyToAssemble == null
-					? accountAssemblingService.SkipStage(user.Id,
+					? accountAssemblingService.SkipStage(botUser.Id,
 						(AccountAssemblingStageSkip)assemblingStage)
-					: accountAssemblingService.Assemble(user.Id,
+					: accountAssemblingService.Assemble(botUser.Id,
 						propertyToAssemble, assemblingStage);
-				await SendNextStageInstruction(user, nextStage,
+				await SendNextStageInstruction(botUser, nextStage,
 					callbackQuery.Message.MessageId);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(user, exception);
+				await botUi.SendValidationErrorAsync(botUser, exception);
 			} catch (InvalidOperationException) {
-				await ReportAbsenceOfNewAccount(user, callbackQuery.Id);
+				await ReportAbsenceOfNewAccount(botUser, callbackQuery.Id);
 			} catch (Exception exception) {
 				//TODO: Log Exception
 				throw;
@@ -167,25 +167,25 @@ namespace PasswordManager.Bot.Commands {
 			
 		}
 
-		private async Task ReportAbsenceOfNewAccount(BotUser user, string callbackQueryId)
+		private async Task ReportAbsenceOfNewAccount(BotUser botUser, string callbackQueryId)
 			=> await Bot.Client.AnswerCallbackQueryAsync(callbackQueryId,
-				text: Localization.GetMessage("CantWithoutNewAcc", user.Lang), showAlert: true);
+				text: Localization.GetMessage("CantWithoutNewAcc", botUser.Lang), showAlert: true);
 		
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 			AccountAssemblingStage nextAssemblingStage = AccountAssemblingStage.None;
 			try {
-				nextAssemblingStage = accountAssemblingService.Assemble(user.Id, message.Text);
+				nextAssemblingStage = accountAssemblingService.Assemble(botUser.Id, message.Text);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(user, exception);
+				await botUi.SendValidationErrorAsync(botUser, exception);
 			} catch (InvalidOperationException) {
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 			}
 
-			await HandleNextStage(user, nextAssemblingStage);
+			await HandleNextStage(botUser, nextAssemblingStage);
 		}
 
-		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 			//This command allows to bypass pressing "Accept password" button and then entering encryption key
 			//by sending encryption key right in reply to suggested password message
 			if (message.ReplyToMessage.ReplyMarkup != null
@@ -194,20 +194,20 @@ namespace PasswordManager.Bot.Commands {
 						&& y.CallbackData == AddAccountCommandCode.AcceptPassword.ToStringCode()))) {
 				AccountAssemblingStage nextAssemblingStage = AccountAssemblingStage.None;
 				try {
-					accountAssemblingService.Assemble(user.Id, message.ReplyToMessage.Text,
+					accountAssemblingService.Assemble(botUser.Id, message.ReplyToMessage.Text,
 						AccountAssemblingStage.AddPassword);
 					nextAssemblingStage = accountAssemblingService
-						.Assemble(user.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
+						.Assemble(botUser.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
 				} catch (ValidationException exception) {
-					await botUi.SendValidationErrorAsync(user, exception);
+					await botUi.SendValidationErrorAsync(botUser, exception);
 				} catch (InvalidOperationException) {
-					await userService.UpdateActionAsync(user.Id, UserAction.Search);
+					await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				}
 
-				await HandleNextStage(user, nextAssemblingStage);
+				await HandleNextStage(botUser, nextAssemblingStage);
 			} else {
 				//handle reply action command as regular action command
-				await (this as IActionCommand).ExecuteAsync(message, user);
+				await (this as IActionCommand).ExecuteAsync(message, botUser);
 			}
 		}
 	}

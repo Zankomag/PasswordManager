@@ -8,8 +8,8 @@ using PasswordManager.Application.Services.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	//public class DeleteAllMessagesCommand : Abstractions.BotCommand, IMessageCommand {
 
-	//	public DeleteAllMessagesCommand(Ibot bot) : base(bot) { }
-	//	async Task IMessageCommand.ExecuteAsync(Message message, BotUser user) {
+	//	public DeleteAllMessagesCommand(IBot bot) : base(bot) { }
+	//	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
 	//		//CYCLE ALL MESSAGES THAT NEEDS TO BE DELETED 
 	//		try {
 	//			await bot.Client.DeleteMessageAsync(message.Chat.Id, message.MessageId);

@@ -15,9 +15,9 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <param name="extraMessage">An Extra message to show with account data</param>
 		/// <param name="backButtonCommandCode">If specified, the Back button with this command code
 		/// will be attached to the end of button list</param>
-		/// <param name="user"></param>
+		/// <param name="botUser"></param>
 		/// <returns></returns>
-		Task ShowAccountAsync(BotUser user,
+		Task ShowAccountAsync(BotUser botUser,
 			Account account,
 			int? messageToEditId = null,
 			string extraMessage = null,
@@ -29,7 +29,7 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		Task<string> SerializeAccountAsync(BotUser botUser, Account account,
 			bool includeOutdatedTime, string extraMessage = null);
 		
-		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
+		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser botUser,
 			GeneratePasswordCommandCode generatePasswordCommandCode,
 			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
 			long? accountId = null);
@@ -37,15 +37,15 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <summary>
 		/// Shows account data with buttons of account updating menu
 		/// </summary>
-		/// <param name="user"></param>
+		/// <param name="botUser"></param>
 		/// <param name="account"></param>
 		/// <param name="messageToEditId"></param>
 		/// <param name="extraMessage">An Extra message to show with account data</param>
 		/// <returns></returns>
-		Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
+		Task ShowAccountUpdatingMenuAsync(BotUser botUser, Account account,
 			int messageToEditId, string extraMessage);
 		
-		Task SendValidationErrorAsync(BotUser user, ValidationException validationException);
+		Task SendValidationErrorAsync(BotUser botUser, ValidationException validationException);
 		
 		string GetPasswordMessage(string password);
 		

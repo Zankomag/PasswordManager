@@ -33,121 +33,121 @@ namespace PasswordManager.Bot.Commands {
 			this.mapper = mapper;
 		}
 
-		private async Task HandleNextStage(BotUser user, AccountUpdatingStage nextAccountUpdatingStage,
+		private async Task HandleNextStage(BotUser botUser, AccountUpdatingStage nextAccountUpdatingStage,
 			long? accountId = null, int? messageToEditId = null) {
 
 			if (nextAccountUpdatingStage == AccountUpdatingStage.Release) {
-				Account updatingAccount = accountUpdatingService.ReleaseAccount(user.Id);
-				Account account = await accountService.GetAccountAsync(user.Id, updatingAccount.Id);
+				Account updatingAccount = accountUpdatingService.ReleaseAccount(botUser.Id);
+				Account account = await accountService.GetAccountAsync(botUser.Id, updatingAccount.Id);
 				if ((account != null) && ((accountId == null) || (accountId == account.Id))) {
 					mapper.Map(updatingAccount, account);
 					await accountService.UpdateAccountAsync();
-					await botUi.ShowAccountAsync(user, account, messageToEditId,
-						Localization.GetMessage("AccountUpdated", user.Lang));
+					await botUi.ShowAccountAsync(botUser, account, messageToEditId,
+						Localization.GetMessage("AccountUpdated", botUser.Lang));
 				}
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				//TODO: Move next section to SendTextStage instruction method and add there this instruction and all from
 				//callback query method
 			} else if (nextAccountUpdatingStage == AccountUpdatingStage.EncryptPassword && accountId.HasValue) {
-				await Bot.Client.SendTextMessageAsync(user.Id,
-					"🔐 " + Localization.GetMessage("AddEncryptionKey", user.Lang),
+				await Bot.Client.SendTextMessageAsync(botUser.Id,
+					"🔐 " + Localization.GetMessage("AddEncryptionKey", botUser.Lang),
 					replyMarkup: new InlineKeyboardMarkup(InlineKeyboardButton.WithCallbackData(
-						"⏩ " + Localization.GetMessage("Skip", user.Lang),
+						"⏩ " + Localization.GetMessage("Skip", botUser.Lang),
 						UpdateAccountCommandCode.SkipPasswordEncryption.ToStringCode(accountId.Value))));
 			} else if (nextAccountUpdatingStage == AccountUpdatingStage.None) {
-				accountUpdatingService.FinishUpdatingRequest(user.Id);
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				accountUpdatingService.FinishUpdatingRequest(botUser.Id);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				//TODO: make method in botUISrevice that sends or edits message with "Cancel" message
-				await Bot.Client.SendTextMessageAsync(user.Id,
-					Localization.GetMessage("Cancel", user.Lang));
+				await Bot.Client.SendTextMessageAsync(botUser.Id,
+					Localization.GetMessage("Cancel", botUser.Lang));
 			}
 		}
 
 		//TODO:
 		//use emoji from new system
-		async Task UpdateAccountData(BotUser user, Account account, UpdateAccountCommandCode updateAccountCommandCode,
+		async Task UpdateAccountData(BotUser botUser, Account account, UpdateAccountCommandCode updateAccountCommandCode,
 			CallbackQuery callbackQuery, long accountId) {
 			var backButton = InlineKeyboardButton.WithCallbackData(
-				"⬅️ " + Localization.GetMessage("Back", user.Lang),
+				"⬅️ " + Localization.GetMessage("Back", botUser.Lang),
 				UpdateAccountCommandCode.SelectUpdateType.ToStringCode(accountId));
 
 			if (account != null) {
 				(string message, InlineKeyboardMarkup replyMarkup)
 					= updateAccountCommandCode switch {
 						UpdateAccountCommandCode.AccountName => ("📝 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewAccountName", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewAccountName", botUser.Lang)),
 							new InlineKeyboardMarkup(backButton)),
 						UpdateAccountCommandCode.Link => ("🔗 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewLink", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewLink", botUser.Lang)),
 							new InlineKeyboardMarkup(
 								new InlineKeyboardButton[]{
 									backButton,
 									InlineKeyboardButton.WithCallbackData(
-										"🗑 " + Localization.GetMessage("DeleteLink", user.Lang),
+										"🗑 " + Localization.GetMessage("DeleteLink", botUser.Lang),
 										UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) })),
 						UpdateAccountCommandCode.Note => ("🗒 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewNote", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewNote", botUser.Lang)),
 							new InlineKeyboardButton[]{
 									backButton,
 									InlineKeyboardButton.WithCallbackData(
-										"🗑 " + Localization.GetMessage("DeleteNote", user.Lang),
+										"🗑 " + Localization.GetMessage("DeleteNote", botUser.Lang),
 										UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) }),
 						UpdateAccountCommandCode.Login => ("📇 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewLogin", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewLogin", botUser.Lang)),
 							new InlineKeyboardMarkup(backButton)),
 						UpdateAccountCommandCode.Password => ("🔑 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewPassword", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewPassword", botUser.Lang)),
 							new InlineKeyboardMarkup(
 								new InlineKeyboardButton[][] {
 									new InlineKeyboardButton[]{ backButton},
-									botUi.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
+									botUi.GeneratePasswordKeyboard(botUser, GeneratePasswordCommandCode.Updating,
 										SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId) })),
 						UpdateAccountCommandCode.OutdatedTime => ("🕜 " + String.Format(
-								Localization.GetMessage("UpdateAccData", user.Lang),
-								Localization.GetMessage("NewOutdatedTime", user.Lang)),
+								Localization.GetMessage("UpdateAccData", botUser.Lang),
+								Localization.GetMessage("NewOutdatedTime", botUser.Lang)),
 							new InlineKeyboardMarkup(backButton)),
 						_ => throw new InvalidOperationException()
 					};
-				message = await botUi.SerializeAccountAsync(user, account, false, message);
-				await Bot.Client.EditMessageTextAsync(user.Id, callbackQuery.Message.MessageId,
+				message = await botUi.SerializeAccountAsync(botUser, account, false, message);
+				await Bot.Client.EditMessageTextAsync(botUser.Id, callbackQuery.Message.MessageId,
 					message, replyMarkup: replyMarkup);
-				accountUpdatingService.StartUpdatingRequest(user.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
-				await userService.UpdateActionAsync(user.Id, UserAction.UpdateAccount);
+				accountUpdatingService.StartUpdatingRequest(botUser.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.UpdateAccount);
 			}
 		}
 
-		async Task DeleteAccountData(BotUser user, UpdateAccountCommandCode updateAccountCommandCode,
+		async Task DeleteAccountData(BotUser botUser, UpdateAccountCommandCode updateAccountCommandCode,
 			CallbackQuery callbackQuery, long accountId) {
 			AccountUpdatingStage accountUpdatingStage = updateAccountCommandCode switch {
 				UpdateAccountCommandCode.DeleteLink => AccountUpdatingStage.Link,
 				UpdateAccountCommandCode.DeleteNote => AccountUpdatingStage.Note,
 				_ => throw new InvalidOperationException()
 			};
-			await UpdateAccountData(user, null, accountUpdatingStage, accountId, callbackQuery, false);
+			await UpdateAccountData(botUser, null, accountUpdatingStage, accountId, callbackQuery, false);
 		}
 
-		async Task UpdateAccountData(BotUser user, string property, AccountUpdatingStage accountUpdatingStage,
+		async Task UpdateAccountData(BotUser botUser, string property, AccountUpdatingStage accountUpdatingStage,
 			long accountId, CallbackQuery callbackQuery, bool startUpdatingRequest, Account account = null) {
 			try {
 				if(startUpdatingRequest) {
 					if (account != null) 
-						accountUpdatingService.StartUpdatingRequest(user.Id, account, AccountUpdatingStage.OutdatedTime);
+						accountUpdatingService.StartUpdatingRequest(botUser.Id, account, AccountUpdatingStage.OutdatedTime);
 					else throw new InvalidOperationException("Account cannot be null when starting updating request");
 				}
-				AccountUpdatingStage nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(user.Id, property,
+				AccountUpdatingStage nextUpdatingStage = accountUpdatingService.GetNextUpdatingStage(botUser.Id, property,
 					accountUpdatingStage, accountId);
-				await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
+				await HandleNextStage(botUser, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(user, exception);
+				await botUi.SendValidationErrorAsync(botUser, exception);
 			}
 		}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
+		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
 			UpdateAccountCommandCode updateAccountCommandCode;
 			long accountId;
@@ -161,14 +161,14 @@ namespace PasswordManager.Bot.Commands {
 				throw;
 			}
 
-			Account account = await accountService.GetAccountAsync(user.Id, accountId);
+			Account account = await accountService.GetAccountAsync(botUser.Id, accountId);
 			AccountUpdatingStage nextUpdatingStage = AccountUpdatingStage.None;
 
 			switch (updateAccountCommandCode) {
 				case UpdateAccountCommandCode.SelectUpdateType:
 					if (account != null) {
-						await botUi.ShowAccountUpdatingMenuAsync(user, account, callbackQuery.Message.MessageId,
-							Localization.GetMessage("ChooseWhatUpdate", user.Lang));
+						await botUi.ShowAccountUpdatingMenuAsync(botUser, account, callbackQuery.Message.MessageId,
+							Localization.GetMessage("ChooseWhatUpdate", botUser.Lang));
 					}
 					break;
 				case UpdateAccountCommandCode.Password:
@@ -177,52 +177,52 @@ namespace PasswordManager.Bot.Commands {
 				case UpdateAccountCommandCode.Note:
 				case UpdateAccountCommandCode.Login:
 				case UpdateAccountCommandCode.OutdatedTime:
-					await UpdateAccountData(user, account, updateAccountCommandCode, callbackQuery, accountId);
+					await UpdateAccountData(botUser, account, updateAccountCommandCode, callbackQuery, accountId);
 					break;
 				case UpdateAccountCommandCode.UntrackOutdatedTime:
-					await UpdateAccountData(user, "0",
+					await UpdateAccountData(botUser, "0",
 						AccountUpdatingStage.OutdatedTime, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.UseGlobalOutdatedTime:
-					await UpdateAccountData(user, null,
+					await UpdateAccountData(botUser, null,
 						AccountUpdatingStage.OutdatedTime, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.RemoveEncryption:
-					await UpdateAccountData(user, callbackQuery.Message.Text,
+					await UpdateAccountData(botUser, callbackQuery.Message.Text,
 						AccountUpdatingStage.RemovePasswordEncryption, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.AcceptPassword:
-					await UpdateAccountData(user, callbackQuery.Message.Text,
+					await UpdateAccountData(botUser, callbackQuery.Message.Text,
 						AccountUpdatingStage.Password, accountId, callbackQuery, true, account);
 					break;
 				case UpdateAccountCommandCode.DeleteLink:
 				case UpdateAccountCommandCode.DeleteNote:
-					await DeleteAccountData(user, updateAccountCommandCode, callbackQuery, accountId);
+					await DeleteAccountData(botUser, updateAccountCommandCode, callbackQuery, accountId);
 					break;
 				case UpdateAccountCommandCode.SkipPasswordEncryption:
-					nextUpdatingStage = accountUpdatingService.SkipNextUpdatingStage(user.Id, accountId,
+					nextUpdatingStage = accountUpdatingService.SkipNextUpdatingStage(botUser.Id, accountId,
 						AccountUpdatingStage.EncryptPassword);
-					await HandleNextStage(user, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
+					await HandleNextStage(botUser, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
 					break;
 			}
 		}
 
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 			AccountUpdatingStage nextUpdatingStage = AccountUpdatingStage.None;
 			long? accountId = null;
 			try {
-				(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(user.Id, message.Text);
+				(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(botUser.Id, message.Text);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(user, exception);
+				await botUi.SendValidationErrorAsync(botUser, exception);
 			} catch (InvalidOperationException) {
-				accountUpdatingService.FinishUpdatingRequest(user.Id);
-				await userService.UpdateActionAsync(user.Id, UserAction.Search);
+				accountUpdatingService.FinishUpdatingRequest(botUser.Id);
+				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 			}
 
-			await HandleNextStage(user, nextUpdatingStage, accountId);
+			await HandleNextStage(botUser, nextUpdatingStage, accountId);
 		}
 
-		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser user) {
+		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 			//This command allows to bypass pressing "Accept password" button and then entering encryption key
 			//by sending encryption key right in reply to suggested password message
 			if (message.ReplyToMessage.ReplyMarkup != null
@@ -233,19 +233,19 @@ namespace PasswordManager.Bot.Commands {
 				long? accountId = null;
 				try {
 					accountUpdatingService.GetNextUpdatingStageAndAccountId(
-						user.Id, message.ReplyToMessage.Text, AccountUpdatingStage.Password);
+						botUser.Id, message.ReplyToMessage.Text, AccountUpdatingStage.Password);
 					(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(
-						user.Id, message.Text, AccountUpdatingStage.EncryptPassword);
+						botUser.Id, message.Text, AccountUpdatingStage.EncryptPassword);
 				} catch (ValidationException exception) {
-					await botUi.SendValidationErrorAsync(user, exception);
+					await botUi.SendValidationErrorAsync(botUser, exception);
 				} catch (InvalidOperationException) {
-					await userService.UpdateActionAsync(user.Id, UserAction.Search);
+					await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 				}
 
-				await HandleNextStage(user, nextUpdatingStage, accountId);
+				await HandleNextStage(botUser, nextUpdatingStage, accountId);
 			} else {
 				//handle reply action command as regular action command
-				await (this as IActionCommand).ExecuteAsync(message, user);
+				await (this as IActionCommand).ExecuteAsync(message, botUser);
 			}
 		}
 
