@@ -8,9 +8,11 @@ using PasswordManager.Application.Services.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	public class ShowAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 		private readonly IAccountService accountService;
+		private readonly IBotUi botUi;
 
-		public ShowAccountCommand(IBot bot, IAccountService accountService) : base(bot) {
+		public ShowAccountCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
 			this.accountService = accountService;
+			this.botUi = botUi;
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {

@@ -126,12 +126,12 @@ namespace PasswordManager.Bot.Extensions {
 		/// <returns><paramref name="callbackQueryCommandCode"/> + <paramref name="additionalCommand"/></returns>
 		private static string GetStringCode(CallbackQueryCommandCode callbackQueryCommandCode, char additionalCommand, object param)
 			=> new StringBuilder(callbackQueryCommandCode.ToStringCode())
-			.Append(additionalCommand)
-			.Append(param)
-			.ToString();
+				.Append(additionalCommand)
+				.Append(param)
+				.ToString();
 
 		///returns null if there is no command in message
-		public static string GetTextCommand(this string messageText) {
+		public static string GetTextCommand(this string messageText) {  
 			//TODO:
 			//remove '/' from returned message when using new commands without '/' 
 			//that means - when support for commands without '/' will be implemented here

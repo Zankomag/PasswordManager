@@ -22,11 +22,13 @@ namespace PasswordManager.Bot.Services.Abstractions {
 			int? messageToEditId = null,
 			string extraMessage = null,
 			string backButtonCommandCode = null);
+		
 		/// <summary>
 		/// Serializes given account to MarkdownV2 string
 		/// </summary>
 		Task<string> SerializeAccount(BotUser botUser, Account account,
 			bool includeOutdatedTime, string extraMessage = null);
+		
 		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser user,
 			GeneratePasswordCommandCode generatePasswordCommandCode,
 			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
@@ -42,8 +44,11 @@ namespace PasswordManager.Bot.Services.Abstractions {
 		/// <returns></returns>
 		Task ShowAccountUpdatingMenuAsync(BotUser user, Account account,
 			int messageToEditId, string extraMessage);
+		
 		Task SendValidationError(BotUser user, ValidationException validationException);
+		
 		string GetPasswordMessage(string password);
+		
 		InlineKeyboardMarkup GetPasswordGeneratorSettingsKeyboard(BotUser botUser, string passwordGeneratorPattern);
 
 	}

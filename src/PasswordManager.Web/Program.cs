@@ -3,10 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
+//todo move to dotnet 6 and use file-scoped usings
 namespace PasswordManager.Web {
 	public class Program {
 		public static void Main(string[] args) {
 			//TODO use appsettings.ENV.json too
+			//todo MAKE NORMAL INITIALIZATION OF CONFIGURATION, NOT LIKE THAT!!!, 
+			// and inject Logger after that
 			var config = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json")
 				.Build();

@@ -18,7 +18,7 @@ namespace PasswordManager.Bot.Extensions {
 				UpdateType.PreCheckoutQuery => update.PreCheckoutQuery.From.Id,
 				UpdateType.ShippingQuery => update.ShippingQuery.From.Id,
 				UpdateType.Unknown => null,
-				_ => throw new ArgumentException("Unknown update type")
+				_ => throw new ArgumentException($"Unknown update type: {update.Type}")
 			};
 	}
 }
