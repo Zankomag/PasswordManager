@@ -5,26 +5,29 @@ using System.Linq;
 
 namespace PasswordManager.Bot.Extensions {
 	public static class StringExtensions {
+		//todo validate all Url types, not only http, and improve Url building logic
 		///<summary></summary>
-		///<returns>https://value</returns>
+		///<returns>https://value or http://value</returns>
 		public static string BuildUrl(this string value) {
-			if (string.IsNullOrWhiteSpace(value))
+			if(String.IsNullOrWhiteSpace(value))
 				throw new ArgumentException("string is null, whitespace or empty");
-			return (value.StartsWith("https://") || value.StartsWith("http://"))
-				? value.Trim() : "https://" + value.Trim();
+			return value.StartsWith("https://", StringComparison.Ordinal)
+				|| value.StartsWith("http://", StringComparison.Ordinal)
+				? value.Trim()
+				: "https://" + value.Trim();
 		}
 
 		///<summary></summary>
 		/// ///<returns>first_word_in_string.com</returns>
 		public static string AutoDomain(this string value) {
-			if (string.IsNullOrWhiteSpace(value))
+			if (String.IsNullOrWhiteSpace(value))
 				throw new ArgumentException("string is null, whitespace or empty");
 			int spaceIndex;
 			string autoLink = (spaceIndex = value.IndexOf(' ')) == -1
-				? value.ToLower() : value.Substring(0, spaceIndex).ToLower();
+				? value.ToLower() : value[..spaceIndex].ToLower();
 			StringBuilder autoLinkBuilder = new StringBuilder(autoLink);
 			int dotIndex;
-			if (!((dotIndex = autoLink.IndexOf('.')) != -1)) {
+			if ((dotIndex = autoLink.IndexOf('.')) == -1) {
 				if(dotIndex == autoLink.Length-1)
 					autoLinkBuilder.Append("com");
 			} else {
@@ -33,23 +36,24 @@ namespace PasswordManager.Bot.Extensions {
 			return autoLinkBuilder.ToString();
 		}
 
-		public static string ToZeroOneString(this bool param) {
-			return param ? "1" : "0";
-		}
+		/// <summary>
+		/// Converts bool to "1" or "0"
+		/// </summary>
+		/// <param name="param"></param>
+		/// <returns>"1" or "0"</returns>
+		public static string ToZeroOneString(this bool param) => param ? "1" : "0";
 
 		/// <summary>
-		/// This function retunrs reverse bool because it will be handled as new setting
+		/// Converts True to "0" and False to "1", because it will be handled as new setting
 		/// which must be opposite to last setting
 		/// </summary>
 		/// <param name="param"></param>
 		/// <returns></returns>
-		public static string ToReverseZeroOneString(this bool param) {
-			return param ? "0" : "1";
-		}
+		public static string ToReverseZeroOneString(this bool param) => param ? "0" : "1";
 
-			public static string ToEmojiString(this bool param, bool addSpace = false) {
+		public static string ToEmojiString(this bool param, bool addSpaceInEnd = false) {
 			string result =  param ? "✅" : "✖️";
-			if (addSpace)
+			if (addSpaceInEnd)
 				result += " ";
 			return result;
 		}
@@ -109,35 +113,41 @@ namespace PasswordManager.Bot.Extensions {
 			=> GetStringCode(CallbackQueryCommandCode.GeneratePassword, (char)generatePasswordCommandCode);
 
 		/// <summary></summary>
+		/// <param name="callbackQueryCommandCode"></param>
 		/// <param name="additionalCommand">Command that need to be appended to <paramref name="callbackQueryCommandCode"/></param>
 		/// <returns><paramref name="callbackQueryCommandCode"/> + <paramref name="additionalCommand"/></returns>
 		private static string GetStringCode(CallbackQueryCommandCode callbackQueryCommandCode, char additionalCommand)
 			=> new StringBuilder(callbackQueryCommandCode.ToStringCode()).Append(additionalCommand).ToString();
 
 		/// <summary></summary>
+		/// <param name="callbackQueryCommandCode"></param>
 		/// <param name="additionalCommand">Command that need to be appended to <paramref name="callbackQueryCommandCode"/></param>
+		/// <param name="param"></param>
 		/// <returns><paramref name="callbackQueryCommandCode"/> + <paramref name="additionalCommand"/></returns>
 		private static string GetStringCode(CallbackQueryCommandCode callbackQueryCommandCode, char additionalCommand, object param)
 			=> new StringBuilder(callbackQueryCommandCode.ToStringCode())
 			.Append(additionalCommand)
-			.Append(param.ToString())
+			.Append(param)
 			.ToString();
 
 		///returns null if there is no command in message
 		public static string GetTextCommand(this string messageText) {
 			//TODO:
-			//remove '/' from returned message when using new commands without /
+			//remove '/' from returned message when using new commands without '/' 
+			//that means - when support for commands without '/' will be implemented here
 			if (messageText == null)
 				throw new ArgumentNullException(nameof(messageText));
 			//Command that starts with '/' may contain args and must be separated from them
 			if (messageText.StartsWith('/')) {
 				string commandString = messageText.ToLower();
 				int cIndex = commandString.IndexOfAny(new char[] { ' ', '\n' });
-				return cIndex != -1 ? commandString.Substring(0, cIndex) : commandString;
+				return cIndex != -1 ? commandString[..cIndex] : commandString;
 			}
 			return null;
 		}
 
+		
+		
 		//TODO:
 		//unit test
 		/// <param name="commandText">command with args</param>
@@ -167,9 +177,9 @@ namespace PasswordManager.Bot.Extensions {
 
 		//Chars that need to be escaped in Telegram MarkdownV2
 		private static readonly string[] charsToEscape 
-			= new char[] { '\\', '`', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' }
+			= new[] { '\\', '`', '_', '*', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' }
 				.Select(x => x.ToString()).ToArray();
-		private static readonly string[] escapedChars = charsToEscape.Select(x => string.Concat('\\', x)).ToArray();
+		private static readonly string[] escapedChars = charsToEscape.Select(x => String.Concat('\\', x)).ToArray();
 
 		public static string EscapeMarkdownV2Chars(this string value) {
 			for(int i = 0; i< charsToEscape.Length; i++) {
