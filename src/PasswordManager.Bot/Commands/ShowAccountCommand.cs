@@ -1,4 +1,5 @@
-﻿using PasswordManager.Bot.Commands.Abstractions;
+﻿using System;
+using PasswordManager.Bot.Commands.Abstractions;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using PasswordManager.Bot.Models;
@@ -15,15 +16,17 @@ namespace PasswordManager.Bot.Commands {
 			this.botUi = botUi;
 		}
 
+		//todo rename all BotUser params to botUser
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
 			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);
-			string accountId = callbackQuery.Data[1..];
+			string accountIdString = callbackQuery.Data[1..];
+			//TODO create custom Exception instead of default one. Also check other cases
+			if(!Int64.TryParse(accountIdString, out long accountId))
+				throw new Exception($"Unable to parse accountId to Int64: {accountIdString}");
 
-			await .ShowAccountById(
-				callbackQuery.From.Id,
-				accountId,
-				user.Lang,
-				callbackQuery.Message.MessageId);
+			var account = await accountService.GetAccountAsync(user.Id, accountId);
+			//todo add backButtonCommandCode
+			await botUi.ShowAccountAsync(user, account, callbackQuery.Message.MessageId);
 		}
 
 	}
