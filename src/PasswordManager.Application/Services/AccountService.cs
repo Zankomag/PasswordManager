@@ -14,13 +14,13 @@ namespace PasswordManager.Application.Services {
 			this.workUnit = workUnit;
 		}
 
-		public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null)
+		public async Task<IEnumerable<Account>> GetAccountsByNameAsync(long userId, int page, int pageSize, string accountName = null)
 			=> await workUnit.AccountRepository.GetByNameAsync(userId, page, pageSize, accountName);
 
-		public async Task<int> GetCountAsync(long userId, string accountName = null)
+		public async Task<int> GetAccountCountByNameAsync(long userId, string accountName = null)
 			=> await workUnit.AccountRepository.GetCountAsync(userId, accountName);
 
-		public async Task<Account> GetFullAsync(long userId, long accountId)
+		public async Task<Account> GetAccountAsync(long userId, long accountId)
 			=> await workUnit.AccountRepository.GetFullAsync(userId, accountId);
 
 		public async Task<Account> GetPasswordAsync(long userId, long accountId)
@@ -36,11 +36,7 @@ namespace PasswordManager.Application.Services {
 			return false;
 		}
 
-		public async Task<bool> AddAccountAsync(long userId, Account account) {
-			if (userId != account.UserId) {
-				//TODO: Log exception
-				throw new ArgumentException("account.UserId doesn't match userId");
-			}
+		public async Task<bool> AddAccountAsync(Account account) {
 			await workUnit.AccountRepository.AddAsync(account);
 			try {
 				await workUnit.SaveAsync();

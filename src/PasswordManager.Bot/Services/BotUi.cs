@@ -23,6 +23,10 @@ namespace PasswordManager.Bot.Services {
 			this.userService = userService;
 		}
 
+		//TODO Create data type for CommandCode as class tht consists from MainCommandCode
+		// and Optional AdditionalCommandCode and ToString() method so that it will be validated on usage instead
+		// of just using strings as 'backButtonCommandCode' below
+		
 		//TODO: 
 		//get rid of using hardcoded emoji
 		//

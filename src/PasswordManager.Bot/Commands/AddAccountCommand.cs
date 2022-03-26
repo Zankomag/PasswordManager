@@ -46,7 +46,7 @@ namespace PasswordManager.Bot.Commands {
 		private async Task HandleNextStage(BotUser user, AccountAssemblingStage nextAccountAssemblingStage) {
 			if (nextAccountAssemblingStage == AccountAssemblingStage.Release) {
 				var account = accountAssemblingService.Release(user.Id);
-				if (await accountService.AddAccountAsync(user.Id, account)) {
+				if (await accountService.AddAccountAsync(account)) {
 					//TODO: use emoji by key
 					await botUi.ShowAccount(user, account,
 						extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", user.Lang),
