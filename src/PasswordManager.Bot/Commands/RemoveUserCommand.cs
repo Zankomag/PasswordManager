@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
@@ -18,7 +19,7 @@ namespace PasswordManager.Bot.Commands {
 				int spaceIndex;
 				if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 					string userIdStr = message.Text[(spaceIndex+1)..];
-					if(int.TryParse(userIdStr, out int userId)){
+					if(Int32.TryParse(userIdStr, out int userId)){
 						if (Bot.IsAdmin(user)) {
 							await Bot.Client.SendTextMessageAsync(user.Id,
 								"You are trying to remove admin. I won't let you do this.");

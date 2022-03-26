@@ -190,7 +190,7 @@ namespace PasswordManager.Bot.Commands {
 			//by sending encryption key right in reply to suggested password message
 			if (message.ReplyToMessage.ReplyMarkup != null
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
-					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
+					.Any(x => x.Any(y => !String.IsNullOrEmpty(y.CallbackData)
 						&& y.CallbackData == AddAccountCommandCode.AcceptPassword.ToStringCode()))) {
 				AccountAssemblingStage nextAssemblingStage = AccountAssemblingStage.None;
 				try {

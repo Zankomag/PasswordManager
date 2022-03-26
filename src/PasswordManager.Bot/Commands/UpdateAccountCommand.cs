@@ -74,11 +74,11 @@ namespace PasswordManager.Bot.Commands {
 			if (account != null) {
 				(string message, InlineKeyboardMarkup replyMarkup)
 					= updateAccountCommandCode switch {
-						UpdateAccountCommandCode.AccountName => ("📝 " + string.Format(
+						UpdateAccountCommandCode.AccountName => ("📝 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewAccountName", user.Lang)),
 							new InlineKeyboardMarkup(backButton)),
-						UpdateAccountCommandCode.Link => ("🔗 " + string.Format(
+						UpdateAccountCommandCode.Link => ("🔗 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewLink", user.Lang)),
 							new InlineKeyboardMarkup(
@@ -87,7 +87,7 @@ namespace PasswordManager.Bot.Commands {
 									InlineKeyboardButton.WithCallbackData(
 										"🗑 " + Localization.GetMessage("DeleteLink", user.Lang),
 										UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) })),
-						UpdateAccountCommandCode.Note => ("🗒 " + string.Format(
+						UpdateAccountCommandCode.Note => ("🗒 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewNote", user.Lang)),
 							new InlineKeyboardButton[]{
@@ -95,11 +95,11 @@ namespace PasswordManager.Bot.Commands {
 									InlineKeyboardButton.WithCallbackData(
 										"🗑 " + Localization.GetMessage("DeleteNote", user.Lang),
 										UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) }),
-						UpdateAccountCommandCode.Login => ("📇 " + string.Format(
+						UpdateAccountCommandCode.Login => ("📇 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewLogin", user.Lang)),
 							new InlineKeyboardMarkup(backButton)),
-						UpdateAccountCommandCode.Password => ("🔑 " + string.Format(
+						UpdateAccountCommandCode.Password => ("🔑 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewPassword", user.Lang)),
 							new InlineKeyboardMarkup(
@@ -107,7 +107,7 @@ namespace PasswordManager.Bot.Commands {
 									new InlineKeyboardButton[]{ backButton},
 									botUi.GeneratePasswordKeyboard(user, GeneratePasswordCommandCode.Updating,
 										SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId) })),
-						UpdateAccountCommandCode.OutdatedTime => ("🕜 " + string.Format(
+						UpdateAccountCommandCode.OutdatedTime => ("🕜 " + String.Format(
 								Localization.GetMessage("UpdateAccData", user.Lang),
 								Localization.GetMessage("NewOutdatedTime", user.Lang)),
 							new InlineKeyboardMarkup(backButton)),
@@ -227,7 +227,7 @@ namespace PasswordManager.Bot.Commands {
 			//by sending encryption key right in reply to suggested password message
 			if (message.ReplyToMessage.ReplyMarkup != null
 				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
-					.Any(x => x.Any(y => !string.IsNullOrEmpty(y.CallbackData)
+					.Any(x => x.Any(y => !String.IsNullOrEmpty(y.CallbackData)
 						&& y.CallbackData[..2] == UpdateAccountCommandCode.AcceptPassword.ToStringCode()))) {
 				AccountUpdatingStage nextUpdatingStage = AccountUpdatingStage.None;
 				long? accountId = null;

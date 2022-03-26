@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
@@ -14,7 +15,7 @@ namespace PasswordManager.Bot.Commands {
 			//TODO:
 			//Create public static method in HelpCommand that returns help message
 			=> await Bot.Client.SendTextMessageAsync(message.From.Id, 
-				string.Format(Localization.GetMessage("Help", user.Lang), 
+				String.Format(Localization.GetMessage("Help", user.Lang), 
 				"/add", "/all", "/generator", "/language", "/cancel","/help"),
 				Telegram.Bot.Types.Enums.ParseMode.Markdown);
 	}

@@ -23,7 +23,7 @@ namespace PasswordManager.Bot.Commands {
 			if(Bot.IsAdmin(user)) {
 				try {
 					IList<User> users = await userService.GetAllBasicInfoAsync();
-					string response = string.Empty;
+					string response = String.Empty;
 					//TODO: use string builder
 					for(int i = 0; i < users.Count; i++) {
 						response += $"{(i + 1)}. [{ users[i].Id}](tg://user?id={users[i].Id}): {users[i].Accounts.Count}\n\n";

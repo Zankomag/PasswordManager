@@ -118,13 +118,13 @@ namespace PasswordManager.Bot.Services {
 				if(outdatedTime != null) {
 					int changePasswordInDays = (account.PasswordUpdatedDate + outdatedTime.Value - DateTime.UtcNow.Date).Days;
 					//TODO: use methods from new localization system and emoji
-					string changePasswordInDaysString = string.Format(Localization.GetMessage("WhenChangePassword", botUser.Lang),
+					string changePasswordInDaysString = String.Format(Localization.GetMessage("WhenChangePassword", botUser.Lang),
 						changePasswordInDays > 0 
-							? string.Format(Localization.GetMessage("WhenDays", botUser.Lang), outdatedTime)
-							: string.Concat("⚠️ ",
+							? String.Format(Localization.GetMessage("WhenDays", botUser.Lang), outdatedTime)
+							: String.Concat("⚠️ ",
 								changePasswordInDays == 0 
 									? Localization.GetMessage("WhenToday", botUser.Lang)
-									: string.Concat('*', Localization.GetMessage("WhenNow", botUser.Lang), '*'),
+									: String.Concat('*', Localization.GetMessage("WhenNow", botUser.Lang), '*'),
 								"⚠️ "));
 
 					messageBuilder.Append("\n\n").Append(changePasswordInDaysString);

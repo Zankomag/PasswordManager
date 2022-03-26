@@ -19,8 +19,8 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser user) {
-			if (long.TryParse(callbackQuery.Data[2..], out long accountId)) {
-				if (!string.IsNullOrEmpty(callbackQuery.Data)
+			if (Int64.TryParse(callbackQuery.Data[2..], out long accountId)) {
+				if (!String.IsNullOrEmpty(callbackQuery.Data)
 					&& callbackQuery.Data[0] == (char)CallbackQueryCommandCode.DeleteAccount) {
 
 					//TODO: move keyboards to ui service

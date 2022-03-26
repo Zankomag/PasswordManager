@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -67,7 +68,7 @@ namespace PasswordManager.Bot.Commands {
 			//Create public static method in HelpCommand that returns help message
 			await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
 				Localization.GetMessage("LangIsSet", user.Lang) + "\n\n" +
-				string.Format(Localization.GetMessage("Help", user.Lang),
+				String.Format(Localization.GetMessage("Help", user.Lang),
 				"/add", "/all", "/generator", "/language", "/cancel", "/help"), Telegram.Bot.Types.Enums.ParseMode.Markdown);
 		}
 	}
