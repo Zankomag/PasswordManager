@@ -10,9 +10,10 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
 	public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
-		//Moved from 
+		//todo move to botUi
 		public const string separator = "\n──────────────────";
-		//Moved from 
+
+		//todo move to botUi
 		private const int maxAccsByPage = 3;
 		private readonly IAccountService accountService;
 
@@ -21,7 +22,18 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
-			await .SearchAccounts(message.From.Id, botUser.Lang, message.Text);
+			int accountCount = GetAccountCount(chatId, accountName);
+
+			if(accountCount == 1) {
+				await ShowAccountByName(chatId, accountName, langCode);
+			} else if(accountCount == 0) {
+				await Bot.Client.SendTextMessageAsync(chatId,
+					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
+			} else if(accountCount <= maxAccsByPage) {
+				await ShowSinglePage(chatId, accountName, langCode);
+			} else {
+				await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
+			}
 		}
 
 		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
@@ -42,7 +54,8 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//Moved from 
+		//todo: delete this comment below
+		//Moved from password manager
 		private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
 			if (accountName != null) {
 				//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
@@ -58,7 +71,8 @@ namespace PasswordManager.Bot.Commands {
 				"." + accountName);
 		}
 
-		//Moved from 
+		//todo: delete this comment below
+		//Moved from password manager
 		public static async Task ShowPage(int userId,
 			string accountName, int page, int pageCount,
 			string langCode, int messageToEditId = 0) {
@@ -122,7 +136,8 @@ namespace PasswordManager.Bot.Commands {
 			}
 		}
 
-		//Moved from 
+		//todo: delete this comment below
+		//Moved from password manager
 		private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 			List<Account> accounts;
 			if (accountName != null) {
@@ -150,7 +165,8 @@ namespace PasswordManager.Bot.Commands {
 					disableWebPagePreview: true);
 		}
 
-		//Moved from 
+		//todo: delete this comment below
+		//Moved from password manager
 		private static string GetPageMessage(List<Account> accounts,
 			out InlineKeyboardButton[][] keyboard,
 			bool singlePage, string langCode, string message = null) {
@@ -174,33 +190,13 @@ namespace PasswordManager.Bot.Commands {
 			return message;
 		}
 
-		//Moved from 
-		/// <param name="chatId"></param>
-		/// <param name="accountName">Send null to find all accounts</param>
-		/// <param name="langCode"></param>
-		/// <returns></returns>
-		public static async Task SearchAccounts(int chatId, string langCode, string accountName = null) {
-
-			int accountCount = GetAccountCount(chatId, accountName);
-
-			if (accountCount == 1) {
-				await ShowAccountByName(chatId, accountName, langCode);
-			} else if (accountCount == 0) {
-				await Bot.Client.SendTextMessageAsync(chatId,
-					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
-			} else if (accountCount <= maxAccsByPage) {
-				await ShowSinglePage(chatId, accountName, langCode);
-			} else {
-				await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
-			}
-		}
-
 
 		//TODO
 		//optimize with TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 		//https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-5.0#add-paging-to-students-index
 		//
-		//Moved from 
+		//todo: delete this comment below
+		//Moved from password manager
 		public static int GetPageCount(int accountCount) {
 			return accountCount % maxAccsByPage == 0 ? accountCount / maxAccsByPage : ((accountCount / maxAccsByPage) + 1);
 		}

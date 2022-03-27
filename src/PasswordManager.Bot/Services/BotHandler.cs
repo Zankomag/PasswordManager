@@ -122,8 +122,7 @@ namespace PasswordManager.Bot.Services {
 				throw exception;
 			}
 
-			CallbackQueryCommandCode callbackCommandCode;
-			callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
+			var callbackCommandCode = (CallbackQueryCommandCode)callbackQuery.Data[0];
 
 			var callbackQueryCommand = commandFactory.GetCallBackQueryCommand(callbackCommandCode);
 			if(callbackQueryCommand != null) {
