@@ -10,15 +10,20 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
 	public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
-		//todo move to botUi
-		public const string separator = "\n──────────────────";
-
-		//todo move to botUi
-		private const int maxAccsByPage = 3;
+		//todo move to botUi and later to appsettings
+		public const string AccountSeparator = "\n──────────────────";
+		//todo move to botUi and later to appsettings
+		/// <summary>
+		/// How many accounts can be on a page
+		/// </summary>
+		private const int pageSize = 3;
+		
 		private readonly IAccountService accountService;
+		private readonly IBotUi botUi;
 
-		public SearchCommand(IBot bot, IAccountService accountService) : base(bot) {
+		public SearchCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
 			this.accountService = accountService;
+			this.botUi = botUi;
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
@@ -29,7 +34,7 @@ namespace PasswordManager.Bot.Commands {
 			} else if(accountCount == 0) {
 				await Bot.Client.SendTextMessageAsync(chatId,
 					String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
-			} else if(accountCount <= maxAccsByPage) {
+			} else if(accountCount <= pageSize) {
 				await ShowSinglePage(chatId, accountName, langCode);
 			} else {
 				await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
@@ -82,12 +87,12 @@ namespace PasswordManager.Bot.Commands {
 				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
-							"limit @maxAccsByPage offset @Offset",
+							"limit @pageSize offset @Offset",
 						new {
 							userId,
 							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",
-							maxAccsByPage,
-							Offset = page * maxAccsByPage
+							maxAccsByPage = pageSize,
+							Offset = page * pageSize
 						})
 						.ToList();
 				}
@@ -95,11 +100,11 @@ namespace PasswordManager.Bot.Commands {
 				using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
 					accounts = conn.Query<Account>(
 						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
-							"limit @maxAccsByPage offset @Offset",
+							"limit @pageSize offset @Offset",
 						new {
 							userId,
-							maxAccsByPage,
-							Offset = page * maxAccsByPage
+							maxAccsByPage = pageSize,
+							Offset = page * pageSize
 						})
 						.ToList();
 				}
@@ -178,7 +183,7 @@ namespace PasswordManager.Bot.Commands {
 
 			for (int i = 0; i < accounts.Count; i++) {
 				if (i != 0)
-					message += separator;
+					message += AccountSeparator;
 				message += "\n" + accounts[i].AccountName;
 				if (accounts[i].Link != null)
 					message += "\n" + accounts[i].Link;
@@ -198,7 +203,7 @@ namespace PasswordManager.Bot.Commands {
 		//todo: delete this comment below
 		//Moved from password manager
 		public static int GetPageCount(int accountCount) {
-			return accountCount % maxAccsByPage == 0 ? accountCount / maxAccsByPage : ((accountCount / maxAccsByPage) + 1);
+			return (int)Math.Ceiling(accountCount / (double)pageSize);
 		}
 
 	}

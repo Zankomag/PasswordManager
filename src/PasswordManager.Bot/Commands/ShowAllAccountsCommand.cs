@@ -8,13 +8,15 @@ using PasswordManager.Bot.Services.Abstractions;
 namespace PasswordManager.Bot.Commands {
 	public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
 		private readonly IAccountService accountService;
+		private readonly IBotUi botUi;
 
-		public ShowAllAccountsCommand(IBot bot, IAccountService accountService) : base(bot) {
+		public ShowAllAccountsCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
 			this.accountService = accountService;
+			this.botUi = botUi;
 		}
 
 		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
-			await .SearchAccounts(message.From.Id, botUser.Lang);
+			var result = await accountService.GetAccountsByNameAsync()
 		}
 
 	}
