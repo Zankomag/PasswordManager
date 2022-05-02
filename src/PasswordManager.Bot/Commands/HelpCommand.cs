@@ -6,17 +6,17 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Services.Abstractions;
 
-namespace PasswordManager.Bot.Commands {
-	public class HelpCommand : Abstractions.BotCommand, IMessageCommand {
+namespace PasswordManager.Bot.Commands; 
 
-		public HelpCommand(IBot bot) : base(bot) { }
+public class HelpCommand : Abstractions.BotCommand, IMessageCommand {
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser)
-			//TODO:
-			//Create public static method in HelpCommand that returns help message
-			=> await Bot.Client.SendTextMessageAsync(message.From.Id, 
-				String.Format(Localization.GetMessage("Help", botUser.Lang), 
+	public HelpCommand(IBot bot) : base(bot) { }
+
+	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser)
+		//TODO:
+		//Create public static method in HelpCommand that returns help message
+		=> await Bot.Client.SendTextMessageAsync(message.From.Id, 
+			String.Format(Localization.GetMessage("Help", botUser.Lang), 
 				"/add", "/all", "/generator", "/language", "/cancel","/help"),
-				Telegram.Bot.Types.Enums.ParseMode.Markdown);
-	}
+			Telegram.Bot.Types.Enums.ParseMode.Markdown);
 }

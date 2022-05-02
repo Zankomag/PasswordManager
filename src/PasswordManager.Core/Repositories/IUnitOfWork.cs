@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-namespace PasswordManager.Core.Repositories {
-	public interface IUnitOfWork {
+namespace PasswordManager.Core.Repositories; 
 
-		IAccountRepository AccountRepository { get; }
-		IUserRepository UserRepository { get; }
+public interface IUnitOfWork {
 
-		Task SaveAsync();
+	IAccountRepository AccountRepository { get; }
+	IUserRepository UserRepository { get; }
 
-	}
+	Task SaveAsync();
+
 }

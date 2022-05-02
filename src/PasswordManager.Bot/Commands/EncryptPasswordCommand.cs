@@ -11,83 +11,83 @@ using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace PasswordManager.Bot.Commands {
-	public class EncryptPasswordCommand : ShowReplyInstructionCommand, ICallbackQueryCommand, IReplyActionCommand {
-		private readonly IAccountService accountService;
-		private readonly IUserService userService;
-		private readonly IPasswordEncryptionService passwordEncryptionService;
+namespace PasswordManager.Bot.Commands; 
 
-		public EncryptPasswordCommand(IBot bot, IAccountService accountService,
-			IUserService userService, IPasswordEncryptionService passwordEncryptionService) : base(bot) {
-			this.accountService = accountService;
-			this.userService = userService;
-			this.passwordEncryptionService = passwordEncryptionService;
+public class EncryptPasswordCommand : ShowReplyInstructionCommand, ICallbackQueryCommand, IReplyActionCommand {
+	private readonly IAccountService accountService;
+	private readonly IUserService userService;
+	private readonly IPasswordEncryptionService passwordEncryptionService;
+
+	public EncryptPasswordCommand(IBot bot, IAccountService accountService,
+		IUserService userService, IPasswordEncryptionService passwordEncryptionService) : base(bot) {
+		this.accountService = accountService;
+		this.userService = userService;
+		this.passwordEncryptionService = passwordEncryptionService;
+	}
+
+	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
+		long accountId;
+		try {
+			accountId = Convert.ToInt64(callbackQuery.Data[1..]);
+		} catch (Exception exception) {
+			//TODO: Log exception
+			throw;
 		}
+		passwordEncryptionService.StartEncryptionRequest(botUser.Id, accountId);
+		await userService.UpdateActionAsync(botUser.Id, UserAction.EncryptPassword);
+		await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
+			Localization.GetMessage("EncryptInstruction", botUser.Lang),
+			showAlert: true);
+	}
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
-			long accountId;
+	async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser botUser) {
+		string callbackData = null;
+		if (message.ReplyToMessage.ReplyMarkup != null
+			&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
+				.Any(x => x.Any(y => !String.IsNullOrEmpty(y.CallbackData)
+					&& (callbackData = y.CallbackData)[0] == (char)CallbackQueryCommandCode.EncryptPassword))) {
+
+			long passwordAccountId;
 			try {
-				accountId = Convert.ToInt64(callbackQuery.Data[1..]);
+				passwordAccountId = Convert.ToInt64(callbackData[1..]);
 			} catch (Exception exception) {
 				//TODO: Log exception
 				throw;
 			}
-			passwordEncryptionService.StartEncryptionRequest(botUser.Id, accountId);
-			await userService.UpdateActionAsync(botUser.Id, UserAction.EncryptPassword);
-			await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id,
-				Localization.GetMessage("EncryptInstruction", botUser.Lang),
-				showAlert: true);
-		}
-
-		async Task IReplyActionCommand.ExecuteAsync(Message message, BotUser botUser) {
-			string callbackData = null;
-			if (message.ReplyToMessage.ReplyMarkup != null
-				&& message.ReplyToMessage.ReplyMarkup.InlineKeyboard
-					.Any(x => x.Any(y => !String.IsNullOrEmpty(y.CallbackData)
-						&& (callbackData = y.CallbackData)[0] == (char)CallbackQueryCommandCode.EncryptPassword))) {
-
-				long passwordAccountId;
-				try {
-					passwordAccountId = Convert.ToInt64(callbackData[1..]);
-				} catch (Exception exception) {
-					//TODO: Log exception
-					throw;
-				}
-				long? accountId = passwordEncryptionService.GetAccountId(botUser.Id);
-				if (accountId != null && message.ReplyToMessage.Text != null) {
-					if (accountId == passwordAccountId) {
-						string encryptedPassword;
-						try {
-							encryptedPassword = message.ReplyToMessage.Text
-								.Encrypt(message.Text);
-						} catch (Exception exception) {
-							//TODO; Log Exception
-							throw;
-						}
-						await accountService.UpdatePasswordAsync(botUser.Id, accountId.Value,
-							encryptedPassword, true);
-						passwordEncryptionService.FinishEncryptionRequest(botUser.Id);
-						return;
+			long? accountId = passwordEncryptionService.GetAccountId(botUser.Id);
+			if (accountId != null && message.ReplyToMessage.Text != null) {
+				if (accountId == passwordAccountId) {
+					string encryptedPassword;
+					try {
+						encryptedPassword = message.ReplyToMessage.Text
+							.Encrypt(message.Text);
+					} catch (Exception exception) {
+						//TODO; Log Exception
+						throw;
 					}
-					await ReportWrongReply(botUser);
+					await accountService.UpdatePasswordAsync(botUser.Id, accountId.Value,
+						encryptedPassword, true);
+					passwordEncryptionService.FinishEncryptionRequest(botUser.Id);
 					return;
 				}
-				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
-				await Bot.Client.SendTextMessageAsync(message.From.Id,
-					Localization.GetMessage("Cancel", botUser.Lang));
+				await ReportWrongReply(botUser);
 				return;
 			}
-			await ReportWrongReply(botUser);
+			await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
+			await Bot.Client.SendTextMessageAsync(message.From.Id,
+				Localization.GetMessage("Cancel", botUser.Lang));
+			return;
 		}
-
-		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) 
-			=> await Bot.Client.SendTextMessageAsync(botUser.Id,
-				Localization.GetMessage("SendKeyInReplyToPasswordMessage", botUser.Lang));
-
-		private async Task ReportWrongReply(BotUser botUser) {
-			await Bot.Client.SendTextMessageAsync(botUser.Id,
-						Localization.GetMessage("NotPasswordMessageReply", botUser.Lang));
-		}
-
+		await ReportWrongReply(botUser);
 	}
+
+	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) 
+		=> await Bot.Client.SendTextMessageAsync(botUser.Id,
+			Localization.GetMessage("SendKeyInReplyToPasswordMessage", botUser.Lang));
+
+	private async Task ReportWrongReply(BotUser botUser) {
+		await Bot.Client.SendTextMessageAsync(botUser.Id,
+			Localization.GetMessage("NotPasswordMessageReply", botUser.Lang));
+	}
+
 }

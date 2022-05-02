@@ -21,101 +21,100 @@ using PasswordManager.Application;
 using AutoMapper;
 using PasswordManager.Infrastructure.Repositories;
 
-namespace PasswordManager.Web {
+namespace PasswordManager.Web; 
 
-	public class Startup {
-		public Startup(IConfiguration configuration) {
-			Configuration = configuration;
-		}
+public class Startup {
+	public Startup(IConfiguration configuration) {
+		Configuration = configuration;
+	}
 
-		public IConfiguration Configuration { get; }
+	public IConfiguration Configuration { get; }
 
-		public void ConfigureServices(IServiceCollection services) {
+	public void ConfigureServices(IServiceCollection services) {
 
-			services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
+		services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
 
-			services.AddDbContext<PasswordManagerDbContext>(options => {
-				options.UseSqlite(Configuration.GetConnectionString("PasswordManager"));
-				////Adding "Microsoft.EntityFrameworkCore": "Information" 
-				////to Serilog MinimumLevel in config  allows to get more convenient output
-				//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
-			});
+		services.AddDbContext<PasswordManagerDbContext>(options => {
+			options.UseSqlite(Configuration.GetConnectionString("PasswordManager"));
+			////Adding "Microsoft.EntityFrameworkCore": "Information" 
+			////to Serilog MinimumLevel in config  allows to get more convenient output
+			//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
+		});
 
-			#region Telegram Bot
-			//
-			//TODO move all this DI in infrastructure layer or corresponding layer and call injection medods from infrastructure
-			//but here only one infrastructure method
-			//
+		#region Telegram Bot
+		//
+		//TODO move all this DI in infrastructure layer or corresponding layer and call injection medods from infrastructure
+		//but here only one infrastructure method
+		//
 
-			//TODO:
-			//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
-			AAAA
-			services.AddSingleton<IBot, Bot.Services.Bot>();
-			services.AddSingleton<ICommandFactory, CommandFactory>();
-			services.AddSingleton<IAccountUpdatingService, AccountUpdatingService>();
-			services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
-			services.AddSingleton<IPasswordDecryptionService, PasswordDecryptionService>();
-			services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
+		//TODO:
+		//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
+		AAAA
+		services.AddSingleton<IBot, Bot.Services.Bot>();
+		services.AddSingleton<ICommandFactory, CommandFactory>();
+		services.AddSingleton<IAccountUpdatingService, AccountUpdatingService>();
+		services.AddSingleton<IAccountAssemblingService, AccountAssemblingService>();
+		services.AddSingleton<IPasswordDecryptionService, PasswordDecryptionService>();
+		services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 
-			services.AddScoped<IBotHandler, BotHandler>();
-			services.AddScoped<IBotUi, BotUi>();
-			services.AddScoped<IBotUserService, BotUserService>();
+		services.AddScoped<IBotHandler, BotHandler>();
+		services.AddScoped<IBotUi, BotUi>();
+		services.AddScoped<IBotUserService, BotUserService>();
 			
 
-			//Add all commands using reflection
-			IEnumerable<Type> botCommands = Assembly.GetAssembly(typeof(IBotCommand))
-				?.GetExportedTypes()
-				.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
-			//Because IEnumerable doesn't have ForEach()
-			foreach (var commandType in botCommands) {
-				services.AddScoped(commandType);
-			}
-			#endregion
-			#region Application
-			services.AddSingleton<IApplicationService, ApplicationService>();
-
-			services.AddScoped<IUserService, UserService>();
-			services.AddScoped<IAccountService, AccountService>();
-			#endregion
-			#region Infrastructure
-			services.AddScoped<IUnitOfWork, UnitOfWork>();
-			#endregion
-
-			services.AddAutoMapper(typeof(Startup));
-
-			services.AddControllers()
-				.AddNewtonsoftJson(options => {
-					options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-					options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-				});
-			//.ConfigureApiBehaviorOptions(options => {
-			//	//Override default model state error response
-			//	options.InvalidModelStateResponseFactory = context => {
-			//		if (context.ModelState.ErrorCount > 0) {
-			//			string messages = string.Join("; ", context.ModelState.Values
-			//				.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
-			//			return (ObjectResult)new Response<object>(messages);
-			//		}
-			//		return (ObjectResult)Response<object>.BadRequestResposne;
-			//	};
-			//});
+		//Add all commands using reflection
+		IEnumerable<Type> botCommands = Assembly.GetAssembly(typeof(IBotCommand))
+			?.GetExportedTypes()
+			.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
+		//Because IEnumerable doesn't have ForEach()
+		foreach (var commandType in botCommands) {
+			services.AddScoped(commandType);
 		}
+		#endregion
+		#region Application
+		services.AddSingleton<IApplicationService, ApplicationService>();
 
-		public void Configure(IApplicationBuilder app) {
+		services.AddScoped<IUserService, UserService>();
+		services.AddScoped<IAccountService, AccountService>();
+		#endregion
+		#region Infrastructure
+		services.AddScoped<IUnitOfWork, UnitOfWork>();
+		#endregion
 
-			//To log only Warning or greater requests
-			//Set "Serilog.AspNetCore": "Warning" in Serilog MinimumLevel Config
-			app.UseSerilogRequestLogging();
+		services.AddAutoMapper(typeof(Startup));
 
-			app.UseRouting();
-
-			app.UseAuthentication();
-			app.UseAuthorization();
-
-
-			app.UseEndpoints(endpoints => {
-				endpoints.MapControllers();
+		services.AddControllers()
+			.AddNewtonsoftJson(options => {
+				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+				options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
 			});
-		}
+		//.ConfigureApiBehaviorOptions(options => {
+		//	//Override default model state error response
+		//	options.InvalidModelStateResponseFactory = context => {
+		//		if (context.ModelState.ErrorCount > 0) {
+		//			string messages = string.Join("; ", context.ModelState.Values
+		//				.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
+		//			return (ObjectResult)new Response<object>(messages);
+		//		}
+		//		return (ObjectResult)Response<object>.BadRequestResposne;
+		//	};
+		//});
+	}
+
+	public void Configure(IApplicationBuilder app) {
+
+		//To log only Warning or greater requests
+		//Set "Serilog.AspNetCore": "Warning" in Serilog MinimumLevel Config
+		app.UseSerilogRequestLogging();
+
+		app.UseRouting();
+
+		app.UseAuthentication();
+		app.UseAuthorization();
+
+
+		app.UseEndpoints(endpoints => {
+			endpoints.MapControllers();
+		});
 	}
 }

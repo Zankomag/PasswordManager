@@ -4,15 +4,15 @@ using Telegram.Bot.Types;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 
-namespace PasswordManager.Bot.Commands {
-	public class DeleteMessageCommand : Abstractions.BotCommand, ICallbackQueryCommand {
+namespace PasswordManager.Bot.Commands; 
 
-		public DeleteMessageCommand(IBot bot) : base(bot) { }
+public class DeleteMessageCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 
-		async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) 
-			=> await Bot.TryDeleteMessageAsync(
-				callbackQuery.Message.Chat.Id,
-				callbackQuery.Message.MessageId);
+	public DeleteMessageCommand(IBot bot) : base(bot) { }
+
+	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) 
+		=> await Bot.TryDeleteMessageAsync(
+			callbackQuery.Message.Chat.Id,
+			callbackQuery.Message.MessageId);
 		
-	}
 }

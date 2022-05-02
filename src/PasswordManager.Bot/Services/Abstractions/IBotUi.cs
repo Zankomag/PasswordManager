@@ -5,51 +5,51 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace PasswordManager.Bot.Services.Abstractions {
-	public interface IBotUi {
-		/// <summary>
-		/// Shows full account data with buttons
-		/// </summary>
-		/// <param name="account"></param>
-		/// <param name="messageToEditId">If specified, message will be edited instead of sending new</param>
-		/// <param name="extraMessage">An Extra message to show with account data</param>
-		/// <param name="backButtonCommandCode">If specified, the Back button with this command code
-		/// will be attached to the end of button list</param>
-		/// <param name="botUser"></param>
-		/// <returns></returns>
-		Task ShowAccountAsync(BotUser botUser,
-			Account account,
-			int? messageToEditId = null,
-			string extraMessage = null,
-			string backButtonCommandCode = null);
-		
-		/// <summary>
-		/// Serializes given account to MarkdownV2 string
-		/// </summary>
-		Task<string> SerializeAccountAsync(BotUser botUser, Account account,
-			bool includeOutdatedTime, string extraMessage = null);
-		
-		InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser botUser,
-			GeneratePasswordCommandCode generatePasswordCommandCode,
-			SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
-			long? accountId = null);
+namespace PasswordManager.Bot.Services.Abstractions; 
 
-		/// <summary>
-		/// Shows account data with buttons of account updating menu
-		/// </summary>
-		/// <param name="botUser"></param>
-		/// <param name="account"></param>
-		/// <param name="messageToEditId"></param>
-		/// <param name="extraMessage">An Extra message to show with account data</param>
-		/// <returns></returns>
-		Task ShowAccountUpdatingMenuAsync(BotUser botUser, Account account,
-			int messageToEditId, string extraMessage);
+public interface IBotUi {
+	/// <summary>
+	/// Shows full account data with buttons
+	/// </summary>
+	/// <param name="account"></param>
+	/// <param name="messageToEditId">If specified, message will be edited instead of sending new</param>
+	/// <param name="extraMessage">An Extra message to show with account data</param>
+	/// <param name="backButtonCommandCode">If specified, the Back button with this command code
+	/// will be attached to the end of button list</param>
+	/// <param name="botUser"></param>
+	/// <returns></returns>
+	Task ShowAccountAsync(BotUser botUser,
+		Account account,
+		int? messageToEditId = null,
+		string extraMessage = null,
+		string backButtonCommandCode = null);
 		
-		Task SendValidationErrorAsync(BotUser botUser, ValidationException validationException);
+	/// <summary>
+	/// Serializes given account to MarkdownV2 string
+	/// </summary>
+	Task<string> SerializeAccountAsync(BotUser botUser, Account account,
+		bool includeOutdatedTime, string extraMessage = null);
 		
-		string GetPasswordMessage(string password);
-		
-		InlineKeyboardMarkup GetPasswordGeneratorSettingsKeyboard(BotUser botUser, string passwordGeneratorPattern);
+	InlineKeyboardButton[] GeneratePasswordKeyboard(BotUser botUser,
+		GeneratePasswordCommandCode generatePasswordCommandCode,
+		SetUpPasswordGeneratorCommandCode setUpPasswordGeneratorCommandCode,
+		long? accountId = null);
 
-	}
+	/// <summary>
+	/// Shows account data with buttons of account updating menu
+	/// </summary>
+	/// <param name="botUser"></param>
+	/// <param name="account"></param>
+	/// <param name="messageToEditId"></param>
+	/// <param name="extraMessage">An Extra message to show with account data</param>
+	/// <returns></returns>
+	Task ShowAccountUpdatingMenuAsync(BotUser botUser, Account account,
+		int messageToEditId, string extraMessage);
+		
+	Task SendValidationErrorAsync(BotUser botUser, ValidationException validationException);
+		
+	string GetPasswordMessage(string password);
+		
+	InlineKeyboardMarkup GetPasswordGeneratorSettingsKeyboard(BotUser botUser, string passwordGeneratorPattern);
+
 }

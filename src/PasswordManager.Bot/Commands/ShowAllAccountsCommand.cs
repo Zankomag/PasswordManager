@@ -5,19 +5,19 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Services.Abstractions;
 
-namespace PasswordManager.Bot.Commands {
-	public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
-		private readonly IAccountService accountService;
-		private readonly IBotUi botUi;
+namespace PasswordManager.Bot.Commands; 
 
-		public ShowAllAccountsCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
-			this.accountService = accountService;
-			this.botUi = botUi;
-		}
+public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
+	private readonly IAccountService accountService;
+	private readonly IBotUi botUi;
 
-		async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
-			var result = await accountService.GetAccountsByNameAsync()
-		}
-
+	public ShowAllAccountsCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
+		this.accountService = accountService;
+		this.botUi = botUi;
 	}
+
+	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
+		var result = await accountService.GetAccountsByNameAsync()
+	}
+
 }

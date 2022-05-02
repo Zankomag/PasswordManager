@@ -1,4 +1,4 @@
 ﻿
-namespace PasswordManager.Bot.Commands.Abstractions {
-	public interface IBotCommand { }
-}
+namespace PasswordManager.Bot.Commands.Abstractions; 
+
+public interface IBotCommand { }
