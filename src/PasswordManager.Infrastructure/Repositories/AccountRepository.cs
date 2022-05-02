@@ -40,9 +40,11 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 			.Take(pageSize)
 			.ToListAsync();
 
-	public async Task<Account> GetSingleByNameAsync(long userId, string accountName = null)
-		=> await GetByName(userId, accountName)
+	public async Task<Account> GetSingleByNameAsync(long userId, string accountName) {
+		if(accountName == null) throw new ArgumentNullException(nameof(accountName));
+		return await GetByName(userId, accountName)
 			.FirstOrDefaultAsync();
+	}
 
 	public async Task<Account> GetFullAsync(long userId, long accountId) {
 		return await GetByUser(userId)
