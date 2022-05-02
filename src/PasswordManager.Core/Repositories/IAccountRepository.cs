@@ -17,6 +17,10 @@ public interface IAccountRepository : IRepository<Account, long> {
 	/// <returns>List of basic Account info found by <paramref name="accountName" /></returns>
 	Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null);
 
+	/// <returns>Basic single Account info found by <paramref name="accountName" /></returns>
+	Task<Account> GetSingleByNameAsync(long userId, string accountName = null);
+
+	
 	/// <returns>Password and its encryption state info</returns>
 	Task<Account> GetPasswordAsync(long userId, long accountId);
 

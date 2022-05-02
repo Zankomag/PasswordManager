@@ -13,6 +13,20 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 
 	private IQueryable<Account> GetByUser(long userId) => dbSet.Where(x => x.UserId == userId);
 
+	private IQueryable<Account> GetByName(long userId, string accountName = null) {
+		var query = GetByUser(userId);
+		if(accountName != null)
+			query = query.Where(x => x.AccountName.Contains(accountName));
+		return query
+			.AsNoTracking()
+			.Select(a => new Account() {
+				Id = a.Id,
+				AccountName = a.AccountName,
+				Link = a.Link,
+				Login = a.Login,
+			});
+	}
+
 	public async Task<int> GetCountAsync(long userId, string accountName = null) {
 		var query = GetByUser(userId);
 		if (accountName != null)
@@ -20,22 +34,16 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 		return await query.AsNoTracking().CountAsync();
 	}
 
-	public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null) {
-		var query = GetByUser(userId);
-		if (accountName != null)
-			query = query.Where(x => x.AccountName.Contains(accountName));
-		return await query
-			.AsNoTracking()
-			.Select(a => new Account() {
-				Id = a.Id,
-				AccountName = a.AccountName,
-				Link = a.Link,
-				Login = a.Login,
-			})
+	public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null)
+		=> await GetByName(userId, accountName)
 			.Skip(page * pageSize)
 			.Take(pageSize)
 			.ToListAsync();
-	}
+
+	public async Task<Account> GetSingleByNameAsync(long userId, string accountName = null)
+		=> await GetByName(userId, accountName)
+			.FirstOrDefaultAsync();
+
 	public async Task<Account> GetFullAsync(long userId, long accountId) {
 		return await GetByUser(userId)
 			.Where(x => x.Id == accountId)
