@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Services;
+using PasswordManager.Bot.Settings;
 using PasswordManager.Common.Extensions;
 using PasswordManager.Core.Entities;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -16,20 +18,15 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace PasswordManager.Bot.Commands; 
 
 public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
-	//todo move to appsettings, and settings must be related to botUiSettings
-	public const string AccountSeparator = "\n──────────────────";
-	//todo move to appsettings, and settings must be related to botUiSettings
-	/// <summary>
-	/// How many accounts can be on a page
-	/// </summary>
-	private const int pageSize = 3;
-		
+
 	private readonly IAccountService accountService;
 	private readonly IBotUi botUi;
+	private readonly BotUiSettings uiSettings;
 
-	public SearchCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
+	public SearchCommand(IBot bot, IAccountService accountService, IBotUi botUi, IOptions<BotUiSettings> uiSettings) : base(bot) {
 		this.accountService = accountService;
 		this.botUi = botUi;
+		this.uiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");
 	}
 
 	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
@@ -42,12 +39,12 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		} else if(accountCount == 1) {
 			var account = await accountService.GetSingleAccountByNameAsync(botUser.Id, accountName);
 			await botUi.ShowAccountAsync(botUser, account);
-		} else if(accountCount <= pageSize) {
-			var accounts = await accountService.GetAccountsByNameAsync(botUser.Id, 0, pageSize, accountName);
+		} else if(accountCount <= uiSettings.PageSize) {
+			var accounts = await accountService.GetAccountsByNameAsync(botUser.Id, 0, uiSettings.PageSize, accountName);
 			await botUi.ShowAccountsPageAsync()
 			await ShowSinglePage(botUser.Id, accountName, langCode);
 		} else {
-			await ShowPage(botUser.Id, accountName, 0, accountCount.PageCount(pageSize), langCode);
+			await ShowPage(botUser.Id, accountName, 0, accountCount.PageCount(uiSettings.PageSize), langCode);
 		}
 	}
 
@@ -69,22 +66,5 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		}
 	}
 
-	//todo: delete this comment below
-	//Moved from password manager
-	private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
-		if (accountName != null) {
-			//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
-			//So, search string can be no more than 64 - (4(>(2 bytes) + . (2 bytes)) + page.ToString().Length*2) chars
-			int maxLength = (64 - (4/*(> + .)*/ + page.ToString().Length * 2));
-			accountName = accountName.Length <= maxLength ?
-				accountName : accountName.Substring(0, maxLength);
-		}
-		return InlineKeyboardButton.WithCallbackData(
-			next ? "▶️ " + Localization.GetMessage("Next", langCode) :
-				"◀️ " + Localization.GetMessage("Prev", langCode),
-			CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
-			"." + accountName);
-	}
-	
 
 }

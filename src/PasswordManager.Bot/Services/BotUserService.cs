@@ -22,7 +22,7 @@ public class BotUserService : IBotUserService {
 		this.commandFactory = commandFactory;
 	}
 
-	public async virtual Task<BotUser> GetUser(Update update) {
+	public virtual async Task<BotUser> GetUser(Update update) {
 		int? userId;
 		if ((userId = update.GetUserIdByUpdateType()) == null)
 			return null;

@@ -31,7 +31,7 @@ public interface IBotUi {
 	/// also shows pageIndex/totalPages
 	/// </summary>
 	/// <returns></returns>
-	Task ShowAccountsPageAsync(BotUser botUser, IList<Account> accounts, int totalAccountCount, int page, int pageSize);
+	Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int page, int pageSize);
 
 	/// <summary>
 	/// Serializes given account to MarkdownV2 string

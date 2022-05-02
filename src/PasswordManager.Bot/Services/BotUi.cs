@@ -12,16 +12,21 @@ using Telegram.Bot.Types.Enums;
 using System.Text;
 using PasswordManager.Application.Services.Abstractions;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Options;
+using PasswordManager.Bot.Settings;
+using PasswordManager.Common.Extensions;
 
 namespace PasswordManager.Bot.Services; 
 
 public class BotUi : IBotUi {
 	private readonly IBot bot;
 	private readonly IUserService userService;
+	private readonly BotUiSettings uiSettings;
 
-	public BotUi(IBot bot, IUserService userService) {
+	public BotUi(IBot bot, IUserService userService, IOptions<BotUiSettings> uiSettings) {
 		this.bot = bot;
 		this.userService = userService;
+		this.uiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");
 	}
 
 	//TODO Create data type for CommandCode as class tht consists from MainCommandCode
@@ -87,36 +92,41 @@ public class BotUi : IBotUi {
 		}
 	}
 
-	public async Task ShowAccountsPageAsync(BotUser botUser, IList<Account> accounts, int totalAccountCount, int page, int pageSize) {
-		string message = Localization.GetMessage("Page", langCode) + " " + (page + 1) + "/" + pageCount + "\n";
-		message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, langCode, message);
+	public async Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int page, int pageSize) {
+		int pageCount = totalAccountCount.PageCount(uiSettings.PageSize);
+		
+		//todo fucking refactor this to Format string!
+		string message = Localization.GetMessage("Page", botUser.Lang) + " " + (page + 1) 
+			+ "/" + pageCount + "\n";
+		message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, botUser.Lang, message);
 
-		//This is first page
+		//First page
 		if(page == 0) {
 			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(true, page, accountName, langCode)
+				GetPageButton(true, page, accountName, botUser.Lang)
+				//todo looks like account name is used only to show what have you searched for, investigate
 			};
 		}
-		//This is last page
+		//Last page
 		else if(page == pageCount - 1) {
 			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, langCode)
+				GetPageButton(false, page, accountName, botUser.Lang)
 			};
 		}
-		//This is middle page
+		//Middle page
 		else {
 			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, langCode),
-				GetPageButton(true, page, accountName, langCode)
+				GetPageButton(false, page, accountName, botUser.Lang),
+				GetPageButton(true, page, accountName, botUser.Lang)
 			};
 		}
 
 		if(messageToEditId == 0) {
-			await Bot.Client.SendTextMessageAsync(userId, message,
+			await Bot.Client.SendTextMessageAsync(botUser.Id, message,
 				replyMarkup: new InlineKeyboardMarkup(keyboard),
 				disableWebPagePreview: true);
 		} else {
-			await Bot.Client.EditMessageTextAsync(userId, messageToEditId, message,
+			await Bot.Client.EditMessageTextAsync(botUser.Id, messageToEditId, message,
 				replyMarkup: new InlineKeyboardMarkup(keyboard),
 				disableWebPagePreview: true);
 		}
@@ -124,7 +134,7 @@ public class BotUi : IBotUi {
 	
 	//todo utilize this in method to show pages above to that that method will work 
 	//both for single and multiple pages
-	private static async Task ShowSinglePage(long userId, string accountName, string langCode) {
+	private async Task ShowSinglePage(long userId, string accountName, string langCode) {
 
 		string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
 
@@ -135,7 +145,7 @@ public class BotUi : IBotUi {
 
 	//todo utilize this in method to show pages above to that that method will work 
 	//both for single and multiple pages
-	private static string GetPageMessage(List<Account> accounts,
+	private string GetPageMessage(IReadOnlyList<Account> accounts,
 		out InlineKeyboardButton[][] keyboard,
 		bool singlePage, string langCode, string message = null) {
 
@@ -146,7 +156,7 @@ public class BotUi : IBotUi {
 
 		for(int i = 0; i < accounts.Count; i++) {
 			if(i != 0)
-				message += AccountSeparator;
+				message += uiSettings.AccountSeparator;
 			message += "\n" + accounts[i].AccountName;
 			if(accounts[i].Link != null)
 				message += "\n" + accounts[i].Link;
@@ -157,6 +167,21 @@ public class BotUi : IBotUi {
 			};
 		}
 		return message;
+	}
+
+	//todo utilize this in method to show pages above to that that method will work 
+	//both for single and multiple pages
+	private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
+		if(accountName != null) {
+			//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
+			//So, search string can be no more than 64 - (4(>(2 bytes) + . (2 bytes)) + page.ToString().Length*2) chars
+			int maxLength = (64 - (4 /*(> + .)*/ + page.ToString().Length * 2));
+			accountName = accountName.Length <= maxLength ? accountName : accountName.Substring(0, maxLength);
+		}
+		return InlineKeyboardButton.WithCallbackData(
+			next ? "▶️ " + Localization.GetMessage("Next", langCode) : "◀️ " + Localization.GetMessage("Prev", langCode),
+			CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
+			"." + accountName);
 	}
 
 	/// <summary>
