@@ -9,15 +9,16 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Services;
+using PasswordManager.Common.Extensions;
 using PasswordManager.Core.Entities;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands; 
 
 public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
-	//todo move to botUi and later to appsettings
+	//todo move to appsettings, and settings must be related to botUiSettings
 	public const string AccountSeparator = "\n──────────────────";
-	//todo move to botUi and later to appsettings
+	//todo move to appsettings, and settings must be related to botUiSettings
 	/// <summary>
 	/// How many accounts can be on a page
 	/// </summary>
@@ -33,17 +34,18 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 
 	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 		string accountName = message.Text;
-		int accountCount = await accountService.GetAccountCountByNameAsync(botUser.Id, accountName);
-
-		if(accountCount == 1) {
+		int accountsCount = await accountService.GetAccountsCountByNameAsync(botUser.Id, accountName);
+		int pagesCount = accountsCount.PagesCount(pageSize);
+		
+		if(accountsCount == 1) {
 			await ShowAccountByName(chatId, accountName, langCode);
-		} else if(accountCount == 0) {
+		} else if(accountsCount == 0) {
 			await Bot.Client.SendTextMessageAsync(chatId,
 				String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
-		} else if(accountCount <= pageSize) {
+		} else if(accountsCount <= pageSize) {
 			await ShowSinglePage(chatId, accountName, langCode);
 		} else {
-			await ShowPage(chatId, accountName, 0, GetPageCount(accountCount), langCode);
+			await ShowPage(chatId, accountName, 0, GetPageCount(accountsCount), langCode);
 		}
 	}
 
@@ -84,6 +86,8 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 
 	//todo: delete this comment below
 	//Moved from password manager
+	//
+	//todo move to botUi service
 	public static async Task ShowPage(int userId,
 		string accountName, int page, int pageCount,
 		string langCode, int messageToEditId = 0) {
@@ -146,9 +150,8 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 				disableWebPagePreview: true);
 		}
 	}
-
-	//todo: delete this comment below
-	//Moved from password manager
+	
+	//todo move to botUi service
 	private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
 		List<Account> accounts;
 		if (accountName != null) {
@@ -175,9 +178,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 			replyMarkup: new InlineKeyboardMarkup(keyboard),
 			disableWebPagePreview: true);
 	}
-
-	//todo: delete this comment below
-	//Moved from password manager
+	
 	private static string GetPageMessage(List<Account> accounts,
 		out InlineKeyboardButton[][] keyboard,
 		bool singlePage, string langCode, string message = null) {
@@ -200,12 +201,6 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		}
 		return message;
 	}
-
-		
-	//todo: delete this comment below
-	//Moved from password manager
-	public static int GetPageCount(int accountCount) {
-		return (int)Math.Ceiling(accountCount / (double)pageSize);
-	}
+	
 
 }
