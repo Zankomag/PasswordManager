@@ -1,11 +1,15 @@
 ﻿using PasswordManager.Bot.Commands.Abstractions;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using MultiUserLocalization;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
+using PasswordManager.Bot.Services;
+using PasswordManager.Core.Entities;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands {
@@ -27,7 +31,8 @@ namespace PasswordManager.Bot.Commands {
 		}
 
 		async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
-			int accountCount = GetAccountCount(chatId, accountName);
+			string accountName = message.Text;
+			int accountCount = await accountService.GetAccountCountByNameAsync(botUser.Id, accountName);
 
 			if(accountCount == 1) {
 				await ShowAccountByName(chatId, accountName, langCode);
@@ -195,11 +200,7 @@ namespace PasswordManager.Bot.Commands {
 			return message;
 		}
 
-
-		//TODO
-		//optimize with TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-		//https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-5.0#add-paging-to-students-index
-		//
+		
 		//todo: delete this comment below
 		//Moved from password manager
 		public static int GetPageCount(int accountCount) {

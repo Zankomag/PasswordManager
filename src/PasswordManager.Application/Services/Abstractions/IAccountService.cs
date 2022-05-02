@@ -12,7 +12,8 @@ namespace PasswordManager.Application.Services.Abstractions {
 		Task<int> GetAccountCountByNameAsync(long userId, string accountName = null);
 		/// <returns>Full Account info without password</returns>
 		Task<Account> GetAccountAsync(long userId, long accountId);
-		/// <returns>List of basic Account info found by <paramref name="accountName"/></returns>
+		/// <returns>List of basic Account info found by <paramref name="accountName"/>.
+		/// Returns all accounts if <paramref name="accountName"/> is null</returns>
 		Task<IEnumerable<Account>> GetAccountsByNameAsync(long userId, int page, int pageSize, string accountName = null);
 		/// <returns>Password and its encryption state info</returns>
 		Task<Account> GetPasswordAsync(long userId, long accountId);
