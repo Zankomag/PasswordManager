@@ -18,7 +18,7 @@ public class AccountService : IAccountService {
 	public async Task<IEnumerable<Account>> GetAccountsByNameAsync(long userId, int page, int pageSize, string accountName = null)
 		=> await workUnit.AccountRepository.GetByNameAsync(userId, page, pageSize, accountName);
 
-	public async Task<int> GetAccountCountByNameAsync(long userId, string accountName = null)
+	public async Task<int> GetAccountsCountByNameAsync(long userId, string accountName = null)
 		=> await workUnit.AccountRepository.GetCountAsync(userId, accountName);
 
 	public async Task<Account> GetAccountAsync(long userId, long accountId)
