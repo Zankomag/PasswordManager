@@ -34,18 +34,18 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 
 	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 		string accountName = message.Text;
-		int accountsCount = await accountService.GetAccountsCountByNameAsync(botUser.Id, accountName);
-		int pagesCount = accountsCount.PagesCount(pageSize);
-		
-		if(accountsCount == 1) {
+		int accountCount = await accountService.GetAccountsCountByNameAsync(botUser.Id, accountName);
+
+		if(accountCount == 1) {
+			var account = await accountService.GetAccountsByNameAsync(botUser.Id, )
 			await ShowAccountByName(chatId, accountName, langCode);
-		} else if(accountsCount == 0) {
+		} else if(accountCount == 0) {
 			await Bot.Client.SendTextMessageAsync(chatId,
 				String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
-		} else if(accountsCount <= pageSize) {
-			await ShowSinglePage(chatId, accountName, langCode);
+		} else if(accountCount <= pageSize) {
+			await ShowSinglePage(botUser.Id, accountName, langCode);
 		} else {
-			await ShowPage(chatId, accountName, 0, GetPageCount(accountsCount), langCode);
+			await ShowPage(botUser.Id, accountName, 0, accountCount.PageCount(pageSize), langCode);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 	//Moved from password manager
 	//
 	//todo move to botUi service
-	public static async Task ShowPage(int userId,
+	public static async Task ShowPage(long userId,
 		string accountName, int page, int pageCount,
 		string langCode, int messageToEditId = 0) {
 
@@ -152,7 +152,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 	}
 	
 	//todo move to botUi service
-	private static async Task ShowSinglePage(int userId, string accountName, string langCode) {
+	private static async Task ShowSinglePage(long userId, string accountName, string langCode) {
 		List<Account> accounts;
 		if (accountName != null) {
 			using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
