@@ -1,10 +1,15 @@
 ﻿
-namespace PasswordManager.Bot; 
+using PasswordManager.Common.Abstractions;
+
+namespace PasswordManager.Bot.Settings;
 
 /// <summary>
 /// Telegram Bot Settings
 /// </summary>
-public class BotSettings {
+public class BotSettings : ISettings {
+
+	public string SectionName => "TelegramBot";
+	
 	public string Token { get; set; }
 	public long[] AdminIds { get; set; }
 	//TODO WARNING: this setting would be better set manually each time it's required, because on serverless setWebhook can be called per each request

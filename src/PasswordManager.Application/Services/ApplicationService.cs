@@ -1,5 +1,6 @@
 ﻿using PasswordManager.Application.Services.Abstractions;
 using Microsoft.Extensions.Options;
+using PasswordManager.Application.Settings;
 
 namespace PasswordManager.Application.Services; 
 

@@ -4,6 +4,7 @@ using PasswordManager.Bot.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using PasswordManager.Bot.Settings;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;

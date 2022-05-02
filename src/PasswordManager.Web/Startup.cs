@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using PasswordManager.Application;
 using AutoMapper;
+using PasswordManager.Bot.Settings;
 using PasswordManager.Infrastructure.Repositories;
 
 namespace PasswordManager.Web; 
