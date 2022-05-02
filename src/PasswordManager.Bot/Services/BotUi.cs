@@ -87,6 +87,78 @@ public class BotUi : IBotUi {
 		}
 	}
 
+	public async Task ShowAccountsPageAsync(BotUser botUser, IList<Account> accounts, int totalAccountCount, int page, int pageSize) {
+		string message = Localization.GetMessage("Page", langCode) + " " + (page + 1) + "/" + pageCount + "\n";
+		message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, langCode, message);
+
+		//This is first page
+		if(page == 0) {
+			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+				GetPageButton(true, page, accountName, langCode)
+			};
+		}
+		//This is last page
+		else if(page == pageCount - 1) {
+			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+				GetPageButton(false, page, accountName, langCode)
+			};
+		}
+		//This is middle page
+		else {
+			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
+				GetPageButton(false, page, accountName, langCode),
+				GetPageButton(true, page, accountName, langCode)
+			};
+		}
+
+		if(messageToEditId == 0) {
+			await Bot.Client.SendTextMessageAsync(userId, message,
+				replyMarkup: new InlineKeyboardMarkup(keyboard),
+				disableWebPagePreview: true);
+		} else {
+			await Bot.Client.EditMessageTextAsync(userId, messageToEditId, message,
+				replyMarkup: new InlineKeyboardMarkup(keyboard),
+				disableWebPagePreview: true);
+		}
+	}
+	
+	//todo utilize this in method to show pages above to that that method will work 
+	//both for single and multiple pages
+	private static async Task ShowSinglePage(long userId, string accountName, string langCode) {
+
+		string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
+
+		await Bot.Client.SendTextMessageAsync(userId, message,
+			replyMarkup: new InlineKeyboardMarkup(keyboard),
+			disableWebPagePreview: true);
+	}
+
+	//todo utilize this in method to show pages above to that that method will work 
+	//both for single and multiple pages
+	private static string GetPageMessage(List<Account> accounts,
+		out InlineKeyboardButton[][] keyboard,
+		bool singlePage, string langCode, string message = null) {
+
+		if(message == null)
+			message = "";
+
+		keyboard = new InlineKeyboardButton[singlePage ? accounts.Count : accounts.Count + 1][];
+
+		for(int i = 0; i < accounts.Count; i++) {
+			if(i != 0)
+				message += AccountSeparator;
+			message += "\n" + accounts[i].AccountName;
+			if(accounts[i].Link != null)
+				message += "\n" + accounts[i].Link;
+			message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
+			keyboard[i] = new InlineKeyboardButton[] {
+				InlineKeyboardButton.WithCallbackData((i + 1) + "⃣ " + accounts[i].AccountName,
+					CallbackCommandCode.ShowAccount.ToStringCode() + accounts[i].Id.ToString())
+			};
+		}
+		return message;
+	}
+
 	/// <summary>
 	/// Serializes given account to MarkdownV2 string
 	/// </summary>

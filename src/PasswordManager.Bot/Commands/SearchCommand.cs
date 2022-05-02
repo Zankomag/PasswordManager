@@ -36,13 +36,15 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		string accountName = message.Text;
 		int accountCount = await accountService.GetAccountsCountByNameAsync(botUser.Id, accountName);
 
-		if(accountCount == 1) {
-			var account = await accountService.GetAccountsByNameAsync(botUser.Id, )
-			await ShowAccountByName(chatId, accountName, langCode);
-		} else if(accountCount == 0) {
-			await Bot.Client.SendTextMessageAsync(chatId,
-				String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", langCode), "/add"));
+		if(accountCount == 0) {
+			await Bot.Client.SendTextMessageAsync(botUser.Id,
+				String.Format(Localization.GetMessage(accountName != null ? "NotFound" : "NoAccounts", botUser.Lang), "/add"));
+		} else if(accountCount == 1) {
+			var account = await accountService.GetSingleAccountByNameAsync(botUser.Id, accountName);
+			await botUi.ShowAccountAsync(botUser, account);
 		} else if(accountCount <= pageSize) {
+			var accounts = await accountService.GetAccountsByNameAsync(botUser.Id, 0, pageSize, accountName);
+			await botUi.ShowAccountsPageAsync()
 			await ShowSinglePage(botUser.Id, accountName, langCode);
 		} else {
 			await ShowPage(botUser.Id, accountName, 0, accountCount.PageCount(pageSize), langCode);
@@ -82,124 +84,6 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 				"◀️ " + Localization.GetMessage("Prev", langCode),
 			CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
 			"." + accountName);
-	}
-
-	//todo: delete this comment below
-	//Moved from password manager
-	//
-	//todo move to botUi service
-	public static async Task ShowPage(long userId,
-		string accountName, int page, int pageCount,
-		string langCode, int messageToEditId = 0) {
-
-		List<Account> accounts;
-		if (accountName != null) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
-				accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName " +
-						"limit @pageSize offset @Offset",
-						new {
-							userId,
-							AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%",
-							maxAccsByPage = pageSize,
-							Offset = page * pageSize
-						})
-					.ToList();
-			}
-		} else {
-			using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
-				accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Accounts where userId = @UserId " +
-						"limit @pageSize offset @Offset",
-						new {
-							userId,
-							maxAccsByPage = pageSize,
-							Offset = page * pageSize
-						})
-					.ToList();
-			}
-		}
-
-		string message = Localization.GetMessage("Page", langCode) + " " + (page + 1) + "/" + pageCount + "\n";
-		message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, langCode, message);
-
-		//This is first page
-		if (page == 0) {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(true, page, accountName, langCode)};
-		}
-		//This is last page
-		else if (page == pageCount - 1) {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, langCode)};
-		}
-		//This is middle page
-		else {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, langCode),
-				GetPageButton(true, page, accountName, langCode)};
-		}
-
-		if (messageToEditId == 0) {
-			await Bot.Client.SendTextMessageAsync(userId, message,
-				replyMarkup: new InlineKeyboardMarkup(keyboard),
-				disableWebPagePreview: true);
-		} else {
-			await Bot.Client.EditMessageTextAsync(userId, messageToEditId, message,
-				replyMarkup: new InlineKeyboardMarkup(keyboard),
-				disableWebPagePreview: true);
-		}
-	}
-	
-	//todo move to botUi service
-	private static async Task ShowSinglePage(long userId, string accountName, string langCode) {
-		List<Account> accounts;
-		if (accountName != null) {
-			using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
-				accounts = conn.Query<Account>(
-					"select Id, AccountName, Link, Login from Accounts where UserId = @userId and AccountName like @AccountName",
-					new {
-						userId,
-						AccountName = "%" + accountName.Replace("[", "[[]").Replace("%", "[%]") + "%"
-					}).ToList();
-			}
-		} else {
-			using (IDbConnection conn = new SQLiteConnection(Bot.connString)) {
-				accounts = conn.Query<Account>(
-						"select Id, AccountName, Link, Login from Accounts where UserId = @userId",
-						new { userId })
-					.ToList();
-			}
-		}
-
-		string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
-
-		await Bot.Client.SendTextMessageAsync(userId, message,
-			replyMarkup: new InlineKeyboardMarkup(keyboard),
-			disableWebPagePreview: true);
-	}
-	
-	private static string GetPageMessage(List<Account> accounts,
-		out InlineKeyboardButton[][] keyboard,
-		bool singlePage, string langCode, string message = null) {
-
-		if (message == null)
-			message = "";
-
-		keyboard = new InlineKeyboardButton[singlePage ? accounts.Count : accounts.Count + 1][];
-
-		for (int i = 0; i < accounts.Count; i++) {
-			if (i != 0)
-				message += AccountSeparator;
-			message += "\n" + accounts[i].AccountName;
-			if (accounts[i].Link != null)
-				message += "\n" + accounts[i].Link;
-			message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
-			keyboard[i] = new InlineKeyboardButton[] { InlineKeyboardButton.WithCallbackData(
-				(i + 1) + "⃣ " + accounts[i].AccountName,
-				CallbackCommandCode.ShowAccount.ToStringCode() + accounts[i].Id.ToString()) };
-		}
-		return message;
 	}
 	
 

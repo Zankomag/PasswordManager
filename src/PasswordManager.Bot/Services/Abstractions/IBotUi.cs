@@ -1,4 +1,5 @@
-﻿using PasswordManager.Bot.Commands.Enums;
+﻿using System.Collections.Generic;
+using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Models;
 using PasswordManager.Core.Entities;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +24,15 @@ public interface IBotUi {
 		int? messageToEditId = null,
 		string extraMessage = null,
 		string backButtonCommandCode = null);
-		
+
+	/// <summary>
+	/// Shows page with accounts and buttons to select them
+	/// If count of accounts is greater than pageSize -
+	/// also shows pageIndex/totalPages
+	/// </summary>
+	/// <returns></returns>
+	Task ShowAccountsPageAsync(BotUser botUser, IList<Account> accounts, int totalAccountCount, int page, int pageSize);
+
 	/// <summary>
 	/// Serializes given account to MarkdownV2 string
 	/// </summary>
