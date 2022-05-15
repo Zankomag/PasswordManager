@@ -28,6 +28,8 @@ public class CommandFactory : ICommandFactory {
 	}
 
 	private void InitMessageCommands() {
+		//todo refactor this anyway, current solution is ONLY temporary for working build
+		
 		//TODO:
 		//Set commands to telegram bot from file using setMyCommands
 		//Check them through getMeCommands first if they match local commands
@@ -45,56 +47,64 @@ public class CommandFactory : ICommandFactory {
 		//TODO:
 		//Add feature to Re-Init commands at runtime
 
-		//All message commands MUST be in lower case
-		messageCommands = new Dictionary<string, Type>();
+		//todo later return back to strongly typed initializatio with genering method as was previously like
+		// Add<IMessageCommand, HelpCommand>("/help");
+		// this is about all commands
+		
+		messageCommands = new Dictionary<string, Type> {
+			{ "/help", typeof(HelpCommand) },
+			{ "/start", typeof(HelpCommand) },
+			{ "/language", typeof(SelectLanguageCommand) },
+			{ "/all", typeof(ShowAllAccountsCommand) },
+			{ "/add", typeof(AddAccountCommand) },
+			{ "/cancel", typeof(CancelCommand) },
+			{ "/generator", typeof(SetUpPasswordGeneratorCommand) },
+			{ "/adduser", typeof(AddUserCommand) },
+			//todo consider camelCase for commands in code(config), make sure they are comparing ignoring case
+			{ "/removeuser", typeof(RemoveUserCommand) },
+			{ "/userlist", typeof(UserListCommand) }
+		};
 
-		//TODO add manually to dictionary
-		Add<IMessageCommand, HelpCommand>("/help");
-		Add<IMessageCommand, HelpCommand>("/start");
-		Add<IMessageCommand, SelectLanguageCommand>("/language");
-		Add<IMessageCommand, ShowAllAccountsCommand>("/all");
-		Add<IMessageCommand, AddAccountCommand>("/add");
-		Add<IMessageCommand, CancelCommand>("/cancel");
-		Add<IMessageCommand, SetUpPasswordGeneratorCommand>("/generator");
-		Add<IMessageCommand, AddUserCommand>("/adduser");
-		Add<IMessageCommand, RemoveUserCommand>("/removeuser");
-		Add<IMessageCommand, UserListCommand>("/userlist");
-		Add<IMessageCommand, UserSettingsCommand>("/settings");
+		//todo wtf is that?
+		//messageCommands.Add<UserSettingsCommand>("/settings");
 	}
 
 	private void InitActionCommands() {
 		actionCommands = new Dictionary<UserAction, Type>();
 
-		Add<IActionCommand, SearchCommand>(UserAction.Search);
-		Add<IActionCommand, AddAccountCommand>(UserAction.AssembleAccount);
-		Add<IActionCommand, UpdateAccountCommand>(UserAction.UpdateAccount);
-		Add<IActionCommand, SetUpPasswordGeneratorCommand>(UserAction.SetUpPasswordGeneratorLength);
-		Add<IActionCommand, ShowPasswordCommand>(UserAction.EnterDecryptionKey);
-		Add<IActionCommand, UpdateUserSettingsCommand>(UserAction.UpdateUserSettings);
-		Add<IActionCommand, EncryptPasswordCommand>(UserAction.EncryptPassword);
+		actionCommands.Add(UserAction.Search, typeof(SearchCommand));
+		actionCommands.Add(UserAction.AssembleAccount, typeof(AddAccountCommand));
+		actionCommands.Add(UserAction.UpdateAccount, typeof(UpdateAccountCommand));
+		actionCommands.Add(UserAction.SetUpPasswordGeneratorLength, typeof(SetUpPasswordGeneratorCommand));
+		actionCommands.Add(UserAction.EnterDecryptionKey, typeof(ShowPasswordCommand));
+		actionCommands.Add(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
+		//todo wtf is that?
+		//actionCommands.Add<IActionCommand, UpdateUserSettingsCommand>(UserAction.UpdateUserSettings);
 	}
 
 	private void InitReplyActionCommands() {
 		replyActionCommands = new Dictionary<UserAction, Type>();
-		Add<IReplyActionCommand, EncryptPasswordCommand>(UserAction.EncryptPassword);
+		replyActionCommands.Add(UserAction.EncryptPassword, typeof(EncryptPasswordCommand));
 	}
 
 	private void InitCallbackQueryCommands() {
 		callbackQueryCommands = new Dictionary<CallbackQueryCommandCode, Type>();
 
-		Add<ICallbackQueryCommand, AddAccountCommand> (CallbackQueryCommandCode.AddAccount);
-		Add<ICallbackQueryCommand, SelectLanguageCommand> (CallbackQueryCommandCode.SelectLanguage);
-		Add<ICallbackQueryCommand, GeneratePasswordCommand>(CallbackQueryCommandCode.GeneratePassword);
-		Add<ICallbackQueryCommand, SearchCommand>(CallbackQueryCommandCode.Search);
-		Add<ICallbackQueryCommand, ShowPasswordCommand>(CallbackQueryCommandCode.ShowPassword);
-		Add<ICallbackQueryCommand, ShowAccountCommand>(CallbackQueryCommandCode.ShowAccount);
-		Add<ICallbackQueryCommand, DeleteMessageCommand>(CallbackQueryCommandCode.DeleteMessage);
-		Add<ICallbackQueryCommand, UpdateAccountCommand>(CallbackQueryCommandCode.UpdateAccount);
-		Add<ICallbackQueryCommand, DeleteAccountCommand>(CallbackQueryCommandCode.DeleteAccount);
-		Add<ICallbackQueryCommand, SetUpPasswordGeneratorCommand>(CallbackQueryCommandCode.SetUpPasswordGenerator);
-		Add<ICallbackQueryCommand, ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/>(CallbackQueryCommandCode.ShowEncryptionKeyHint);
-		Add<ICallbackQueryCommand, UpdateUserSettingsCommand>(CallbackQueryCommandCode.UpdateUserSettings);
-		Add<ICallbackQueryCommand, EncryptPasswordCommand>(CallbackQueryCommandCode.EncryptPassword);
+		callbackQueryCommands.Add(CallbackQueryCommandCode.AddAccount, typeof(AddAccountCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.SelectLanguage, typeof(SelectLanguageCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.GeneratePassword, typeof(GeneratePasswordCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.Search, typeof(SearchCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.ShowPassword, typeof(ShowPasswordCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.ShowAccount, typeof(ShowAccountCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.DeleteMessage, typeof(DeleteMessageCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.UpdateAccount, typeof(UpdateAccountCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.DeleteAccount, typeof(DeleteAccountCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.SetUpPasswordGenerator, typeof(SetUpPasswordGeneratorCommand));
+		callbackQueryCommands.Add(CallbackQueryCommandCode.EncryptPassword, typeof(EncryptPasswordCommand));
+		
+		//todo wtf is that?
+		//callbackQueryCommands.Add<ShowEncryptionHintCommand/*Show hint in answer callback method as alert*/>(CallbackQueryCommandCode.ShowEncryptionKeyHint);
+		//callbackQueryCommands.Add<UpdateUserSettingsCommand>(CallbackQueryCommandCode.UpdateUserSettings);
 	}
 
 	public ICallbackQueryCommand GetCallBackQueryCommand(CallbackQueryCommandCode callbackCommandCode) {
