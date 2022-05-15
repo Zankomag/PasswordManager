@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
-using MultiUserLocalization;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Core.Entities;
 using PasswordManager.Bot.Models;

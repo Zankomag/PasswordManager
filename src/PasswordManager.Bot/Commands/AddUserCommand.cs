@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using MultiUserLocalization;
 using System;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Models;

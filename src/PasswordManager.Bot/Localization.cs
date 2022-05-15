@@ -1,11 +1,12 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-//todo move to nuget package
-namespace MultiUserLocalization; 
 
+namespace PasswordManager.Bot;
+
+//todo move to nuget package
 public class Localization {
 	//TODO:
 	//Add class with all text variables and

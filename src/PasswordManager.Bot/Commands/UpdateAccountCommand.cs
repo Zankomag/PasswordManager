@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MultiUserLocalization;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Commands.Enums;

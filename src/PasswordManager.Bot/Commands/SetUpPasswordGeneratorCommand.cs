@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using MultiUserLocalization;
 using Telegram.Bot.Types.ReplyMarkups;
 using PasswordManager.Bot.Commands.Enums;
 using System;
