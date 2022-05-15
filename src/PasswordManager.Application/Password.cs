@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace Passwords; 
 
+namespace PasswordManager.Application;
+
+//todo move to external nuget package
 public static class Password {
 	public const string DefaultPasswordGeneratorPattern = "11111032";
 

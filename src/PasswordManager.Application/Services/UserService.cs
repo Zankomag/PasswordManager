@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Core.Entities;
 using PasswordManager.Core.Repositories;
-using Passwords;
 
 namespace PasswordManager.Application.Services; 
 

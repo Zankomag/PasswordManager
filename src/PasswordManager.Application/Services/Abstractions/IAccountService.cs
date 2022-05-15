@@ -14,7 +14,7 @@ public interface IAccountService {
 	Task<Account> GetAccountAsync(long userId, long accountId);
 	/// <returns>List of basic Account info found by <paramref name="accountName"/>.
 	/// Returns all accounts if <paramref name="accountName"/> is null</returns>
-	Task<IEnumerable<Account>> GetAccountsByNameAsync(long userId, int page, int pageSize, string accountName = null);
+	Task<IEnumerable<Account>> GetAccountsByNameAsync(long userId, int pageIndex, int pageSize, string accountName = null);
 	/// <returns>Single Account basic info found by <paramref name="accountName"/></returns>
 	Task<Account> GetSingleAccountByNameAsync(long userId, string accountName);
 	/// <returns>Password and its encryption state info</returns>

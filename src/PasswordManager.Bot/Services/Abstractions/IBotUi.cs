@@ -31,7 +31,13 @@ public interface IBotUi {
 	/// also shows pageIndex/totalPages
 	/// </summary>
 	/// <returns></returns>
-	Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int page, int pageSize);
+	/// <param name="botUser"></param>
+	/// <param name="accounts"></param>
+	/// <param name="totalAccountCount">number of accounts returned by search</param>
+	/// <param name="pageIndex"></param>
+	/// <param name="searchQuery">query of account search (basically name of account we need to find) used to place it in button for future searches if we have more than 1 page</param>
+	/// <param name="messageToEditId">Used to edit same message when navigating through search result pages</param>
+	Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int pageIndex, string searchQuery, int messageToEditId = 0);
 
 	/// <summary>
 	/// Serializes given account to MarkdownV2 string

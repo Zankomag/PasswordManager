@@ -21,12 +21,12 @@ namespace PasswordManager.Bot.Services;
 public class BotUi : IBotUi {
 	private readonly IBot bot;
 	private readonly IUserService userService;
-	private readonly BotUiSettings uiSettings;
+	private readonly BotUiSettings botUiSettings;
 
 	public BotUi(IBot bot, IUserService userService, IOptions<BotUiSettings> uiSettings) {
 		this.bot = bot;
 		this.userService = userService;
-		this.uiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");
+		this.botUiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");
 	}
 
 	//TODO Create data type for CommandCode as class tht consists from MainCommandCode
@@ -92,96 +92,105 @@ public class BotUi : IBotUi {
 		}
 	}
 
-	public async Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int page, int pageSize) {
-		int pageCount = totalAccountCount.PageCount(uiSettings.PageSize);
+	public async Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int pageIndex, string searchQuery, int messageToEditId = 0) {
+		int pageCount = totalAccountCount.PageCount(botUiSettings.PageSize);
+		bool isSinglePage = pageCount == 1;
 		
 		//todo fucking refactor this to Format string!
-		string message = Localization.GetMessage("Page", botUser.Lang) + " " + (page + 1) 
+		string message = Localization.GetMessage("Page", botUser.Lang) + " " + (pageIndex + 1)
 			+ "/" + pageCount + "\n";
-		message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, false, botUser.Lang, message);
+		
+		message += GetAccountsPageMessage(accounts, out InlineKeyboardButton[][] keyboard, isSinglePage, botUser.Lang);
 
-		//First page
-		if(page == 0) {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(true, page, accountName, botUser.Lang)
-				//todo looks like account name is used only to show what have you searched for, investigate
-			};
-		}
-		//Last page
-		else if(page == pageCount - 1) {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, botUser.Lang)
-			};
-		}
-		//Middle page
-		else {
-			keyboard[keyboard.Length - 1] = new InlineKeyboardButton[] {
-				GetPageButton(false, page, accountName, botUser.Lang),
-				GetPageButton(true, page, accountName, botUser.Lang)
-			};
+		//todo refactor and extract to method
+		//todo add regions for different processes for example region for showing pages of account and related methods
+		if(!isSinglePage) {
+			//First page
+			if(pageIndex == 0) {
+				keyboard[^1] = new[] {
+					GetPageNavigationButton(true, pageIndex, searchQuery, botUser.Lang)
+				};
+			}
+
+			//Last page
+			else if(pageIndex == pageCount - 1) {
+				keyboard[^1] = new[] {
+					GetPageNavigationButton(false, pageIndex, searchQuery, botUser.Lang)
+				};
+			}
+
+			//Middle page
+			else {
+				keyboard[^1] = new[] {
+					GetPageNavigationButton(false, pageIndex, searchQuery, botUser.Lang),
+					GetPageNavigationButton(true, pageIndex, searchQuery, botUser.Lang)
+				};
+			}
 		}
 
 		if(messageToEditId == 0) {
-			await Bot.Client.SendTextMessageAsync(botUser.Id, message,
+			await bot.Client.SendTextMessageAsync(botUser.Id, message,
 				replyMarkup: new InlineKeyboardMarkup(keyboard),
 				disableWebPagePreview: true);
 		} else {
-			await Bot.Client.EditMessageTextAsync(botUser.Id, messageToEditId, message,
+			await bot.Client.EditMessageTextAsync(botUser.Id, messageToEditId, message,
 				replyMarkup: new InlineKeyboardMarkup(keyboard),
 				disableWebPagePreview: true);
 		}
 	}
 	
-	//todo utilize this in method to show pages above to that that method will work 
-	//both for single and multiple pages
-	private async Task ShowSinglePage(long userId, string accountName, string langCode) {
-
-		string message = GetPageMessage(accounts, out InlineKeyboardButton[][] keyboard, true, langCode);
-
-		await Bot.Client.SendTextMessageAsync(userId, message,
-			replyMarkup: new InlineKeyboardMarkup(keyboard),
-			disableWebPagePreview: true);
-	}
-
-	//todo utilize this in method to show pages above to that that method will work 
-	//both for single and multiple pages
-	private string GetPageMessage(IReadOnlyList<Account> accounts,
+	private string GetAccountsPageMessage(IReadOnlyList<Account> accounts,
 		out InlineKeyboardButton[][] keyboard,
-		bool singlePage, string langCode, string message = null) {
+		bool singlePage, string langCode) {
 
-		if(message == null)
-			message = "";
-
+		StringBuilder messageSb = new StringBuilder();
+		
+		//If page is single we need only buttons for selecting accounts, 
+		//otherwise we also need one more row for navigation buttons
 		keyboard = new InlineKeyboardButton[singlePage ? accounts.Count : accounts.Count + 1][];
 
 		for(int i = 0; i < accounts.Count; i++) {
 			if(i != 0)
-				message += uiSettings.AccountSeparator;
-			message += "\n" + accounts[i].AccountName;
-			if(accounts[i].Link != null)
-				message += "\n" + accounts[i].Link;
-			message += "\n" + Localization.GetMessage("Login", langCode) + ": " + accounts[i].Login;
-			keyboard[i] = new InlineKeyboardButton[] {
-				InlineKeyboardButton.WithCallbackData((i + 1) + "⃣ " + accounts[i].AccountName,
-					CallbackCommandCode.ShowAccount.ToStringCode() + accounts[i].Id.ToString())
+				messageSb.Append(botUiSettings.AccountSeparator);
+			messageSb.AppendLine().Append(accounts[i].AccountName);
+			if(accounts[i].Link != null) 
+				messageSb.AppendLine().Append(accounts[i].Link);
+			messageSb.AppendLine();
+			messageSb.Append(Localization.GetMessage("Login", langCode))
+				.Append(": ").Append(accounts[i].Login);
+			keyboard[i] = new[] {
+				InlineKeyboardButton.WithCallbackData((i + 1) + "⃣ " + accounts[i].AccountName, 
+					CallbackQueryCommandCode.ShowAccount.ToStringCode() + accounts[i].Id)
 			};
 		}
-		return message;
+		return messageSb.ToString();
 	}
-
-	//todo utilize this in method to show pages above to that that method will work 
-	//both for single and multiple pages
-	private InlineKeyboardButton GetPageButton(bool next, int page, string accountName, string langCode) {
-		if(accountName != null) {
+	
+	/// <summary>
+	/// Creates a button to navigate through accounts pages (Next or Previous page)
+	/// </summary>
+	/// <param name="next"></param>
+	/// <param name="page"></param>
+	/// <param name="searchQuery">Needs for placing it in navigation button</param>
+	/// <param name="langCode"></param>
+	/// <returns></returns>
+	//todo change bool next to enum for clearness
+	private InlineKeyboardButton GetPageNavigationButton(bool next, int page, string searchQuery, string langCode) {
+		if(searchQuery != null) {
+			//todo may be if we have limits on search in telegram, we can save search in cache instead of button
+			//and save only search id in button
+			
+			//todo verify if statement below is true
 			//Telegram inline button accepts only 64 bytes of data. UTF-16 string has 2 bytes per char.
 			//So, search string can be no more than 64 - (4(>(2 bytes) + . (2 bytes)) + page.ToString().Length*2) chars
 			int maxLength = (64 - (4 /*(> + .)*/ + page.ToString().Length * 2));
-			accountName = accountName.Length <= maxLength ? accountName : accountName.Substring(0, maxLength);
+			searchQuery = searchQuery.Length <= maxLength ? searchQuery : searchQuery[..maxLength];
 		}
+		//todo refactor command code building
 		return InlineKeyboardButton.WithCallbackData(
 			next ? "▶️ " + Localization.GetMessage("Next", langCode) : "◀️ " + Localization.GetMessage("Prev", langCode),
-			CallbackCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
-			"." + accountName);
+			CallbackQueryCommandCode.Search.ToStringCode() + (next ? (page + 1).ToString() : (page - 1).ToString()) +
+			"." + searchQuery);
 	}
 
 	/// <summary>

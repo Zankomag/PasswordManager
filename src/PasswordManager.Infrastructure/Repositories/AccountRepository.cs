@@ -34,9 +34,9 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 		return await query.AsNoTracking().CountAsync();
 	}
 
-	public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int page, int pageSize, string accountName = null)
+	public async Task<IEnumerable<Account>> GetByNameAsync(long userId, int pageIndex, int pageSize, string accountName = null)
 		=> await GetByName(userId, accountName)
-			.Skip(page * pageSize)
+			.Skip(pageIndex * pageSize)
 			.Take(pageSize)
 			.ToListAsync();
 
