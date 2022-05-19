@@ -42,6 +42,8 @@ public class Startup {
 			//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
 		});
 
+		//TODO MOVE ALL INITIALIZATION FROM OTHER PROJECTS TO THERS ServiceCollectionExtentions methods
+
 		#region Telegram Bot
 		//
 		//TODO move all this DI in infrastructure layer or corresponding layer and call injection medods from infrastructure
@@ -50,7 +52,7 @@ public class Startup {
 
 		//TODO:
 		//make that botsettings will be configured so that that have AdminIds from "ApplicationSettings" section
-		AAAA
+		
 		services.AddSingleton<IBot, Bot.Services.Bot>();
 		services.AddSingleton<ICommandFactory, CommandFactory>();
 		services.AddSingleton<IAccountUpdatingService, AccountUpdatingService>();
@@ -67,7 +69,6 @@ public class Startup {
 		IEnumerable<Type> botCommands = Assembly.GetAssembly(typeof(IBotCommand))
 			?.GetExportedTypes()
 			.Where(x => x.IsAssignableFrom(typeof(IBotCommand)) && x.IsClass && !x.IsAbstract);
-		//Because IEnumerable doesn't have ForEach()
 		foreach (var commandType in botCommands) {
 			services.AddScoped(commandType);
 		}
@@ -89,6 +90,8 @@ public class Startup {
 				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 				options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
 			});
+		
+		//todo check on this:
 		//.ConfigureApiBehaviorOptions(options => {
 		//	//Override default model state error response
 		//	options.InvalidModelStateResponseFactory = context => {
@@ -114,8 +117,6 @@ public class Startup {
 		app.UseAuthorization();
 
 
-		app.UseEndpoints(endpoints => {
-			endpoints.MapControllers();
-		});
+		app.UseEndpoints(endpoints => endpoints.MapControllers());
 	}
 }
