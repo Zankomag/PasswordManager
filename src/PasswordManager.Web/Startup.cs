@@ -34,7 +34,8 @@ public class Startup {
 
 	public void ConfigureServices(IServiceCollection services) {
 
-		services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
+		//todo add other settings too
+		services.Configure<BotSettings>(Configuration.GetSection(BotSettings.SectionName));
 
 		services.AddSqlServer(Configuration);
 
@@ -105,7 +106,7 @@ public class Startup {
 
 		//To log only Warning or greater requests
 		//Set "Serilog.AspNetCore": "Warning" in Serilog MinimumLevel Config
-		app.UseSerilogRequestLogging();
+		//app.UseSerilogRequestLogging();
 
 		app.UseRouting();
 

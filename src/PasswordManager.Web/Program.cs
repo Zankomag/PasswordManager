@@ -15,17 +15,17 @@ public class Program {
 			.AddJsonFile("appsettings.json")
 			.Build();
 
-		Log.Logger = new LoggerConfiguration()
-			.ReadFrom.Configuration(config)
-			.CreateLogger();
-
-		Log.Information("Application starting");
+		//Log.Logger = new LoggerConfiguration()
+		//	.ReadFrom.Configuration(config)
+		//	.CreateLogger();
+//
+		//Log.Information("Application starting");
 		CreateHostBuilder(args).Build().Run();
 	}
 
 	public static IHostBuilder CreateHostBuilder(string[] args) =>
 		Host.CreateDefaultBuilder(args)
-			.UseSerilog()
+			//.UseSerilog()
 			.ConfigureWebHostDefaults(webBuilder => {
 				webBuilder.UseStartup<Startup>();
 			});
