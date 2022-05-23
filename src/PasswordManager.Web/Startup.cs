@@ -25,6 +25,8 @@ using PasswordManager.Infrastructure.Repositories;
 
 namespace PasswordManager.Web; 
 
+//todo update all nuget packages in all projects
+
 public class Startup {
 	public Startup(IConfiguration configuration) {
 		Configuration = configuration;
