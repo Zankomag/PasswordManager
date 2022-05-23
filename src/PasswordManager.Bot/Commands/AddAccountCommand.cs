@@ -21,13 +21,13 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 	private readonly IAccountService accountService;
 	private readonly IUserService userService;
 	private readonly IAccountAssemblingService accountAssemblingService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 
 	public AddAccountCommand(IBot bot, IAccountService accountService,
 		IUserService userService, IAccountAssemblingService accountAssemblingService,
-		IBotUi botUi) : base(bot)
-		=> (this.accountService, this.userService, this.accountAssemblingService, this.botUi)
-			= (	 accountService,	  userService,		accountAssemblingService,	   botUi);
+		ITelegramBotUi telegramBotUi) : base(bot)
+		=> (this.accountService, this.userService, this.accountAssemblingService, this.telegramBotUi)
+			= (	 accountService,	  userService,		accountAssemblingService,	   telegramBotUi);
 
 	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
 		AccountAssemblingStage nextAccountAssemblingStage = AccountAssemblingStage.None;
@@ -35,7 +35,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 			nextAccountAssemblingStage = accountAssemblingService
 				.Create(botUser.Id, message.Text.GetCommandArgsByNewLine());
 		} catch(ValidationException exception) {
-			await botUi.SendValidationErrorAsync(botUser, exception);
+			await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 		} catch (ArgumentException exception) {
 			//TODO: Log exception
 			throw;
@@ -49,7 +49,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 			var account = accountAssemblingService.Release(botUser.Id);
 			if (await accountService.AddAccountAsync(account)) {
 				//TODO: use emoji by key
-				await botUi.ShowAccountAsync(botUser, account,
+				await telegramBotUi.ShowAccountAsync(botUser, account,
 					extraMessage: "✅ " + String.Format(Localization.GetMessage("AccountAdded", botUser.Lang),
 						account.AccountName));
 			}
@@ -92,7 +92,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 				=> ("📇 " + Localization.GetMessage("AddLogin", botUser.Lang), null),
 			AccountAssemblingStage.AddPassword
 				=> ("🔑 " + Localization.GetMessage("AddPassword", botUser.Lang),
-					botUi.GeneratePasswordKeyboard(botUser,
+					telegramBotUi.GeneratePasswordKeyboard(botUser,
 						GeneratePasswordCommandCode.Assembling,
 						SetUpPasswordGeneratorCommandCode.ReturnAssembling)),
 			AccountAssemblingStage.AddEncryptionKey
@@ -158,7 +158,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 			await SendNextStageInstruction(botUser, nextStage,
 				callbackQuery.Message.MessageId);
 		} catch (ValidationException exception) {
-			await botUi.SendValidationErrorAsync(botUser, exception);
+			await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 		} catch (InvalidOperationException) {
 			await ReportAbsenceOfNewAccount(botUser, callbackQuery.Id);
 		} catch (Exception exception) {
@@ -179,7 +179,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 		try {
 			nextAssemblingStage = accountAssemblingService.Assemble(botUser.Id, message.Text);
 		} catch (ValidationException exception) {
-			await botUi.SendValidationErrorAsync(botUser, exception);
+			await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 		} catch (InvalidOperationException) {
 			await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 		}
@@ -201,7 +201,7 @@ public class AddAccountCommand : Abstractions.BotCommand, IMessageCommand, IRepl
 				nextAssemblingStage = accountAssemblingService
 					.Assemble(botUser.Id, message.Text, AccountAssemblingStage.AddEncryptionKey);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(botUser, exception);
+				await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 			} catch (InvalidOperationException) {
 				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 			}

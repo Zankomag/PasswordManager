@@ -14,11 +14,14 @@ using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.Bot.Services; 
 
+//TODO MAKE FUCKING TEMPORARY PROJECT Junetic.Telegram.Bot right here and move all library stuff there
+
+//todo merge this with BotHandler and name final as TelegramBotHandler
 public class BotService : IBotService {
 
 	private readonly ITelegramBotClient client;
 	private readonly ILogger<BotService> logger;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 	private readonly BotSettings settings;
 		
 	//todo validate if this works as expected
@@ -27,9 +30,9 @@ public class BotService : IBotService {
 	/// </summary>
 	private readonly Lazy<Task<string>> botUsername;
 
-	public BotService(IOptions<BotSettings> botSettings, ILogger<BotService> logger,  IBotUi botUi) {
+	public BotService(IOptions<BotSettings> botSettings, ILogger<BotService> logger,  ITelegramBotUi telegramBotUi) {
 		this.logger = logger;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 		//todo check if it works when options are null
 		settings = botSettings?.Value ?? throw new ArgumentNullException(nameof(botSettings), $"{nameof(botSettings)} value is null");
 		client = new TelegramBotClient(settings.Token);

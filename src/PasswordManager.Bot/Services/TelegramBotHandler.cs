@@ -15,7 +15,7 @@ namespace PasswordManager.Bot.Services;
 /// <summary>
 ///     Handles Telegram Bot Updates
 /// </summary>
-public class BotHandler : IBotHandler {
+public class TelegramBotHandler : ITelegramBotHandler {
 	private readonly IBot bot;
 	private readonly IUserService userService;
 	private readonly ICommandFactory commandFactory;
@@ -23,7 +23,7 @@ public class BotHandler : IBotHandler {
 
 	//TODO:
 	//Make BaseBotHandler for framework
-	public BotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory,
+	public TelegramBotHandler(IBot bot, IUserService userService, ICommandFactory commandFactory,
 		IBotUserService botUserService) {
 		this.bot = bot;
 		this.userService = userService;
@@ -44,12 +44,14 @@ public class BotHandler : IBotHandler {
 
 		//We do not call the database if there is no reason to retrieve the user
 		if(handleUpdateFunc != null) {
-			BotUser botUser = null;
+			BotUser botUser;
 			if((botUser = await GetUser(update)) != null)
 				await handleUpdateFunc(botUser);
 		}
 	}
-
+	
+	//todo make this as virtual item in abstract class where it just getting telegram user id and creates BotUser model
+	// after that implement PasswordManagerBotHandler where we'll have this implementation
 	protected virtual async Task<BotUser> GetUser(Update update)
 		=> await botUserService.GetUser(update);
 

@@ -8,7 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Services.Abstractions; 
 
-public interface IBotUi {
+public interface ITelegramBotUi {
 	/// <summary>
 	/// Shows full account data with buttons
 	/// </summary>

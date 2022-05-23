@@ -21,12 +21,12 @@ namespace PasswordManager.Bot.Commands;
 public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQueryCommand {
 
 	private readonly IAccountService accountService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 	private readonly BotUiSettings botUiSettings;
 
-	public SearchCommand(IBot bot, IAccountService accountService, IBotUi botUi, IOptions<BotUiSettings> uiSettings) : base(bot) {
+	public SearchCommand(IBot bot, IAccountService accountService, ITelegramBotUi telegramBotUi, IOptions<BotUiSettings> uiSettings) : base(bot) {
 		this.accountService = accountService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 		this.botUiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");
 	}
 
@@ -41,12 +41,12 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 				break;
 			case 1: {
 				var account = await accountService.GetSingleAccountByNameAsync(botUser.Id, accountName);
-				await botUi.ShowAccountAsync(botUser, account);
+				await telegramBotUi.ShowAccountAsync(botUser, account);
 				break;
 			}
 			default: {
 				var firstPageAccounts = (await accountService.GetAccountsByNameAsync(botUser.Id, 0, botUiSettings.PageSize, accountName)).ToList();
-				await botUi.ShowAccountsPageAsync(botUser, firstPageAccounts, accountCount, 0, accountName);
+				await telegramBotUi.ShowAccountsPageAsync(botUser, firstPageAccounts, accountCount, 0, accountName);
 				break;
 			}
 		}
@@ -62,7 +62,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		int accountCount = await accountService.GetAccountsCountByNameAsync(callbackQuery.From.Id, accountName);
 		if(accountCount != 0) {
 			var pageAccounts = (await accountService.GetAccountsByNameAsync(botUser.Id, pageIndex, botUiSettings.PageSize, accountName)).ToList();
-			await botUi.ShowAccountsPageAsync(botUser, pageAccounts, accountCount, pageIndex, accountName);
+			await telegramBotUi.ShowAccountsPageAsync(botUser, pageAccounts, accountCount, pageIndex, accountName);
 
 			//todo do we need to answer???
 			//await Bot.Client.AnswerCallbackQueryAsync(callbackQuery.Id);

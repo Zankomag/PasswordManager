@@ -21,18 +21,18 @@ public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryComman
 	private readonly IAccountService accountService;
 	private readonly IPasswordDecryptionService passwordDecryptionService;
 	private readonly IUserService userService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 
 	public ShowPasswordCommand(IBot bot,
 		IAccountService accountService,
 		IPasswordDecryptionService passwordDecryptionService,
-		IUserService userService, IBotUi botUi)
+		IUserService userService, ITelegramBotUi telegramBotUi)
 		: base(bot) {
 
 		this.accountService = accountService;
 		this.passwordDecryptionService = passwordDecryptionService;
 		this.userService = userService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 	}
 
 	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
@@ -50,7 +50,7 @@ public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryComman
 		if (account != null) {
 			if (!account.Encrypted) {
 				await Bot.Client.EditMessageTextAsync(botUser.Id, callbackQuery.Message.MessageId,
-					botUi.GetPasswordMessage(account.Password),
+					telegramBotUi.GetPasswordMessage(account.Password),
 					replyMarkup: GetPasswordKeyboard(account, botUser),
 					parseMode: ParseMode.MarkdownV2);
 			} else {
@@ -63,7 +63,7 @@ public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryComman
 		}
 	}
 
-	//TODO: Move to BotUi
+	//TODO: Move to TelegramBotUi
 	private InlineKeyboardMarkup GetDecryptionKeyInvitationKeyboard(Account account, BotUser botUser,
 		bool includeShowHintButton) {
 		List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>>();
@@ -88,7 +88,7 @@ public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryComman
 		return new InlineKeyboardMarkup(keyboard);
 	}
 
-	//TODO: Move to BotUi
+	//TODO: Move to TelegramBotUi
 	private InlineKeyboardMarkup GetPasswordKeyboard(Account account, BotUser botUser) {
 		List<List<InlineKeyboardButton>> keyboard = new List<List<InlineKeyboardButton>> {
 			new List<InlineKeyboardButton> {
@@ -140,7 +140,7 @@ public class ShowPasswordCommand : Abstractions.BotCommand, ICallbackQueryComman
 			}
 			passwordDecryptionService.FinishDecryptionRequest(botUser.Id);
 			await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
-			await Bot.Client.SendTextMessageAsync(botUser.Id, botUi.GetPasswordMessage(decryptedPassword),
+			await Bot.Client.SendTextMessageAsync(botUser.Id, telegramBotUi.GetPasswordMessage(decryptedPassword),
 				replyMarkup: GetPasswordKeyboard(account, botUser),
 				parseMode: ParseMode.MarkdownV2);
 		} else {

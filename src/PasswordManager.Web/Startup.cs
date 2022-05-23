@@ -61,8 +61,8 @@ public class Startup {
 		services.AddSingleton<IPasswordDecryptionService, PasswordDecryptionService>();
 		services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 
-		services.AddScoped<IBotHandler, BotHandler>();
-		services.AddScoped<IBotUi, BotUi>();
+		services.AddScoped<ITelegramBotHandler, TelegramBotHandler>();
+		services.AddScoped<ITelegramBotUi, TelegramBotUi>();
 		services.AddScoped<IBotUserService, BotUserService>();
 			
 

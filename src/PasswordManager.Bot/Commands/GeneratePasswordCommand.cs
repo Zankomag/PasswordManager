@@ -21,13 +21,13 @@ namespace PasswordManager.Bot.Commands;
 public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 	private readonly IAccountService accountService;
 	private readonly IUserService userService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 
-	public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService, IBotUi botUi) : base(bot) {
+	public GeneratePasswordCommand(IBot bot, IAccountService accountService, IUserService userService, ITelegramBotUi telegramBotUi) : base(bot) {
 
 		this.accountService = accountService;
 		this.userService = userService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 	}
 	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 		string password;
@@ -68,7 +68,7 @@ public class GeneratePasswordCommand : Abstractions.BotCommand, ICallbackQueryCo
 				}
 			});
 
-		string passwordMessage = botUi.GetPasswordMessage(password);
+		string passwordMessage = telegramBotUi.GetPasswordMessage(password);
 			
 		await Bot.Client.EditMessageTextAsync(
 			callbackQuery.From.Id,

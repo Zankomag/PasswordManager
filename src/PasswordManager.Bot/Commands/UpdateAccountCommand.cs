@@ -19,16 +19,16 @@ namespace PasswordManager.Bot.Commands;
 
 public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand, IActionCommand, IReplyActionCommand {
 	private readonly IAccountService accountService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 	private readonly IAccountUpdatingService accountUpdatingService;
 	private readonly IUserService userService;
 	private readonly IMapper mapper;
 
 	public UpdateAccountCommand(IBot bot, IAccountService accountService,
-		IBotUi botUi, IAccountUpdatingService accountUpdatingService,
+		ITelegramBotUi telegramBotUi, IAccountUpdatingService accountUpdatingService,
 		IUserService userService, IMapper mapper) : base(bot) {
 		this.accountService = accountService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 		this.accountUpdatingService = accountUpdatingService;
 		this.userService = userService;
 		this.mapper = mapper;
@@ -43,7 +43,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 			if ((account != null) && ((accountId == null) || (accountId == account.Id))) {
 				mapper.Map(updatingAccount, account);
 				await accountService.UpdateAccountAsync();
-				await botUi.ShowAccountAsync(botUser, account, messageToEditId,
+				await telegramBotUi.ShowAccountAsync(botUser, account, messageToEditId,
 					Localization.GetMessage("AccountUpdated", botUser.Lang));
 			}
 			await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
@@ -106,7 +106,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 						new InlineKeyboardMarkup(
 							new InlineKeyboardButton[][] {
 								new InlineKeyboardButton[]{ backButton},
-								botUi.GeneratePasswordKeyboard(botUser, GeneratePasswordCommandCode.Updating,
+								telegramBotUi.GeneratePasswordKeyboard(botUser, GeneratePasswordCommandCode.Updating,
 									SetUpPasswordGeneratorCommandCode.ReturnUpdating, accountId) })),
 					UpdateAccountCommandCode.OutdatedTime => ("🕜 " + String.Format(
 							Localization.GetMessage("UpdateAccData", botUser.Lang),
@@ -114,7 +114,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 						new InlineKeyboardMarkup(backButton)),
 					_ => throw new InvalidOperationException()
 				};
-			message = await botUi.SerializeAccountAsync(botUser, account, false, message);
+			message = await telegramBotUi.SerializeAccountAsync(botUser, account, false, message);
 			await Bot.Client.EditMessageTextAsync(botUser.Id, callbackQuery.Message.MessageId,
 				message, replyMarkup: replyMarkup);
 			accountUpdatingService.StartUpdatingRequest(botUser.Id, account, (AccountUpdatingStage)updateAccountCommandCode);
@@ -144,7 +144,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 				accountUpdatingStage, accountId);
 			await HandleNextStage(botUser, nextUpdatingStage, accountId, callbackQuery.Message.MessageId);
 		} catch (ValidationException exception) {
-			await botUi.SendValidationErrorAsync(botUser, exception);
+			await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 		switch (updateAccountCommandCode) {
 			case UpdateAccountCommandCode.SelectUpdateType:
 				if (account != null) {
-					await botUi.ShowAccountUpdatingMenuAsync(botUser, account, callbackQuery.Message.MessageId,
+					await telegramBotUi.ShowAccountUpdatingMenuAsync(botUser, account, callbackQuery.Message.MessageId,
 						Localization.GetMessage("ChooseWhatUpdate", botUser.Lang));
 				}
 				break;
@@ -214,7 +214,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 		try {
 			(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(botUser.Id, message.Text);
 		} catch (ValidationException exception) {
-			await botUi.SendValidationErrorAsync(botUser, exception);
+			await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 		} catch (InvalidOperationException) {
 			accountUpdatingService.FinishUpdatingRequest(botUser.Id);
 			await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
@@ -238,7 +238,7 @@ public class UpdateAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 				(accountId, nextUpdatingStage) = accountUpdatingService.GetNextUpdatingStageAndAccountId(
 					botUser.Id, message.Text, AccountUpdatingStage.EncryptPassword);
 			} catch (ValidationException exception) {
-				await botUi.SendValidationErrorAsync(botUser, exception);
+				await telegramBotUi.SendValidationErrorAsync(botUser, exception);
 			} catch (InvalidOperationException) {
 				await userService.UpdateActionAsync(botUser.Id, UserAction.Search);
 			}

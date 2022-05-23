@@ -18,11 +18,11 @@ namespace PasswordManager.Bot.Commands;
 
 public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCommand, IActionCommand, ICallbackQueryCommand {
 	private readonly IUserService userService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 
-	public SetUpPasswordGeneratorCommand(IBot bot, IUserService userService, IBotUi botUi) : base(bot) {
+	public SetUpPasswordGeneratorCommand(IBot bot, IUserService userService, ITelegramBotUi telegramBotUi) : base(bot) {
 		this.userService = userService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 	}
 
 	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
@@ -51,11 +51,11 @@ public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCo
 			
 	}
 
-	//todo move this to botUi
+	//todo move this to telegramBotUi
 	async Task SendGeneratorSettings(BotUser botUser, Message message) {
 		string passwordGeneratorPattern = await userService.GetPasswordGeneratorPattern(botUser.Id);
 		string messageText = await GetMessageText(botUser, passwordGeneratorPattern);
-		InlineKeyboardMarkup keyboard = botUi.GetPasswordGeneratorSettingsKeyboard(botUser, passwordGeneratorPattern);
+		InlineKeyboardMarkup keyboard = telegramBotUi.GetPasswordGeneratorSettingsKeyboard(botUser, passwordGeneratorPattern);
 		await Bot.Client.SendTextMessageAsync(message.From.Id, messageText, replyMarkup: keyboard, parseMode: ParseMode.MarkdownV2);
 	}
 
@@ -80,7 +80,7 @@ public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCo
 		}
 			
 		return "🛠 " + String.Format(Localization.GetMessage("SetUpPassword", botUser.Lang),
-			$"\n\n{botUi.GetPasswordMessage(password)}");
+			$"\n\n{telegramBotUi.GetPasswordMessage(password)}");
 	}
 
 	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
@@ -139,9 +139,9 @@ public class SetUpPasswordGeneratorCommand : Abstractions.BotCommand, IMessageCo
 		passwordGeneratorPattern = sb + passwordGeneratorPattern[6..];
 		await userService.UpdatePasswordGeneratorPattern(botUser.Id, passwordGeneratorPattern);
 			
-		//todo move this to botUi
+		//todo move this to telegramBotUi
 		string messageText = await GetMessageText(botUser, passwordGeneratorPattern);
-		var keyboard = botUi.GetPasswordGeneratorSettingsKeyboard(botUser, passwordGeneratorPattern);
+		var keyboard = telegramBotUi.GetPasswordGeneratorSettingsKeyboard(botUser, passwordGeneratorPattern);
 		await Bot.Client.EditMessageTextAsync(callbackQuery.Message.Chat.Id,
 			callbackQuery.Message.MessageId, messageText, replyMarkup: keyboard, parseMode: ParseMode.MarkdownV2);
 

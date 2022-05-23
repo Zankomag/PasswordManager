@@ -3,6 +3,6 @@ using Telegram.Bot.Types;
 
 namespace PasswordManager.Bot.Services.Abstractions; 
 
-public interface IBotHandler {
+public interface ITelegramBotHandler {
 	Task HandleUpdateAsync(Update update);
 }

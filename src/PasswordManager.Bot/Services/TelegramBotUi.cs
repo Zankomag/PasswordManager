@@ -18,12 +18,19 @@ using Telegram.Bot;
 
 namespace PasswordManager.Bot.Services; 
 
-public class BotUi : IBotUi {
+
+//Todo this solution is too complex
+// we don't need to separate Bot and BotUi classes. 
+// Make base in library ITelegramBot, implement it in TelegramBot (also library) that has all basic stuff
+//(all methods needed from TelegramBotClient, and additional feature methods
+// After that implement custom IBot and Bot that will implement TelegramBotClient and will have all Ui features from here
+// then we won't need two clients for sending default messages and custom ui message - we'll have it in one place!
+public class TelegramBotUi : ITelegramBotUi {
 	private readonly IBot bot;
 	private readonly IUserService userService;
 	private readonly BotUiSettings botUiSettings;
 
-	public BotUi(IBot bot, IUserService userService, IOptions<BotUiSettings> uiSettings) {
+	public TelegramBotUi(IBot bot, IUserService userService, IOptions<BotUiSettings> uiSettings) {
 		this.bot = bot;
 		this.userService = userService;
 		this.botUiSettings = uiSettings?.Value ?? throw new ArgumentNullException(nameof(uiSettings), $"{nameof(BotUiSettings)} value is null");

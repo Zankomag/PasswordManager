@@ -14,16 +14,16 @@ namespace PasswordManager.Bot.Services;
 /// <summary>
 /// This service should be used to run Telegram Bot on a local machine as it uses Telegram Bot API polling
 /// </summary>
-public class BotLocalRunner : IHostedService {
+public class TelegramBotLocalRunner : IHostedService {
 
 	private readonly IBotService botService;
-	private readonly ILogger<BotLocalRunner> logger;
+	private readonly ILogger<TelegramBotLocalRunner> logger;
 	private readonly ITelegramBotClient client;
 
 	private CancellationTokenSource? cancellationTokenSource;
 	private Task pollingTask;
 
-	public BotLocalRunner(IOptions<BotSettings> botSettings, IBotService botService, ILogger<BotLocalRunner> logger) {
+	public TelegramBotLocalRunner(IOptions<BotSettings> botSettings, IBotService botService, ILogger<TelegramBotLocalRunner> logger) {
 		this.botService = botService;
 		this.logger = logger;
 		BotSettings settings = botSettings.Value;

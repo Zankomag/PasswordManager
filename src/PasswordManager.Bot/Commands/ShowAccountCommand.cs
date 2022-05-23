@@ -11,11 +11,11 @@ namespace PasswordManager.Bot.Commands;
 
 public class ShowAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand {
 	private readonly IAccountService accountService;
-	private readonly IBotUi botUi;
+	private readonly ITelegramBotUi telegramBotUi;
 
-	public ShowAccountCommand(IBot bot, IAccountService accountService, IBotUi botUi) : base(bot) {
+	public ShowAccountCommand(IBot bot, IAccountService accountService, ITelegramBotUi telegramBotUi) : base(bot) {
 		this.accountService = accountService;
-		this.botUi = botUi;
+		this.telegramBotUi = telegramBotUi;
 	}
 
 	//todo rename all BotUser params to botUser as here
@@ -28,7 +28,7 @@ public class ShowAccountCommand : Abstractions.BotCommand, ICallbackQueryCommand
 
 		var account = await accountService.GetAccountAsync(botUser.Id, accountId);
 		//todo add backButtonCommandCode
-		await botUi.ShowAccountAsync(botUser, account, callbackQuery.Message.MessageId);
+		await telegramBotUi.ShowAccountAsync(botUser, account, callbackQuery.Message.MessageId);
 	}
 
 }

@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions {
 	public static IServiceCollection AddTelegramBotServices(this IServiceCollection services, IConfiguration configuration) {
 		services.AddOptions<BotSettings>(configuration, BotSettings.SectionName);
 		services.AddSingleton<IBotService, BotService>();
-		services.AddSingleton<IBotUi, BotUi>();
+		services.AddSingleton<ITelegramBotUi, TelegramBotUi>();
 		return services;
 	}
 
