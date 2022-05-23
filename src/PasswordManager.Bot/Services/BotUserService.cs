@@ -21,8 +21,9 @@ public class BotUserService : IBotUserService {
 		this.commandFactory = commandFactory;
 	}
 
+	//todo check if we don't have Int32 userid anywhere in code
 	public virtual async Task<BotUser> GetUser(Update update) {
-		int? userId;
+		long? userId;
 		if ((userId = update.GetUserIdByUpdateType()) == null)
 			return null;
 

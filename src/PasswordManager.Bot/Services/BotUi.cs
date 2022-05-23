@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using PasswordManager.Bot.Settings;
 using PasswordManager.Common.Extensions;
+using Telegram.Bot;
 
 namespace PasswordManager.Bot.Services; 
 

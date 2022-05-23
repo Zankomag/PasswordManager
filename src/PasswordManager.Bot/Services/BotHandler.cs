@@ -6,6 +6,7 @@ using PasswordManager.Bot.Commands.Enums;
 using PasswordManager.Bot.Extensions;
 using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 

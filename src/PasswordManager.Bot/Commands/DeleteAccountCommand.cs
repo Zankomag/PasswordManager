@@ -8,6 +8,7 @@ using PasswordManager.Bot.Models;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Application.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
+using Telegram.Bot;
 
 namespace PasswordManager.Bot.Commands; 
 

@@ -13,6 +13,7 @@ using PasswordManager.Bot.Services;
 using PasswordManager.Bot.Settings;
 using PasswordManager.Common.Extensions;
 using PasswordManager.Core.Entities;
+using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.Bot.Commands; 

@@ -2,6 +2,7 @@
 using PasswordManager.Bot.Services.Abstractions;
 using Telegram.Bot.Types;
 using System.Threading.Tasks;
+using Telegram.Bot;
 
 namespace PasswordManager.Bot.Commands.Abstractions; 
 

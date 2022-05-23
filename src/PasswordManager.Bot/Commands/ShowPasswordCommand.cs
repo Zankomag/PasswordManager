@@ -13,6 +13,7 @@ using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands.Enums;
 using System.Text;
 using System.Collections.Generic;
+using Telegram.Bot;
 
 namespace PasswordManager.Bot.Commands; 
 

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.Bot.Extensions; 
 
 public static class BotExtensions {
-	public static int? GetUserIdByUpdateType(this Update update)
+	
+	[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+	public static long? GetUserIdByUpdateType(this Update update)
 		=> update.Type switch {
 			UpdateType.Message => update.Message.From.Id,
 			UpdateType.CallbackQuery => update.CallbackQuery.From.Id,

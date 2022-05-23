@@ -82,7 +82,7 @@ public class Bot : IBot {
 		await SendMessageToAllAdmins(message);
 	}
 
-	private async Task<bool> SendMessageToAdmin(long adminId, string message, ParseMode parseMode) {
+	private async Task<bool> SendMessageToAdmin(long adminId, string message, ParseMode parseMode = default) {
 		try {
 			await Client.SendTextMessageAsync(adminId, message, parseMode);
 		} catch {
@@ -93,7 +93,7 @@ public class Bot : IBot {
 		return true;
 	}
 
-	public async Task<bool> SendMessageToAllAdmins(string message, ParseMode parseMode = ParseMode.Default) {
+	public async Task<bool> SendMessageToAllAdmins(string message, ParseMode parseMode = default) {
 		if (admins.Length == 1)
 			return await SendMessageToAdmin(admins[0], message, parseMode);
 
