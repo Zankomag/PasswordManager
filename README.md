@@ -3,6 +3,19 @@ Asp NET Core bot that helps you to manage your accounts.
 
 !Working build: https://github.com/Zankomag/PasswordManager/tree/3ae4161bd7a14c2ed2a3c7ac546bc9cfb8cbfeb4!
 
+###How to create database using EF Core
+Make sure you have ef core dotnet CLI tools installed. If not, run:
+```
+dotnet tool install --global dotnet-ef
+```
+Make sure connection string is set in appsettings.Environment.json. After that run:
+```
+cd src/PasswordManager.Infrastructure
+dotnet ef --startup-project ../PasswordManager.Web/ migrations add Initial
+dotnet ef --startup-project ../PasswordManager.Web/ database update
+```
+
+
 ## How to deploy on Linux server
 There must be installed dotnet core, nginx and SSL certificate on your web-server to use webhook.
 Do not forget to update SSL certificate in time!

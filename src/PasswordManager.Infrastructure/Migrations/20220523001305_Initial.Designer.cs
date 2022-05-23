@@ -2,62 +2,70 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PasswordManager.Infrastructure.Data;
 
+#nullable disable
+
 namespace PasswordManager.Infrastructure.Migrations
 {
     [DbContext(typeof(PasswordManagerDbContext))]
-    [Migration("20201203215422_Init6")]
-    partial class Init6
+    [Migration("20220523001305_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("PasswordManager.Core.Entities.Account", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("AccountName")
                         .IsRequired()
                         .HasMaxLength(60)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<bool>("Encrypted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Link")
-                        .HasMaxLength(70)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(512)
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
-                    b.Property<TimeSpan>("OutdatedTime")
-                        .HasColumnType("TEXT");
+                    b.Property<TimeSpan?>("OutdatedTime")
+                        .HasColumnType("time");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(6072)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PasswordUpdatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Url")
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -68,28 +76,28 @@ namespace PasswordManager.Infrastructure.Migrations
 
             modelBuilder.Entity("PasswordManager.Core.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Action")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
-                    b.Property<string>("PasswordGeneratorPattern")
+                    b.Property<string>("KeyGeneratorSettings")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KeyHint")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Lang")
+                    b.Property<string>("Language")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan>("OutdatedTime")
+                    b.Property<TimeSpan?>("OutdatedTime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue(new TimeSpan(180, 0, 0, 0, 0));
+                        .HasColumnType("time")
+                        .HasDefaultValue(new TimeSpan(365, 0, 0, 0, 0));
 
                     b.HasKey("Id");
 

@@ -20,6 +20,7 @@ using System.Reflection;
 using PasswordManager.Application;
 using AutoMapper;
 using PasswordManager.Bot.Settings;
+using PasswordManager.Infrastructure.Extensions;
 using PasswordManager.Infrastructure.Repositories;
 
 namespace PasswordManager.Web; 
@@ -35,12 +36,7 @@ public class Startup {
 
 		services.Configure<BotSettings>(Configuration.GetSection(nameof(BotSettings)));
 
-		services.AddDbContext<PasswordManagerDbContext>(options => {
-			options.UseSqlite(Configuration.GetConnectionString("PasswordManager"));
-			////Adding "Microsoft.EntityFrameworkCore": "Information" 
-			////to Serilog MinimumLevel in config  allows to get more convenient output
-			//options.LogTo(System.Console.WriteLine, minimumLevel: LogLevel.Information);
-		});
+		services.AddSqlServer(Configuration);
 
 		//TODO MOVE ALL INITIALIZATION FROM OTHER PROJECTS TO THERS ServiceCollectionExtentions methods
 
