@@ -47,7 +47,7 @@ public class BotService : IBotService {
 	public async Task HandleUpdateAsync(Update update) {
 		switch(update.Type) {
 			case UpdateType.Message:
-				if(update.Message!.Type == MessageType.Text) await HandleMessageAsync(update.Message);
+				if(update.Message!.Type == MessageType.Text) await HandleTextMessageAsync(update.Message);
 				break;
 			case UpdateType.InlineQuery:
 				await HandleInlineQueryAsync(update.InlineQuery);
@@ -68,7 +68,7 @@ public class BotService : IBotService {
 	public bool IsTokenCorrect(string token) => token == settings.Token;
 	
 
-	private async Task HandleMessageAsync(Message message) {
+	private async Task HandleTextMessageAsync(Message message) {
 		if(message is null) throw new ArgumentNullException(nameof(message));
 
 		//If command contains bot username we need to exclude it from command (/btc@MyBtcBot should be /btc)
