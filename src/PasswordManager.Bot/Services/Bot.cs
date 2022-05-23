@@ -101,6 +101,7 @@ public class Bot : IBot {
 			if (!await SendMessageToAdmin(admins[i], message, parseMode))
 				return false;
 			//To prevent bot from being banned for spamming
+			//todo move to temporary extension with moving delay ms to constant and getting it from telegram info
 			await Task.Delay(500);
 		}
 		return true;
@@ -118,6 +119,8 @@ public class Bot : IBot {
 				await Client.EditMessageTextAsync(chatId, messageId, "🗑");
 			} catch {
 				// ignored
+				// todo log this just as information and catch appropriate error and catch common Exception 
+				// and log it as Error
 			}
 		}
 	}
