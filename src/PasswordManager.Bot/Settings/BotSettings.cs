@@ -7,8 +7,9 @@ namespace PasswordManager.Bot.Settings;
 /// Telegram Bot Settings
 /// </summary>
 public class BotSettings : ISettings {
-
-	public string SectionName => "TelegramBot";
+	
+	/// <inheritdoc />
+	public static string SectionName => "TelegramBot";
 	
 	public string Token { get; set; }
 	public long[] AdminIds { get; set; }

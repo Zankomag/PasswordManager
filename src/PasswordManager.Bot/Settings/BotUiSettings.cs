@@ -4,8 +4,8 @@ namespace PasswordManager.Bot.Settings;
 
 public class BotUiSettings : ISettings {
 
-	
-	public string SectionName => "TelegramBotUi";
+	/// <inheritdoc />
+	public static string SectionName => "TelegramBotUi";
 
 	/// <summary>
 	/// Indicates how many accounts can be on a page
@@ -17,4 +17,5 @@ public class BotUiSettings : ISettings {
 	/// </summary>
 	public string AccountSeparator { get; set; }
 
+	
 }

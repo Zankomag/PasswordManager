@@ -9,6 +9,6 @@ public interface ISettings {
 	/// <summary>
 	/// The name of configuration section in appsettings.json file
 	/// </summary>
-	public string SectionName { get; }
+	abstract static string SectionName { get;  }
 
 }
