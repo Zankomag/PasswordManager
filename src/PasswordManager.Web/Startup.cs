@@ -33,7 +33,9 @@ public class Startup {
 	public IConfiguration Configuration { get; }
 
 	public void ConfigureServices(IServiceCollection services) {
-
+		//todo remove ef core pcakges for .Web project if not needed
+		
+		
 		//todo add other settings too
 		services.Configure<BotSettings>(Configuration.GetSection(BotSettings.SectionName));
 
