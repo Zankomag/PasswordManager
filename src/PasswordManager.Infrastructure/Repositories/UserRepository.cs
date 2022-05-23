@@ -17,7 +17,7 @@ public class UserRepository : Repository<User, long>, IUserRepository {
 		=> await GetUser(userId)
 			.Select(x => new User { 
 				Id = userId,
-				Lang = x.Lang,
+				Language = x.Language,
 				Action = x.Action})
 			.AsNoTracking()
 			.FirstOrDefaultAsync();
@@ -45,16 +45,16 @@ public class UserRepository : Repository<User, long>, IUserRepository {
 	public void UpdateLanguage(User user) {
 		if (user == null)
 			throw new ArgumentNullException(nameof(user));
-		if (user.Lang == null)
-			throw new ArgumentException("user.Lang cannot be null", nameof(user));
-		context.Entry(user).Property(x => x.Lang).IsModified = true;
+		if (user.Language == null)
+			throw new ArgumentException("user.Language cannot be null", nameof(user));
+		context.Entry(user).Property(x => x.Language).IsModified = true;
 	}
 	public void UpdatePasswordGeneratorPattern(User user) {
 		if (user == null)
 			throw new ArgumentNullException(nameof(user));
-		if (user.PasswordGeneratorPattern == null)
-			throw new ArgumentException("user.PasswordGeneratorPattern cannot be null", nameof(user));
-		context.Entry(user).Property(x => x.PasswordGeneratorPattern).IsModified = true;
+		if (user.KeyGeneratorSettings == null)
+			throw new ArgumentException("user.KeyGeneratorSettings cannot be null", nameof(user));
+		context.Entry(user).Property(x => x.KeyGeneratorSettings).IsModified = true;
 	}
 
 	public async Task<string> GetKeyHint(long userId)
@@ -64,7 +64,7 @@ public class UserRepository : Repository<User, long>, IUserRepository {
 		
 	public async Task<string> GetPasswordGeneratorPattern(long userId)
 		=> await GetUser(userId)
-			.Select(x => x.PasswordGeneratorPattern)
+			.Select(x => x.KeyGeneratorSettings)
 			.FirstOrDefaultAsync();
 
 	public void UpdateKeyHint(User user) {

@@ -24,8 +24,8 @@ public class AccountAssemblingModel {
 	public string Link {
 		get => link;
 		set {
-			var account = new Account { Link = value };
-			Validate(account.Link, account, nameof(account.Link));
+			var account = new Account { Url = value };
+			Validate(account.Url, account, nameof(account.Url));
 			link = value;
 		}
 	}

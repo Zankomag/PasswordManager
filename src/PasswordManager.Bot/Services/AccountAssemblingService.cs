@@ -20,13 +20,13 @@ public class AccountAssemblingService : IAccountAssemblingService {
 
 	public void Cancel(long userId) => accountAssemblings.Remove(userId); 
 
-	// [0] /add => Ask for AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
-	// [1] /add AccountName => Ask for Link => Ask for Note => Ask for password => Ask for EncryptionKey
+	// [0] /add => Ask for AccountName => Ask for Url => Ask for Note => Ask for password => Ask for EncryptionKey
+	// [1] /add AccountName => Ask for Url => Ask for Note => Ask for password => Ask for EncryptionKey
 	// [2] /add AccountName \n Login => Ask for password => Ask for EncryptionKey
 	// [3] /add AccountName \n Login \n Password => Ask for EncryptionKey
 	// [4] /add AccountName \n Login \n Password \n EncryptionKey
-	// [5] /add AccountName \n Link \n Login \n Password \n EncryptionKey
-	// [6] /add AccountName \n Link \n Note \n Login \n Password \n EncryptionKey
+	// [5] /add AccountName \n Url \n Login \n Password \n EncryptionKey
+	// [6] /add AccountName \n Url \n Note \n Login \n Password \n EncryptionKey
 	public AccountAssemblingStage Create(long userId, string[] args = null) {
 		var accountAssemblingModel = new AccountAssemblingModel() {
 			AccountAssemblingStage = AccountAssemblingStage.AddAccountName,
@@ -88,7 +88,7 @@ public class AccountAssemblingService : IAccountAssemblingService {
 			return new Account {
 				AccountName = accountAssemblingModel.AccountName,
 				UserId = accountAssemblingModel.UserId,
-				Link = accountAssemblingModel.Link,
+				Url = accountAssemblingModel.Link,
 				Note = accountAssemblingModel.Note,
 				Login = accountAssemblingModel.Login,
 				Password = accountAssemblingModel.Password,

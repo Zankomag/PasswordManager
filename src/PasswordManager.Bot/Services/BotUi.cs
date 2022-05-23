@@ -152,8 +152,8 @@ public class BotUi : IBotUi {
 			if(i != 0)
 				messageSb.Append(botUiSettings.AccountSeparator);
 			messageSb.AppendLine().Append(accounts[i].AccountName);
-			if(accounts[i].Link != null) 
-				messageSb.AppendLine().Append(accounts[i].Link);
+			if(accounts[i].Url != null) 
+				messageSb.AppendLine().Append(accounts[i].Url);
 			messageSb.AppendLine();
 			messageSb.Append(Localization.GetMessage("Login", langCode))
 				.Append(": ").Append(accounts[i].Login);
@@ -201,10 +201,10 @@ public class BotUi : IBotUi {
 			? new StringBuilder(extraMessage).Append("\n\n")
 			: new StringBuilder();
 
-		if (account.Link != null) {
+		if (account.Url != null) {
 			messageBuilder.Append('[')
 				.Append(account.AccountName.EscapeMarkdownV2Chars()).Append("](")
-				.Append(account.Link.EscapeInlineLinkMarkdownV2Chars()).Append(')');
+				.Append(account.Url.EscapeInlineLinkMarkdownV2Chars()).Append(')');
 		} else {
 			messageBuilder.Append(account.AccountName.EscapeMarkdownV2Chars());
 		}
@@ -267,7 +267,7 @@ public class BotUi : IBotUi {
 						UpdateAccountCommandCode.AccountName.ToStringCode(account.Id))},
 				new InlineKeyboardButton[] {
 					InlineKeyboardButton.WithCallbackData(
-						"🔗 " + Localization.GetMessage("Link", botUser.Lang),
+						"🔗 " + Localization.GetMessage("Url", botUser.Lang),
 						UpdateAccountCommandCode.Link.ToStringCode(account.Id)),
 					InlineKeyboardButton.WithCallbackData(
 						"🗒 " + Localization.GetMessage("Note", botUser.Lang),
@@ -379,11 +379,11 @@ public class BotUi : IBotUi {
 
 	//new InlineKeyboardButton[] {
 	//	InlineKeyboardButton.WithCallbackData(
-	//		"🗑 " + Localization.GetMessage("DeleteLink", botUser.Lang),
+	//		"🗑 " + Localization.GetMessage("DeleteLink", botUser.Language),
 	//		UpdateAccountCommandCode.DeleteLink.ToStringCode(accountId)) },
 	//new InlineKeyboardButton[] {
 	//	InlineKeyboardButton.WithCallbackData(
-	//		"🗑 " + Localization.GetMessage("DeleteNote", botUser.Lang),
+	//		"🗑 " + Localization.GetMessage("DeleteNote", botUser.Language),
 	//		UpdateAccountCommandCode.DeleteNote.ToStringCode(accountId)) },
 
 

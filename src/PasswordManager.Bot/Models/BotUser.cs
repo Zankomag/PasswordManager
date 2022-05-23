@@ -21,7 +21,7 @@ public class BotUser {
 			return null;
 		return new BotUser {
 			Id = user.Id,
-			Lang = user.Lang,
+			Lang = user.Language,
 			Action = user.Action
 		};
 	}

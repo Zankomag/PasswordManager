@@ -26,8 +26,6 @@ public class PasswordManagerDbContext : DbContext {
 		//Set default value for 6 month
 		modelBuilder.Entity<User>().Property(u => u.OutdatedTime)
 			.HasDefaultValue(new TimeSpan(days: 365, 0, 0, 0));
-
-		modelBuilder.Entity<User>()
-			.Property(e => e.PasswordGeneratorPattern).HasColumnName("PasswordGeneratorPattern");
+		
 	}
 }

@@ -7,7 +7,7 @@ namespace PasswordManager.Core.Repositories;
 public interface IUserRepository : IRepository<User, long> {
 
 	/// <summary></summary>
-	/// <returns>User with Action and Lang</returns>
+	/// <returns>User with Action and Language</returns>
 	Task<User> GetUserActionAsync(long userId);
 
 	/// <summary></summary>

@@ -9,7 +9,7 @@ public interface IUserService {
 	Task<User> AddUserAsync(long userId, string langCode);
 
 	/// <summary></summary>
-	/// <returns>User with Action and Lang</returns>
+	/// <returns>User with Action and Language</returns>
 	Task<User> GetUserActionAsync(long userId);
 
 	/// <summary></summary>

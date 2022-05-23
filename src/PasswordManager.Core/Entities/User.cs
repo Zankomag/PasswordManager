@@ -34,12 +34,12 @@ public class User {
 	/// <summary>
 	///     Language code
 	/// </summary>
-	[Required] public string Lang { get; set; }
+	[Required] public string Language { get; set; }
 		
 	/// <summary>
 	///     Generator pattern
 	/// </summary>
-	[Required] public string PasswordGeneratorPattern { get; set; }
+	[Required] public string KeyGeneratorSettings { get; set; }
 
 	[Required] public UserAction Action { get; set; }
 

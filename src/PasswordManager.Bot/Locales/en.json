@@ -29,7 +29,7 @@
 	"ErrorTryAgainLater": "An error occured, try again later",
 	"NotFound": "There is no accounts you are searching for.\nAdd a new one: {0}",
 	"MaxLength": "Max {0} length is {1} characters. Try again.",
-	"Link": "Link",
+	"Url": "Link",
 	"Note": "Note",
 	"DeleteMsg": "Delete message",
 	"UpdateAcc": "Edit account",

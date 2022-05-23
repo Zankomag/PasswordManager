@@ -14,7 +14,7 @@ public class Account {
 	public long UserId { get; set; }
 	[Required] public DateTime PasswordUpdatedDate { get; set; }
 	[Required] [StringLength(60)] public string AccountName { get; set; }
-	[StringLength(70)] public string Link { get; set; }
+	[StringLength(70)] public string Url { get; set; }
 	[Required] [StringLength(40)] public string Login { get; set; }
 
 	[Required] [StringLength(MaxPasswordLength)]

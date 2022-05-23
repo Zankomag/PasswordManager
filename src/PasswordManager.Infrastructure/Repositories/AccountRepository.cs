@@ -22,7 +22,7 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 			.Select(a => new Account() {
 				Id = a.Id,
 				AccountName = a.AccountName,
-				Link = a.Link,
+				Url = a.Url,
 				Login = a.Login,
 			});
 	}
@@ -52,7 +52,7 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 			.Select(a => new Account() {
 				Id = accountId,
 				AccountName = a.AccountName,
-				Link = a.Link,
+				Url = a.Url,
 				Login = a.Login,
 				Note = a.Note,
 				Encrypted = a.Encrypted,
@@ -86,7 +86,7 @@ public class AccountRepository : Repository<Account, long>, IAccountRepository {
 		if (account == null)
 			throw new ArgumentNullException(nameof(account));
 		if (account.Password == null)
-			throw new ArgumentException("user.PasswordGeneratorPattern cannot be null", nameof(account));
+			throw new ArgumentException("user.KeyGeneratorSettings cannot be null", nameof(account));
 		context.Entry(account).Property(x => x.Password).IsModified = true;
 		context.Entry(account).Property(x => x.Encrypted).IsModified = true;
 	}

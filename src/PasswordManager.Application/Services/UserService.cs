@@ -20,8 +20,8 @@ public class UserService : IUserService {
 	public async Task<User> AddUserAsync(long userId, string langCode) {
 		var user = new User {
 			Id = userId,
-			Lang = langCode,
-			PasswordGeneratorPattern = Password.DefaultPasswordGeneratorPattern,
+			Language = langCode,
+			KeyGeneratorSettings = Password.DefaultPasswordGeneratorPattern,
 			Action = UserAction.Search
 		};
 		await workUnit.UserRepository.AddAsync(user);
@@ -53,7 +53,7 @@ public class UserService : IUserService {
 
 	public async Task UpdateLanguage(long userId, string langCode) {
 		if (langCode == null) throw new ArgumentNullException(nameof(langCode));
-		workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Lang = langCode });
+		workUnit.UserRepository.UpdateLanguage(new User { Id = userId, Language = langCode });
 		await workUnit.SaveAsync();
 	}
 
@@ -65,7 +65,7 @@ public class UserService : IUserService {
 
 	public async Task UpdatePasswordGeneratorPattern(long userId, string passwordGeneratorPattern) {
 		if(passwordGeneratorPattern is null) throw new ArgumentNullException(nameof(passwordGeneratorPattern));
-		workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, PasswordGeneratorPattern = passwordGeneratorPattern });
+		workUnit.UserRepository.UpdatePasswordGeneratorPattern(new User { Id = userId, KeyGeneratorSettings = passwordGeneratorPattern });
 		await workUnit.SaveAsync();
 	}
 

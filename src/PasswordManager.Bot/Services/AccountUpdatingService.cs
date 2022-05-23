@@ -62,7 +62,7 @@ public class AccountUpdatingService : IAccountUpdatingService {
 							return (accountUpdatingModel.AccountUpdatingStage = AccountUpdatingStage.Release);
 						case AccountUpdatingStage.Link:
 							accountAssemblingModel.Link = property.AutoDomain().BuildUrl();
-							accountUpdatingModel.Account.Link = accountAssemblingModel.Link;
+							accountUpdatingModel.Account.Url = accountAssemblingModel.Link;
 							return (accountUpdatingModel.AccountUpdatingStage = AccountUpdatingStage.Release);
 						case AccountUpdatingStage.Note:
 							accountAssemblingModel.Note = property;
