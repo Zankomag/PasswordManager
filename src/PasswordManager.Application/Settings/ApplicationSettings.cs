@@ -1,5 +1,6 @@
 ﻿
-using PasswordManager.Common.Abstractions;
+
+using Junetic.Common.Abstractions;
 
 namespace PasswordManager.Application.Settings; 
 

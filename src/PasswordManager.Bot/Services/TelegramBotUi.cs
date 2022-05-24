@@ -11,9 +11,9 @@ using Telegram.Bot.Types.Enums;
 using System.Text;
 using PasswordManager.Application.Services.Abstractions;
 using System.ComponentModel.DataAnnotations;
+using Junetic.Common.Extensions;
 using Microsoft.Extensions.Options;
 using PasswordManager.Bot.Settings;
-using PasswordManager.Common.Extensions;
 using Telegram.Bot;
 
 namespace PasswordManager.Bot.Services; 

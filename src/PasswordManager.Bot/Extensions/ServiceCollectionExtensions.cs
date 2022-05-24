@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Junetic.Common.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordManager.Bot.Services;
 using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Settings;
-using PasswordManager.Common.Extensions;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
