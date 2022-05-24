@@ -24,7 +24,7 @@ public class ShowAllAccountsCommand : Abstractions.BotCommand, IMessageCommand {
 
 	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
 		//todo if we have this logic both here and in SeachCommand - we need to extract in may be to extension method
-		int accountCount = await accountService.GetAccountsCountByNameAsync(botUser.Id);
+		int accountCount = await accountService.GetAccountCountByNameAsync(botUser.Id);
 		var firstPageAccounts = (await accountService.GetAccountsByNameAsync(botUser.Id, 0, botUiSettings.PageSize)).ToList();
 		await telegramBotUi.ShowAccountsPageAsync(botUser, firstPageAccounts, accountCount, 0, null);
 	}

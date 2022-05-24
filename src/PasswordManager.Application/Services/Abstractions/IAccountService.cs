@@ -9,7 +9,7 @@ public interface IAccountService {
 	/// <param name="userId"></param>
 	/// <param name="accountName">Account Name to search. If null - count of all accounts will be returned.</param>
 	/// <returns>Count of all accounts found by <paramref name="accountName"/></returns>
-	Task<int> GetAccountsCountByNameAsync(long userId, string accountName = null);
+	Task<int> GetAccountCountByNameAsync(long userId, string accountName = null);
 	/// <returns>Full Account info without password</returns>
 	Task<Account> GetAccountAsync(long userId, long accountId);
 	/// <returns>List of basic Account info found by <paramref name="accountName"/>.

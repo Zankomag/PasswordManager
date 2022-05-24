@@ -32,7 +32,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 
 	async Task IActionCommand.ExecuteAsync(Message message, BotUser botUser) {
 		string accountName = message.Text;
-		int accountCount = await accountService.GetAccountsCountByNameAsync(botUser.Id, accountName);
+		int accountCount = await accountService.GetAccountCountByNameAsync(botUser.Id, accountName);
 
 		switch(accountCount) {
 			case 0:
@@ -59,7 +59,7 @@ public class SearchCommand : Abstractions.BotCommand, IActionCommand, ICallbackQ
 		string accountName = callbackQuery.Data.Length != (callbackQuery.Data.IndexOf('.') + 1) ?
 			callbackQuery.Data.Substring(callbackQuery.Data.IndexOf('.') + 1) : null;
 		//todo I guess for all callback queries we need to check (or double check) if callbackQuery.From.Id equals to chat id (and chat must be private)
-		int accountCount = await accountService.GetAccountsCountByNameAsync(callbackQuery.From.Id, accountName);
+		int accountCount = await accountService.GetAccountCountByNameAsync(callbackQuery.From.Id, accountName);
 		if(accountCount != 0) {
 			var pageAccounts = (await accountService.GetAccountsByNameAsync(botUser.Id, pageIndex, botUiSettings.PageSize, accountName)).ToList();
 			await telegramBotUi.ShowAccountsPageAsync(botUser, pageAccounts, accountCount, pageIndex, accountName);
