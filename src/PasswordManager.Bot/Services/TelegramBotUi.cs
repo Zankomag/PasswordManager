@@ -99,8 +99,8 @@ public class TelegramBotUi : ITelegramBotUi {
 		}
 	}
 
-	public async Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, int totalAccountCount, int pageIndex, string searchQuery, int messageToEditId = 0) {
-		int pageCount = totalAccountCount.PageCount(botUiSettings.PageSize);
+	public async Task ShowAccountsPageAsync(BotUser botUser, IReadOnlyList<Account> accounts, long totalAccountCount, int pageIndex, string searchQuery, int messageToEditId = 0) {
+		long pageCount = totalAccountCount.PageCount(botUiSettings.PageSize);
 		bool isSinglePage = pageCount == 1;
 		
 		//todo fucking refactor this to Format string!
