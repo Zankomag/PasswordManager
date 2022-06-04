@@ -37,6 +37,6 @@ public interface IBot {
 	/// </summary>
 	public Task TryDeleteMessageAsync(ChatId chatId, int messageId);
 
-	bool IsAdmin(long botUserId);
-	bool IsAdmin(BotUser botUser);
+	bool IsUserAdmin(long botUserId);
+	bool IsUserAdmin(BotUser botUser);
 }

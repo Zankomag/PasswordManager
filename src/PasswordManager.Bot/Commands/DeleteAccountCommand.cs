@@ -19,6 +19,7 @@ public class DeleteAccountCommand : Abstractions.BotCommand, ICallbackQueryComma
 		this.accountService = accountService;
 	}
 
+	//todo make sure double deletion asking works (cause now it asks only single time)
 	async Task ICallbackQueryCommand.ExecuteAsync(CallbackQuery callbackQuery, BotUser botUser) {
 		if (Int64.TryParse(callbackQuery.Data[2..], out long accountId)) {
 			if (!String.IsNullOrEmpty(callbackQuery.Data)

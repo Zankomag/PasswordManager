@@ -10,7 +10,7 @@ public interface IUserService {
 
 	/// <summary></summary>
 	/// <returns>User with Action and Language</returns>
-	Task<User> GetUserActionAsync(long userId);
+	Task<User> GetUserAsync(long userId);
 
 	/// <summary></summary>
 	/// <returns>List of user Ids and theis Accounts Count</returns>

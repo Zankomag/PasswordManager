@@ -125,8 +125,8 @@ public class Bot : IBot {
 		}
 	}
 
-	public bool IsAdmin(long botUserId) => admins.Contains(botUserId);
+	public bool IsUserAdmin(long botUserId) => admins.Contains(botUserId);
 
-	public bool IsAdmin(BotUser botUser) => IsAdmin(botUser.Id);
+	public bool IsUserAdmin(BotUser botUser) => IsUserAdmin(botUser.Id);
 
 }

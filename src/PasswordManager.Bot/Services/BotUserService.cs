@@ -27,14 +27,15 @@ public class BotUserService : IBotUserService {
 		if ((userId = update.GetUserIdByUpdateType()) == null)
 			return null;
 
-		BotUser botUser = await userService.GetUserActionAsync(userId.Value);
+		BotUser botUser = await userService.GetUserAsync(userId.Value);
 		if (botUser == null) {
+			//todo move this block behaviour to overridable method
 			//If bot is private, only admins can be treated as new users
 			//In case user is not admin bot doesn't respond with message
 			//explaining that user is not registered, instead bot 
 			//ignores user pretending it's dead.
 			//This behavior can vary depending on your requirements
-			if (!bot.IsPublic && !bot.IsAdmin(userId.Value))
+			if (!bot.IsPublic && !bot.IsUserAdmin(userId.Value))
 				return null;
 			return await RegisterUser(update);
 		}
@@ -58,7 +59,7 @@ public class BotUserService : IBotUserService {
 				//TODO: 
 				//Use key from new BotCommand system, not hardcoded
 				//
-				//User is not registered here as in CallbackQuerry Handler
+				//User is not registered here as in CallbackQuery Handler
 				//because he should not be treated as registered user
 				//until he selects language. So he is invited to select one.
 				await commandFactory.GetMessageCommand("/language")

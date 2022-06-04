@@ -21,7 +21,7 @@ public class UserListCommand: Abstractions.BotCommand, IMessageCommand {
 	}
 
 	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
-		if(Bot.IsAdmin(botUser)) {
+		if(Bot.IsUserAdmin(botUser)) {
 			try {
 				IList<User> users = await userService.GetAllBasicInfoAsync();
 				string response = String.Empty;

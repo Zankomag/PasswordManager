@@ -28,7 +28,7 @@ public class UserService : IUserService {
 		await workUnit.SaveAsync();
 		return user;
 	}
-	public async Task<User> GetUserActionAsync(long userId) 
+	public async Task<User> GetUserAsync(long userId) 
 		=> await workUnit.UserRepository.GetUserActionAsync(userId);
 
 	public async Task<IList<User>> GetAllBasicInfoAsync()

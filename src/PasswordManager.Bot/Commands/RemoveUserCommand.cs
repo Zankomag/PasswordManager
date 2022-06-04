@@ -17,12 +17,12 @@ public class RemoveUserCommand : Abstractions.BotCommand, IMessageCommand {
 	}
 
 	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
-		if(Bot.IsAdmin(botUser)) {
+		if(Bot.IsUserAdmin(botUser)) {
 			int spaceIndex;
 			if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 				string userIdStr = message.Text[(spaceIndex+1)..];
 				if(Int32.TryParse(userIdStr, out int userId)){
-					if (Bot.IsAdmin(botUser)) {
+					if (Bot.IsUserAdmin(botUser)) {
 						await Bot.Client.SendTextMessageAsync(botUser.Id,
 							"You are trying to remove admin. I won't let you do this.");
 						return;

@@ -19,7 +19,7 @@ public class AddUserCommand : Abstractions.BotCommand, IMessageCommand {
 	//This command allows admin manually add users to bot
 	//Bot don't need this command if it has free registration
 	async Task IMessageCommand.ExecuteAsync(Message message, BotUser botUser) {
-		if (Bot.IsAdmin(botUser)) {
+		if (Bot.IsUserAdmin(botUser)) {
 			int spaceIndex;
 			if ((spaceIndex = message.Text.IndexOf(' ')) != -1) {
 				try {
