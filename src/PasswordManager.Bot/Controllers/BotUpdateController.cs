@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot.Types;
 using PasswordManager.Bot.Services.Abstractions;
+using Telegram.Bot.Types;
 
-namespace PasswordManager.Web.Controllers; 
+namespace PasswordManager.Bot.Controllers; 
 
 [Route("api/bots")]
 [ApiController]
 public class BotUpdateController : ControllerBase {
-	//TODO Move Bot Controller to Bot project!
-	//Create helper class that maps controller from other assembly
 	private readonly ITelegramBotHandler telegramBotHandler;
+	//todo add feature to work with several bots damn
 	private readonly IBot bot;
 
 	public BotUpdateController(ITelegramBotHandler telegramBotHandler, IBot bot) {
@@ -17,7 +16,7 @@ public class BotUpdateController : ControllerBase {
 		this.bot = bot;
 	}
 
-	[HttpPost("{token}")]
+	[HttpPost("update/{token}")]
 	public IActionResult Post([FromBody]Update update, string token) {
 		if (bot.IsTokenCorrect(token)) {
 			telegramBotHandler.HandleUpdateAsync(update);

@@ -1,40 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Junetic.Common.Abstractions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using PasswordManager.Application.Services;
 using PasswordManager.Application.Services.Abstractions;
-using PasswordManager.Bot;
-using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Commands;
 using PasswordManager.Bot.Commands.Abstractions;
 using PasswordManager.Bot.Services;
-using PasswordManager.Core.Repositories;
-using PasswordManager.Infrastructure.Data;
-using Serilog;
-using System.Linq;
-using System.Reflection;
-using PasswordManager.Application;
-using AutoMapper;
+using PasswordManager.Bot.Services.Abstractions;
 using PasswordManager.Bot.Settings;
+using PasswordManager.Core.Repositories;
 using PasswordManager.Infrastructure.Extensions;
 using PasswordManager.Infrastructure.Repositories;
 
-namespace PasswordManager.Web; 
+namespace PasswordManager.Bot; 
 
 //todo update all nuget packages in all projects
 
-public class Startup {
-	public Startup(IConfiguration configuration) {
-		Configuration = configuration;
-	}
+public class Startup : StartupBase{
+	public Startup(IConfiguration configuration) : base(configuration){ }
 
-	public IConfiguration Configuration { get; }
-
-	public void ConfigureServices(IServiceCollection services) {
+	public override void ConfigureServices(IServiceCollection services) {
 		//todo remove ef core pcakges for .Web project if not needed
 		
 		

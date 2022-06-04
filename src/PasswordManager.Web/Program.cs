@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using PasswordManager.Bot;
 using Serilog;
 
 //todo move to dotnet 6 and use file-scoped usings
@@ -20,13 +21,15 @@ public class Program {
 		//	.CreateLogger();
 //
 		//Log.Information("Application starting");
-		CreateHostBuilder(args).Build().Run();
+		
+		//deprecated project
+		//CreateHostBuilder(args).Build().Run();
 	}
 
-	public static IHostBuilder CreateHostBuilder(string[] args) =>
-		Host.CreateDefaultBuilder(args)
-			//.UseSerilog()
-			.ConfigureWebHostDefaults(webBuilder => {
-				webBuilder.UseStartup<Startup>();
-			});
+	// public static IHostBuilder CreateHostBuilder(string[] args) =>
+	// 	Host.CreateDefaultBuilder(args)
+	// 		//.UseSerilog()
+	// 		.ConfigureWebHostDefaults(webBuilder => {
+	// 			webBuilder.UseStartup<Startup>();
+	// 		});
 }
