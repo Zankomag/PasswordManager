@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using PasswordManager.Bot;
+using PasswordManager.Telegram;
 using Serilog;
 
 //todo move to dotnet 6 and use file-scoped usings
