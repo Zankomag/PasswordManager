@@ -109,12 +109,13 @@ public static class Encryptor {
 		return result;
 	}
 
+	//todo consider use Span<byte> instead of byte[] 
 	private static byte[] Generate256BitsOfRandomEntropy() {
 		var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
-		using var rngCsp = new RNGCryptoServiceProvider();
+		using var randomGenerator = RandomNumberGenerator.Create();
 
 		// Fill the array with cryptographically secure random bytes.
-		rngCsp.GetBytes(randomBytes);
+		randomGenerator.GetBytes(randomBytes);
 
 		return randomBytes;
 	}
