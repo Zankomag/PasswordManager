@@ -23,6 +23,8 @@ public class Bot : IBot {
 	//TODO:
 	//Add feature to edit admins at runtime
 	//todo get rid of such implementation, use from other projects
+	//
+	//todo use hashset for allowed chats + admins
 	private long[] admins;
 
 	private readonly string token;
